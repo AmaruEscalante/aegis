@@ -1,243 +1,215 @@
-<img src="assets/banner.png" alt="Logo" style="border-radius: 30px; width: 100%;">
+# Aegis
 
-## Context
-- Cactus runs Google DeepMind's FunctionGemma at up to 3000 toks/sec prefill speed on M4 Macs.
-- While decode speed reaches 200 tokens/sec, all without GPU, to remain energy-efficient. 
-- FunctionGemma is great at tool calling, but small models are not the smartest for some tasks. 
-- There is a need to dynamically combine edge and cloud (Gemini Flash) to get the best of both worlds. 
-- Cactus develops various strategies for choosing when to fall back to Gemini or FunctionGemma.
+A local privacy layer for agentic AI. Aegis intercepts file access from AI agents, classifies sensitivity on-device using fine-tuned FunctionGemma, and routes to the appropriate action: passthrough, sanitize, block, or escalate for human review.
 
-## Challenge
-- FunctionGemma is just a tool-call model, but tool calling is the core of agentic systems. 
-- You MUST design new strategies that decide when to stick with on-device or fall to cloud. 
-- You will be objectively ranked on tool-call correctness, speed and edge/cloud ratio (priortize local). 
-- You can focus on prompting, tool description patterns, confidence score algorithms, anything!
-- Please ensure at least 1 team member has a Mac, Cactus runs on Macs, mobile devices and wearables.
+## Architecture
 
-## Setup (clone this repo and hollistically follow)
-- Step 1: Fork this repo, clone to your Mac, open terminal.
-- Step 2: `git clone https://github.com/cactus-compute/cactus`
-- Step 3: `cd cactus && source ./setup && cd ..` (re-run in new terminal)
-- Step 4: `cactus build --python`
-- Step 5: `cactus download google/functiongemma-270m-it --reconvert`
-- Step 6: Get cactus key from the [cactus website](https://cactuscompute.com/dashboard/api-keys)
-- Sept 7: Run `cactus auth` and enter your token when prompted.
-- Step 8: `pip install google-genai`
-- Step 9: Obtain Gemini API key from [Google AI Studio](https://aistudio.google.com/api-keys)
-- Step 10: `export GEMINI_API_KEY="your-key"`
-- Step 11: Click on location to get Gemini credits - [SF](https://trygcp.dev/claim/cactus-x-gdm-hackathon-sf), [Boston](https://trygcp.dev/claim/cactus-x-gdm-hackathon-boston), [DC](https://trygcp.dev/claim/cactus-x-gdm-hackathon-dc), [London](https://trygcp.dev/claim/cactus-x-gdm-hackathon-london), [Singapore](https://trygcp.dev/claim/cactus-x-gdm-hackathon), [Online](https://trygcp.dev/claim/cactus-x-gdm-hackathon-online)
-- Step 12: Join the [Reddit channel](https://www.reddit.com/r/cactuscompute/), ask any technical questions there.
-- Step 13: read and run `python benchmark.py` to understand how objective scoring works.
-- Note: Final objective score will be done on held-out evals, top 10 are then judged subjectively.
+Three components work together:
 
-## Submissions
-- Your main task is to modify the **internal logic** of the `generate_hybrid` method in `main.py`. 
-- Do not modify the input or output signature (function arguments and return variables) of the `generate_hybrid` method. Keep the hybrid interface compatible with `benchmark.py`.
-- Submit to the leaderboard `python submit.py --team "YourTeamName" --location "YourCity"`, only 1x every 1hr.
-- The dataset is a hidden Cactus eval, quite difficult for FunctionGemma by design.
-- Use `python benchmark.py` to iterate, but your best score is preserved.
-- For transparency, hackers can see live rankings on the [leaderboard](https://cactusevals.ngrok.app).
-- Leaderboard will start accepting submissions once event starts. 
-- The top 10 in each location will make it to judging.
+- **Aegis Bridge** (`aegis_bridge.py`) — Python HTTP server wrapping two on-device models: SmolLM2 for summarization and FunctionGemma-270M for classification. Dual backend support (Cactus SDK or HuggingFace Transformers).
+- **Middleware** (`middleware/`) — TypeScript OpenClaw plugin. Registers `aegis_read`, `aegis_classify`, and other tools. Routes files through the bridge, then applies DataGuard sanitization for PII files.
+- **CLI Test Harness** (`aegis_cli.py`) — Interactive Python script for testing the full pipeline with visible step-by-step output.
 
-## Qualitative Judging 
-- **Rubric 1**: The quality of your hybrid routing algorithm, depth and cleverness.
-- **Rubric 2**: End-to-end products that execute function calls to solve real-world problems. 
-- **Rubric 3**: Building low-latency voice-to-action products, leveraging `cactus_transcribe`.
+## Execution Flow
 
-## Quick Example
+When an AI agent tries to read a file, the full pipeline executes:
 
-```python
-import json
-from cactus import cactus_init, cactus_complete, cactus_destroy
-
-model = cactus_init("weights/lfm2-vl-450m")
-messages = [{"role": "user", "content": "What is 2+2?"}]
-response = json.loads(cactus_complete(model, messages))
-print(response["response"])
-
-cactus_destroy(model)
+```
+AI Agent (Claude, etc.)
+  |
+  |  calls aegis_read({ path: "samples/patient_records.csv" })
+  |
+  v
++-------------------------------------------------------------+
+|  plugin/index.ts                          [OpenClaw plugin]  |
+|  Registers tools + hooks at startup                          |
+|  -----------------------------------------------------------+
+|  also registers: before_tool_call hook                       |
+|  (blocks native Read/Glob/cat -- forces agent to use aegis)  |
++----------------------------+--------------------------------+
+                             |
+                             v
++-------------------------------------------------------------+
+|  tools/dataguard_read.ts                    [aegis_read]     |
+|                                                              |
+|  Step 1: checkPath()           <-- sanitize/policy.ts        |
+|          Deny globs (.env, .ssh, .pem)?                      |
+|          Under allowed roots?                                |
+|                                                              |
+|  Step 2: checkFileSize()       <-- sanitize/policy.ts        |
+|          Under 5MB limit?                                    |
+|                                                              |
+|  Step 3: extractText()         <-- sanitize/extract.ts       |
+|          PDF -> pdftotext/pdf-parse                          |
+|          DOCX -> mammoth                                     |
+|          Everything else -> UTF-8 read                       |
+|                                                              |
+|  Step 0: classifyFile(text)    <-- router/classify.ts        |
+|          +------------------------------+                    |
+|          | POST /summarize (8000 chars)  |                    |
+|          |         |                     |                    |
+|          |         v                     |                    |
+|          |  aegis_bridge.py ------------ | ---- Python ----  |
+|          |  |                            |                    |
+|          |  |  SmolLM2 (LM Studio)       |                    |
+|          |  |  "File contains SSNs,      |                    |
+|          |  |   emails, phone numbers"   |                    |
+|          |  |         |                  |                    |
+|          |  v         v                  |                    |
+|          | POST /classify (summary)      |                    |
+|          |  |                            |                    |
+|          |  |  FunctionGemma-270M        |                    |
+|          |  |  call:flag_pii{            |                    |
+|          |  |    types: "email,ssn"}     |                    |
+|          |  |         |                  |                    |
+|          |  v         v                  |                    |
+|          |  { verdict: "flag_pii" }      |                    |
+|          +------------------------------+                    |
+|                    |                                         |
+|                    v                                         |
+|  +--- ROUTE on verdict -----------------------------------+  |
+|  |                                                        |  |
+|  |  safe -------> Return raw text, 0 redactions           |  |
+|  |                method: "aegis-safe"                     |  |
+|  |                (NO sanitization, NO cache, NO LLM)      |  |
+|  |                                                        |  |
+|  |  flag_pii --> DataGuard sanitization pipeline           |  |
+|  |                |                                       |  |
+|  |                +-- Cache check                         |  |
+|  |                +-- detect() [regex+entropy]            |  |
+|  |                +-- applyRedactions() [placeholders]    |  |
+|  |                +-- vault (store originals)             |  |
+|  |                +-- LLM refinement (Ollama/OpenRouter)  |  |
+|  |                +-- Cache write                         |  |
+|  |                +-- Return sanitized text               |  |
+|  |                   method: "llm+regex" / "regex-only"   |  |
+|  |                                                        |  |
+|  |  block ------> THROW Error("Aegis blocked file")       |  |
+|  |                Content NEVER returned to agent          |  |
+|  |                                                        |  |
+|  |  escalate ---> Return { content: null,                 |  |
+|  |                  escalation: {                         |  |
+|  |                    message: "Ask user for              |  |
+|  |                    permission before proceeding"       |  |
+|  |                }}                                      |  |
+|  |                method: "aegis-escalate"                 |  |
+|  +--------------------------------------------------------+  |
+|                                                              |
+|  Bridge DOWN? --> Degrade to flag_pii (sanitize all)         |
++--------------------------------------------------------------+
 ```
 
-## API Reference
+### The Four Verdicts
 
-### `cactus_init(model_path, corpus_dir=None)`
+| Verdict | FunctionGemma Tool | What Happens | Content Returned? |
+|---|---|---|---|
+| **safe** | `classify_safe` | Passthrough, no sanitization | Yes, raw text |
+| **flag_pii** | `flag_pii` | Full DataGuard pipeline (regex + LLM + cache) | Yes, sanitized with placeholders |
+| **block** | `block_transfer` | Throw error, deny access | No |
+| **escalate** | `request_permission` | Return escalation object, ask human | No (`content: null`) |
+| **bridge down** | *(none)* | Degrade to `flag_pii`, sanitize everything | Yes, sanitized |
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `model_path` | `str` | Path to model weights directory |
-| `corpus_dir` | `str` | (Optional) dir of txt/md files for auto-RAG |
+**SAFE** (`open_source_readme.md`): FunctionGemma says "no sensitive data" -- raw file returned directly to agent. Zero overhead beyond classification. No regex, no LLM, no cache.
 
-```python
-model = cactus_init("weights/lfm2-vl-450m")
-model = cactus_init("weights/lfm2-rag", corpus_dir="./documents")
+**FLAG_PII** (`patient_records.csv`): FunctionGemma says "contains PII" -- full DataGuard pipeline runs. Regex detects SSNs/emails/phones, replaces with `__SSN_1__`, `__EMAIL_1__` placeholders, optionally LLM refines, cached, sanitized text returned to agent with redaction count.
+
+**BLOCK** (`api_config.env`): FunctionGemma says "contains secrets" -- throws an Error. Agent gets an error message, never sees any file content. Two layers: path-based blocking (`.env` glob) AND content-based blocking (FunctionGemma classification).
+
+**ESCALATE** (`vendor_evaluation.txt`): FunctionGemma says "ambiguous, needs human" -- returns `content: null` with a structured escalation message telling the agent to ask the user for permission before proceeding.
+
+**BRIDGE DOWN**: Graceful degradation -- treats every file as `flag_pii`, sanitize-everything mode (same as before Aegis existed). Never crashes.
+
+## Quick Start
+
+### Prerequisites
+
+- Python 3.12+ with `uv`
+- Node.js 18+
+- LM Studio running with `smollm2-1.7b-instruct` loaded (port 1234)
+- The `aegis-adapter` model directory (FunctionGemma-270M fine-tuned weights)
+
+### 1. Start the Bridge
+
+```bash
+uv run python aegis_bridge.py --backend transformers --model ./aegis-adapter
 ```
 
-### `cactus_complete(model, messages, **options)`
+The bridge auto-detects LM Studio for summarization. Verify with:
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `model` | handle | Model handle from `cactus_init` |
-| `messages` | `list\|str` | List of message dicts or JSON string |
-| `tools` | `list` | Optional tool definitions for function calling |
-| `temperature` | `float` | Sampling temperature |
-| `top_p` | `float` | Top-p sampling |
-| `top_k` | `int` | Top-k sampling |
-| `max_tokens` | `int` | Maximum tokens to generate |
-| `stop_sequences` | `list` | Stop sequences |
-| `include_stop_sequences` | `bool` | Include matched stop sequences in output (default: `False`) |
-| `force_tools` | `bool` | Constrain output to tool call format |
-| `tool_rag_top_k` | `int` | Select top-k relevant tools via Tool RAG (default: 2, 0 = use all tools) |
-| `confidence_threshold` | `float` | Minimum confidence for local generation (default: 0.7, triggers cloud_handoff when below) |
-| `callback` | `fn` | Streaming callback `fn(token, token_id, user_data)` |
-
-```python
-# Basic completion
-messages = [{"role": "user", "content": "Hello!"}]
-response = cactus_complete(model, messages, max_tokens=100)
-print(json.loads(response)["response"])
+```bash
+curl http://127.0.0.1:7523/health
+# {"status":"ok","backend":"transformers","model":"./aegis-adapter","summarizer":"SmolLM2 via LM Studio (http://127.0.0.1:1234)"}
 ```
 
-```python
-# Completion with tools
-tools = [{
-    "name": "get_weather",
-    "description": "Get weather for a location",
-    "parameters": {
-        "type": "object",
-        "properties": {"location": {"type": "string"}},
-        "required": ["location"]
-    }
-}]
+### 2. Run the CLI Test Harness
 
-response = cactus_complete(model, messages, tools=tools)
-cactus_complete(model, messages, callback=on_token)
+```bash
+# All sample files
+python aegis_cli.py --all
+
+# Single file
+python aegis_cli.py samples/patient_records.csv
+
+# Classification only (no action execution)
+python aegis_cli.py --classify-only samples/api_config.env
 ```
 
-**Response format** (all fields always present):
-```json
-{
-    "success": true,
-    "error": null,
-    "cloud_handoff": false,
-    "response": "Hello! How can I help?",
-    "function_calls": [],
-    "confidence": 0.85,
-    "time_to_first_token_ms": 45.2,
-    "total_time_ms": 163.7,
-    "prefill_tps": 619.5,
-    "decode_tps": 168.4,
-    "ram_usage_mb": 245.67,
-    "prefill_tokens": 28,
-    "decode_tokens": 50,
-    "total_tokens": 78
-}
+### 3. Run the Middleware Tests
+
+```bash
+cd middleware
+npm install
+npm test                              # unit tests (no bridge needed)
+npx vitest run tests/e2e.test.ts      # e2e tests (bridge must be running)
 ```
 
-**Cloud handoff response** (when model detects low confidence):
-```json
-{
-    "success": false,
-    "error": null,
-    "cloud_handoff": true,
-    "response": null,
-    "function_calls": [],
-    "confidence": 0.18,
-    "time_to_first_token_ms": 45.2,
-    "total_time_ms": 45.2,
-    "prefill_tps": 619.5,
-    "decode_tps": 0.0,
-    "ram_usage_mb": 245.67,
-    "prefill_tokens": 28,
-    "decode_tokens": 0,
-    "total_tokens": 28
-}
+## Project Structure
+
+```
+aegis_bridge.py          Python HTTP bridge (FunctionGemma + SmolLM2)
+aegis_cli.py             CLI test harness
+aegis.py                 Original standalone privacy pipeline
+main.py                  Hybrid routing engine (Cactus confidence-based)
+benchmark.py             30-case benchmark with F1 scoring
+samples/                 12 synthetic test files (all 4 categories)
+
+middleware/
+  src/
+    plugin/index.ts      OpenClaw plugin entry point
+    router/classify.ts   HTTP client for the bridge
+    tools/
+      dataguard_read.ts  aegis_read tool (main pipeline)
+      aegis_classify.ts  Standalone classification tool
+      dataguard_search.ts, dataguard_patch_file.ts, ...
+    hooks/
+      before_tool_call.ts  Intercepts native file reads
+    sanitize/
+      detector.ts        Regex + entropy PII detection
+      sanitize.ts        Two-pass sanitization (regex + LLM)
+      policy.ts          Path/size policy enforcement
+      extract.ts         Text extraction (PDF, DOCX, text)
+      vault.ts           In-memory original<->placeholder store
+      cache.ts           File-based sanitization cache
+      audit.ts           JSONL audit logging
+    types.ts             Central type registry
+  tests/
+    detector.test.ts     PII detector unit tests
+    router.test.ts       Router client unit tests (mock HTTP)
+    e2e.test.ts          Full pipeline e2e tests (requires bridge)
 ```
 
-- When `cloud_handoff` is `True`, the model's confidence dropped below `confidence_threshold` (default: 0.7) and recommends deferring to a cloud-based model for better results. 
+## Bridge Options
 
-- You will NOT rely on this, hackers must design custom strategies to fall-back to cloud, that maximizes on-devices and correctness, while minimizing end-to-end latency!
+```bash
+# Transformers backend (default, any HuggingFace model)
+uv run python aegis_bridge.py --backend transformers --model ./aegis-adapter
 
-### `cactus_transcribe(model, audio_path, prompt="")`
+# Cactus backend (requires converted GGUF weights)
+uv run python aegis_bridge.py --backend cactus
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `model` | handle | Whisper model handle |
-| `audio_path` | `str` | Path to audio file (WAV) |
-| `prompt` | `str` | Whisper prompt for language/task |
+# Custom port
+uv run python aegis_bridge.py --port 8080
 
-```python
-whisper = cactus_init("weights/whisper-small")
-prompt = "<|startoftranscript|><|en|><|transcribe|><|notimestamps|>"
-response = cactus_transcribe(whisper, "audio.wav", prompt=prompt)
-print(json.loads(response)["response"])
-cactus_destroy(whisper)
+# Disable LM Studio summarizer (use truncated text)
+uv run python aegis_bridge.py --backend transformers --no-lmstudio
 ```
-
-### `cactus_embed(model, text, normalize=False)`
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `model` | handle | Model handle |
-| `text` | `str` | Text to embed |
-| `normalize` | `bool` | L2-normalize embeddings (default: False) |
-
-```python
-embedding = cactus_embed(model, "Hello world")
-print(f"Dimension: {len(embedding)}")
-```
-
-### `cactus_reset(model)`
-
-Reset model state (clear KV cache). Call between unrelated conversations.
-
-```python
-cactus_reset(model)
-```
-
-### `cactus_stop(model)`
-
-Stop an ongoing generation (useful with streaming callbacks).
-
-```python
-cactus_stop(model)
-```
-
-### `cactus_destroy(model)`
-
-Free model memory. Always call when done.
-
-```python
-cactus_destroy(model)
-```
-
-### `cactus_get_last_error()`
-
-Get the last error message, or `None` if no error.
-
-```python
-error = cactus_get_last_error()
-if error:
-    print(f"Error: {error}")
-```
-
-### `cactus_rag_query(model, query, top_k=5)`
-
-Query RAG corpus for relevant text chunks. Requires model initialized with `corpus_dir`.
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `model` | handle | Model handle (must have corpus_dir set) |
-| `query` | `str` | Query text |
-| `top_k` | `int` | Number of chunks to retrieve (default: 5) |
-
-```python
-model = cactus_init("weights/lfm2-rag", corpus_dir="./documents")
-chunks = cactus_rag_query(model, "What is machine learning?", top_k=3)
-for chunk in chunks:
-    print(f"Score: {chunk['score']:.2f} - {chunk['text'][:100]}...")
-```
-
-## Next steps:
-- Join the [Reddit channel](https://www.reddit.com/r/cactuscompute/), ask any technical questions there.
-- To gain some technical insights on AI, checkout [Maths, CS & AI Compendium](https://github.com/HenryNdubuaku/maths-cs-ai-compendium). 
