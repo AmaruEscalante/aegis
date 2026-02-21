@@ -1,0 +1,99 @@
+{
+  "id": "aegis",
+  "name": "Aegis",
+  "version": "2.0.0",
+  "description": "Local privacy router for agentic AI. Classifies files via FunctionGemma (on-device), then routes to sanitization, passthrough, block, or escalation.",
+  "main": "dist/plugin/index.js",
+  "hooks": ["before_tool_call"],
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "aegisEnabled": {
+        "type": "boolean",
+        "default": true,
+        "description": "Enable Aegis FunctionGemma classification. When false, falls back to sanitize-everything."
+      },
+      "aegisBridgeUrl": {
+        "type": "string",
+        "default": "http://127.0.0.1:7523",
+        "description": "URL of the Aegis bridge server (aegis_bridge.py)"
+      },
+      "aegisBridgeTimeoutMs": {
+        "type": "number",
+        "default": 10000,
+        "description": "Timeout for Aegis bridge requests in milliseconds"
+      },
+      "denyPathGlobs": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Glob patterns for paths that are absolutely forbidden to access"
+      },
+      "allowedRoots": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Root directories that are allowed to be accessed"
+      },
+      "sanitizeAlwaysGlobs": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Glob patterns for files that should always be sanitized (PDFs, docs, etc.)"
+      },
+      "maxFileBytes": {
+        "type": "number",
+        "default": 5242880,
+        "description": "Maximum file size to process (default 5MB)"
+      },
+      "cacheDir": {
+        "type": "string",
+        "description": "Directory to cache sanitized artifacts"
+      },
+      "auditLogPath": {
+        "type": "string",
+        "description": "Path to JSONL audit log file"
+      },
+      "llmProvider": {
+        "type": "string",
+        "enum": ["ollama", "openrouter"],
+        "default": "ollama",
+        "description": "LLM provider for DataGuard sanitization: 'ollama' for local, 'openrouter' for cloud"
+      },
+      "llmMode": {
+        "type": "string",
+        "enum": ["prompt", "tool-calling"],
+        "default": "tool-calling",
+        "description": "Redaction mode: 'tool-calling' for surgical edits (recommended), 'prompt' for full rewrite"
+      },
+      "ollamaBaseUrl": {
+        "type": "string",
+        "default": "http://127.0.0.1:11434",
+        "description": "Base URL for local Ollama instance (must be localhost)"
+      },
+      "ollamaModel": {
+        "type": "string",
+        "default": "gemma2:latest",
+        "description": "Ollama model to use for sanitization (e.g. gemma2, llama2, etc.)"
+      },
+      "ollamaTimeoutMs": {
+        "type": "number",
+        "default": 30000,
+        "description": "Timeout for Ollama requests in milliseconds"
+      },
+      "openrouterApiKey": {
+        "type": "string",
+        "default": "",
+        "description": "OpenRouter API key (get from https://openrouter.ai)"
+      },
+      "openrouterModel": {
+        "type": "string",
+        "default": "qwen/qwen3-coder",
+        "description": "OpenRouter model to use (e.g. qwen/qwen3-coder, openai/gpt-4o-mini)"
+      },
+      "openrouterTimeoutMs": {
+        "type": "number",
+        "default": 60000,
+        "description": "Timeout for OpenRouter requests in milliseconds"
+      }
+    }
+  }
+}

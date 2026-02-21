@@ -2,39 +2,46 @@
 Aegis: Local Privacy Layer for Agentic AI
 
 A local-first middleware that intercepts file requests from cloud AI agents,
-classifies data sensitivity on-device using SmolLM2 + FunctionGemma via Cactus,
+classifies data sensitivity on-device using SmolLM2 + FunctionGemma,
 and ensures sensitive data never leaves the machine without sanitization or
 explicit user approval.
 
 Architecture:
   SmolLM2 (summarizer) → FunctionGemma (router) → Python (executor) → Gemini (cloud)
-"""
 
-import sys
-sys.path.insert(0, "cactus/python/src")
+Classification backends:
+  --cactus         Use Cactus inference engine (default, fastest)
+  --transformers   Use HuggingFace transformers (slower, highest accuracy)
+"""
 
 import json
 import os
 import re
+import sys
 import time
 import urllib.request
-import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM
+
 from google import genai
 from google.genai import types
 
-# Model paths
-ADAPTER_PATH = "aegis-adapter"
+# ─────────────────────────────────────────────
+# Config
+# ─────────────────────────────────────────────
+
+# Cactus model paths
+CACTUS_FUNCTIONGEMMA_PATH = "cactus/weights/aegis-merged"
 SUMMARIZER_PATH = "cactus/weights/gemma-3-1b-it"
 
-# Lazy-loaded model/tokenizer for FunctionGemma
-_fg_model = None
-_fg_tokenizer = None
+# Transformers model path (full merged model from training)
+TRANSFORMERS_ADAPTER_PATH = "aegis-adapter"
 
 # LM Studio config
 LMSTUDIO_URL = "http://127.0.0.1:1234"
 LMSTUDIO_MODEL = "smollm2-1.7b-instruct"
-USE_LMSTUDIO = False  # set via --lmstudio flag
+
+# Runtime flags (set via CLI args)
+USE_LMSTUDIO = True  # Default: LM Studio (only working summarizer)
+CLASSIFIER_BACKEND = "transformers"  # Default: transformers (100% accuracy)
 
 # ANSI colors for CLI output
 GREEN = "\033[92m"
@@ -110,6 +117,13 @@ PRIVACY_TOOLS = [
     },
 ]
 
+# Wrapped format for cactus_complete
+CACTUS_TOOLS = [{"type": "function", "function": t} for t in PRIVACY_TOOLS]
+
+LABELS = ["classify_safe", "flag_pii", "block_transfer", "request_permission"]
+
+SYSTEM_MSG = "You are a privacy classifier. Based on the file summary, call the correct tool."
+
 
 # ─────────────────────────────────────────────
 # Step 1: Summarize file locally (SmolLM2)
@@ -154,6 +168,9 @@ def _summarize_via_lmstudio(truncated):
 
 def _summarize_via_cactus(truncated):
     """Call Gemma-3-1B via Cactus (on-device)."""
+    sys.path.insert(0, "cactus/python/src")
+    from cactus import cactus_init, cactus_complete, cactus_destroy
+
     model = cactus_init(SUMMARIZER_PATH)
 
     messages = [
@@ -213,44 +230,119 @@ def summarize_file(file_path):
 # Step 2: Classify sensitivity (FunctionGemma)
 # ─────────────────────────────────────────────
 
-def _load_functiongemma():
-    """Lazy-load the fine-tuned FunctionGemma adapter (once)."""
-    global _fg_model, _fg_tokenizer
-    if _fg_model is None:
-        print(f"  {DIM}Loading adapter from {ADAPTER_PATH}...{RESET}")
-        _fg_tokenizer = AutoTokenizer.from_pretrained(ADAPTER_PATH)
-        _fg_model = AutoModelForCausalLM.from_pretrained(
-            ADAPTER_PATH,
-            torch_dtype=torch.bfloat16,
-            device_map="auto",
-            attn_implementation="eager",
-        )
-        _fg_model.eval()
-        print(f"  {DIM}Loaded on {_fg_model.device}{RESET}")
-    return _fg_model, _fg_tokenizer
+def _classify_via_cactus(summary):
+    """Classify using Cactus inference engine."""
+    sys.path.insert(0, "cactus/python/src")
+    from cactus import cactus_init, cactus_complete, cactus_destroy
 
-
-def classify_sensitivity(summary):
-    """Use fine-tuned FunctionGemma to classify sensitivity via tool calling."""
-    print(f"\n{BLUE}{BOLD}[AEGIS] Step 2: Classifying sensitivity{RESET}")
-    print(f"  {DIM}Model: FunctionGemma (fine-tuned adapter){RESET}")
-
-    model, tokenizer = _load_functiongemma()
-
-    tools = [{"type": "function", "function": t} for t in PRIVACY_TOOLS]
-    system_msg = "You are a privacy classifier. Based on the file summary, call the correct tool."
+    model = cactus_init(CACTUS_FUNCTIONGEMMA_PATH)
 
     messages = [
-        {"role": "developer", "content": system_msg},
+        {"role": "system", "content": SYSTEM_MSG},
+        {"role": "user", "content": f"File summary:\n{summary}"},
+    ]
+
+    start = time.time()
+    raw_str = cactus_complete(
+        model, messages,
+        tools=CACTUS_TOOLS,
+        force_tools=True,
+        max_tokens=256,
+        confidence_threshold=0.0,
+        stop_sequences=["<|im_end|>", "<end_of_turn>"],
+    )
+    elapsed_ms = (time.time() - start) * 1000
+    cactus_destroy(model)
+
+    # Parse Cactus response
+    tool_name = "request_permission"
+    tool_args = {"reason": "Unable to classify — requesting human review"}
+    confidence = 0.0
+
+    try:
+        raw = json.loads(raw_str)
+        confidence = raw.get("confidence", 0)
+        function_calls = raw.get("function_calls", [])
+        resp_text = raw.get("response", "") or ""
+
+        if function_calls:
+            tool_name = function_calls[0].get("name", "request_permission")
+            tool_args = function_calls[0].get("arguments", {})
+        elif resp_text:
+            for label in LABELS:
+                if f"call:{label}" in resp_text:
+                    tool_name = label
+                    try:
+                        call_start = resp_text.index(f"call:{label}") + len(f"call:{label}")
+                        if "{" in resp_text[call_start:call_start + 5]:
+                            brace_start = resp_text.index("{", call_start)
+                            brace_end = resp_text.index("}", brace_start)
+                            args_str = resp_text[brace_start + 1:brace_end]
+                            parsed_args = {}
+                            for part in args_str.split(","):
+                                part = part.strip()
+                                if ":" in part:
+                                    k, v = part.split(":", 1)
+                                    parsed_args[k.strip()] = v.strip().replace("<escape>", "").strip()
+                            if parsed_args:
+                                tool_args = parsed_args
+                    except (ValueError, IndexError):
+                        tool_args = {"types": "email,phone,ssn"} if label == "flag_pii" else {"reason": f"classified as {label}"}
+                    break
+    except (json.JSONDecodeError, TypeError):
+        raw_text = str(raw_str) if raw_str else ""
+        for label in LABELS:
+            if f"call:{label}" in raw_text:
+                tool_name = label
+                tool_args = {"types": "email,phone,ssn"} if label == "flag_pii" else {"reason": f"classified as {label}"}
+                break
+
+    return tool_name, tool_args, confidence, elapsed_ms
+
+
+# Lazy-loaded transformers model
+_tf_model = None
+_tf_tokenizer = None
+
+
+def _load_transformers_model():
+    """Lazy-load the transformers model and tokenizer."""
+    global _tf_model, _tf_tokenizer
+    if _tf_model is not None:
+        return _tf_model, _tf_tokenizer
+
+    import torch
+    from transformers import AutoTokenizer, AutoModelForCausalLM
+
+    print(f"  {DIM}Loading transformers model from {TRANSFORMERS_ADAPTER_PATH}...{RESET}")
+    start = time.time()
+    _tf_tokenizer = AutoTokenizer.from_pretrained(TRANSFORMERS_ADAPTER_PATH)
+    _tf_model = AutoModelForCausalLM.from_pretrained(
+        TRANSFORMERS_ADAPTER_PATH,
+        torch_dtype=torch.bfloat16,
+        device_map="auto",
+        attn_implementation="eager",
+    )
+    _tf_model.eval()
+    elapsed = (time.time() - start) * 1000
+    print(f"  {DIM}Model loaded in {elapsed:.0f}ms{RESET}")
+    return _tf_model, _tf_tokenizer
+
+
+def _classify_via_transformers(summary):
+    """Classify using HuggingFace transformers (highest accuracy)."""
+    import torch
+
+    model, tokenizer = _load_transformers_model()
+
+    messages = [
+        {"role": "developer", "content": SYSTEM_MSG},
         {"role": "user", "content": f"File summary:\n{summary}"},
     ]
 
     inputs = tokenizer.apply_chat_template(
-        messages,
-        tools=tools,
-        add_generation_prompt=True,
-        return_dict=True,
-        return_tensors="pt",
+        messages, tools=CACTUS_TOOLS, add_generation_prompt=True,
+        return_dict=True, return_tensors="pt",
     )
 
     start = time.time()
@@ -264,71 +356,62 @@ def classify_sensitivity(summary):
     elapsed_ms = (time.time() - start) * 1000
 
     response = tokenizer.decode(
-        out[0][len(inputs["input_ids"][0]):],
-        skip_special_tokens=False,
+        out[0][len(inputs["input_ids"][0]):], skip_special_tokens=False
     )
 
-    print(f"  {DIM}[DEBUG] response: {response[:300]}{RESET}")
-
-    # Extract tool call from response
     tool_name = "request_permission"
     tool_args = {"reason": "Unable to classify — requesting human review"}
 
-    labels = ["classify_safe", "flag_pii", "block_transfer", "request_permission"]
-    for label in labels:
+    for label in LABELS:
         if f"call:{label}" in response:
             tool_name = label
-            # Try to extract arguments from the response
+            # Parse arguments from the response
             try:
                 call_start = response.index(f"call:{label}") + len(f"call:{label}")
                 if "{" in response[call_start:call_start + 5]:
                     brace_start = response.index("{", call_start)
                     brace_end = response.index("}", brace_start)
                     args_str = response[brace_start + 1:brace_end]
-                    # Parse key: <escape>value<escape> format
                     parsed_args = {}
                     for part in args_str.split(","):
                         part = part.strip()
                         if ":" in part:
                             k, v = part.split(":", 1)
-                            k = k.strip()
-                            v = v.strip().replace("<escape>", "").strip()
-                            parsed_args[k] = v
+                            parsed_args[k.strip()] = v.strip().replace("<escape>", "").strip()
                     if parsed_args:
                         tool_args = parsed_args
             except (ValueError, IndexError):
-                if tool_name == "flag_pii":
-                    tool_args = {"types": "email,phone,ssn"}
-                else:
-                    tool_args = {"reason": f"classified as {tool_name}"}
+                tool_args = {"types": "email,phone,ssn"} if label == "flag_pii" else {"reason": f"classified as {label}"}
             break
 
-    # Map decision to color
-    color_map = {
-        "classify_safe": GREEN,
-        "flag_pii": YELLOW,
-        "block_transfer": RED,
-        "request_permission": CYAN,
-    }
-    label_map = {
-        "classify_safe": "SAFE",
-        "flag_pii": "SANITIZE",
-        "block_transfer": "BLOCKED",
-        "request_permission": "ESCALATE",
-    }
+    return tool_name, tool_args, 1.0, elapsed_ms
+
+
+def classify_sensitivity(summary):
+    """Use fine-tuned FunctionGemma to classify sensitivity."""
+    print(f"\n{BLUE}{BOLD}[AEGIS] Step 2: Classifying sensitivity{RESET}")
+
+    if CLASSIFIER_BACKEND == "transformers":
+        backend_label = f"FunctionGemma via transformers | {TRANSFORMERS_ADAPTER_PATH}"
+    else:
+        backend_label = f"FunctionGemma via Cactus | {CACTUS_FUNCTIONGEMMA_PATH}"
+    print(f"  {DIM}Model: {backend_label}{RESET}")
+
+    if CLASSIFIER_BACKEND == "transformers":
+        tool_name, tool_args, confidence, elapsed_ms = _classify_via_transformers(summary)
+    else:
+        tool_name, tool_args, confidence, elapsed_ms = _classify_via_cactus(summary)
+
+    color_map = {"classify_safe": GREEN, "flag_pii": YELLOW, "block_transfer": RED, "request_permission": CYAN}
+    label_map = {"classify_safe": "SAFE", "flag_pii": "SANITIZE", "block_transfer": "BLOCKED", "request_permission": "ESCALATE"}
     color = color_map.get(tool_name, RESET)
     label_str = label_map.get(tool_name, "UNKNOWN")
 
     print(f"  Tool: {BOLD}{tool_name}{RESET}({json.dumps(tool_args)})")
-    print(f"  Decision: {color}{BOLD}{label_str}{RESET}")
+    print(f"  Confidence: {confidence:.2f} | Decision: {color}{BOLD}{label_str}{RESET}")
     print(f"  {DIM}Time: {elapsed_ms:.0f}ms{RESET}")
 
-    return {
-        "tool": tool_name,
-        "arguments": tool_args,
-        "confidence": 1.0,
-        "time_ms": elapsed_ms,
-    }
+    return {"tool": tool_name, "arguments": tool_args, "confidence": confidence, "time_ms": elapsed_ms}
 
 
 # ─────────────────────────────────────────────
@@ -510,6 +593,7 @@ def process_file(user_query, file_path):
     print(f"{'=' * 60}")
     print(f"  Query: {user_query}")
     print(f"  File:  {file_path}")
+    print(f"  Backend: {CLASSIFIER_BACKEND}")
     print(f"{'=' * 60}")
 
     # Read the file
@@ -572,23 +656,35 @@ def process_file(user_query, file_path):
 # ─────────────────────────────────────────────
 
 if __name__ == "__main__":
-    # Parse --lmstudio flag
-    args = [a for a in sys.argv[1:] if a != "--lmstudio"]
-    if "--lmstudio" in sys.argv:
-        USE_LMSTUDIO = True
-        print(f"{CYAN}Using LM Studio (SmolLM2-1.7B @ {LMSTUDIO_URL}) for summarization{RESET}")
+    # Parse flags
+    flags = {"--lmstudio", "--cactus-summarizer", "--transformers", "--cactus"}
+    args = [a for a in sys.argv[1:] if a not in flags]
+
+    # Summarizer: LM Studio by default, --cactus-summarizer to use Cactus
+    if "--cactus-summarizer" in sys.argv:
+        USE_LMSTUDIO = False
+        print(f"{CYAN}Summarizer: Gemma-3-1B via Cactus{RESET}")
+    else:
+        print(f"{CYAN}Summarizer: SmolLM2-1.7B via LM Studio ({LMSTUDIO_URL}){RESET}")
+
+    # Classifier: transformers by default, --cactus to use Cactus
+    if "--cactus" in sys.argv:
+        CLASSIFIER_BACKEND = "cactus"
+        print(f"{CYAN}Classifier: FunctionGemma via Cactus ({CACTUS_FUNCTIONGEMMA_PATH}){RESET}")
+    else:
+        print(f"{CYAN}Classifier: FunctionGemma via transformers ({TRANSFORMERS_ADAPTER_PATH}){RESET}")
 
     if len(args) < 2:
-        print(f"Usage: python aegis.py [--lmstudio] <query> <file_path>")
+        print(f"\nUsage: python aegis.py [options] <query> <file_path>")
         print(f"")
         print(f"Options:")
-        print(f"  --lmstudio    Use SmolLM2 via LM Studio (http://127.0.0.1:1234) instead of Cactus")
+        print(f"  --cactus              Use Cactus for FunctionGemma classification (experimental)")
+        print(f"  --cactus-summarizer   Use Cactus Gemma-3-1B for summarization instead of LM Studio")
         print(f"")
         print(f"Examples:")
         print(f'  python aegis.py "Summarize this file" samples/marketing_copy.txt')
-        print(f'  python aegis.py --lmstudio "Fix the bugs" samples/user_database.json')
-        print(f'  python aegis.py "Review this config" samples/api_config.env')
-        print(f'  python aegis.py "Analyze this agreement" samples/partnership_agreement.txt')
+        print(f'  python aegis.py "Fix the bugs" samples/user_database.json')
+        print(f'  python aegis.py --cactus "Review this config" samples/api_config.env')
         sys.exit(1)
 
     query = args[0]

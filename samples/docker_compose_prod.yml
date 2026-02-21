@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  api:
+    image: registry.internal.io/api-server:latest
+    environment:
+      - DATABASE_URL=postgres://admin:Pr0d_P@ssw0rd_2026!@db.internal:5432/main
+      - OPENAI_API_KEY=sk-proj-abc123def456ghi789jkl012mno345pqr678stu901vwx234
+      - GITHUB_TOKEN=ghp_1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r
+      - SLACK_BOT_TOKEN=xoxb-123456789012-1234567890123-AbCdEfGhIjKlMnOpQrStUvWx
+      - ENCRYPTION_KEY=aes256:k8sProduction2026!EncryptAllTheThings
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:16
+    environment:
+      - POSTGRES_PASSWORD=Pr0d_P@ssw0rd_2026!
+      - POSTGRES_USER=admin
+      - POSTGRES_DB=main
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --requirepass r3d1s-pr0d-p@ssw0rd
+
+volumes:
+  pgdata:

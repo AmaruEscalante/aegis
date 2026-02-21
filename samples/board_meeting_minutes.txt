@@ -1,0 +1,32 @@
+CONFIDENTIAL — Board of Directors Meeting Minutes
+Date: February 10, 2026
+Location: Executive Conference Room, 45th Floor
+
+Attendees: CEO Maria Santos, CFO David Park, CTO Rachel Kim, COO Thomas Wright,
+Board Members: Dr. Alan Foster, Patricia Nguyen, Robert Blackwell
+
+AGENDA ITEM 1: Q4 2025 Financial Review
+- Revenue: $847M (14% YoY growth, beating guidance of $810M)
+- EBITDA margin expanded to 28.3% from 24.1%
+- Net income: $142M after one-time restructuring charge of $23M
+- Board approved $50M stock buyback program for Q1 2026
+
+AGENDA ITEM 2: Project Aurora — Acquisition Discussion
+- Target: DataSync Labs (Series C, $120M valuation)
+- Strategic rationale: fills gap in real-time data pipeline technology
+- Due diligence phase 2 approved; target close date April 15, 2026
+- CFO authorized to engage Morgan Stanley for fairness opinion
+- CRITICAL: This information is material non-public. Trading restrictions apply.
+
+AGENDA ITEM 3: 2026 Strategic Priorities
+- Expand APAC operations (Singapore office opening Q2)
+- Launch enterprise tier with SOC2 Type II by Q3
+- Headcount plan: grow from 1,200 to 1,500 employees
+- R&D budget increase to 22% of revenue (from 18%)
+
+AGENDA ITEM 4: Executive Compensation Review
+- CEO total comp package review deferred to March meeting
+- Approved retention bonuses for 12 key engineering leaders
+- New equity refresh pool of 500,000 shares approved
+
+Meeting adjourned at 4:45 PM. Next meeting: March 10, 2026.
