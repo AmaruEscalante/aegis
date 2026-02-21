@@ -20,9 +20,10 @@ cactus/
 aegis-adapter/
 functiongemma-hackathon/
 
-# Large dataset files
+# Large dataset files and trained model checkpoints
 functiongemma-finetuning/dataset.jsonl
 functiongemma-finetuning/dataset600.jsonl
+functiongemma-finetuning/latest/
 
 # Zip archives
 *.zip
