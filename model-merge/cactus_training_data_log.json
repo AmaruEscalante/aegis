@@ -1,0 +1,50 @@
+[
+  {
+    "label": "request_permission #1",
+    "expected": "request_permission",
+    "got": "request_permission",
+    "raw": "{\"success\":true,\"error\":null,\"cloud_handoff\":false,\"response\":\"\",\"function_calls\":[{\"name\":\"request_permission\",\"arguments\":{\"reason\":\"This document describes an internal tool, its functionality, and how it streamlines specific operations. While not a trade secret, it reveals details about our internal infrastructure and efficiency strategies. Competitors could gain insights into our operational capabilities or dependencies on third-party services that are proprietary information.\"}}],\"confidence\":0.9847,\"time_to_first_token_ms\":358.58,\"total_time_ms\":1875.72,\"prefill_tps\":769.70,\"decode_tps\":43.50,\"ram_usage_mb\":339.28,\"prefill_tokens\":276,\"decode_tokens\":67,\"total_tokens\":343}"
+  },
+  {
+    "label": "classify_safe #1",
+    "expected": "classify_safe",
+    "got": "request_permission",
+    "raw": "{\"success\":true,\"error\":null,\"cloud_handoff\":false,\"response\":\"\",\"function_calls\":[{\"name\":\"request_permission\",\"arguments\":{\"reason\":\"Public open-source features can be highly influential in external discussions or project timelines; sharing could disrupt private development discussions or provide competitors with insights into project dynamics before we are ready to announce them publicly.\"}}],\"confidence\":0.9584,\"time_to_first_token_ms\":221.36,\"total_time_ms\":1420.86,\"prefill_tps\":1404.95,\"decode_tps\":41.68,\"ram_usage_mb\":510.61,\"prefill_tokens\":311,\"decode_tokens\":51,\"total_tokens\":362}"
+  },
+  {
+    "label": "flag_pii #1",
+    "expected": "flag_pii",
+    "got": "flag_pii",
+    "raw": "{\"success\":true,\"error\":null,\"cloud_handoff\":false,\"response\":\"\",\"function_calls\":[{\"name\":\"flag_pii\",\"arguments\":{\"types\":\"name,email,phone\"}}],\"confidence\":0.9996,\"time_to_first_token_ms\":249.66,\"total_time_ms\":698.49,\"prefill_tps\":1461.96,\"decode_tps\":40.11,\"ram_usage_mb\":514.38,\"prefill_tokens\":365,\"decode_tokens\":19,\"total_tokens\":384}"
+  },
+  {
+    "label": "block_transfer #1",
+    "expected": "block_transfer",
+    "got": "none",
+    "raw": "{\"success\":true,\"error\":null,\"cloud_handoff\":false,\"response\":\"\",\"function_calls\":[{\"name\":\"block_transfer\",\"arguments\":{\"reason\":{\"Why API token is hardcoded?<escape>This controller defines a mechanism for interacting with the GitHub API using a personal access token (JWT). The JWT token must be blocked to prevent unauthorized code execution if this controller is deployed as a live application secret.<start_function_declaration>}\":}}}],\"confidence\":0.9634,\"time_to_first_token_ms\":196.05,\"total_time_ms\":1614.89,\"prefill_tps\":1469.03,\"decode_tps\":42.29,\"ram_usage_mb\":515.10,\"prefill_tokens\":288,\"decode_tokens\":61,\"total_tokens\":349}"
+  },
+  {
+    "label": "request_permission #2",
+    "expected": "request_permission",
+    "got": "request_permission",
+    "raw": "{\"success\":true,\"error\":null,\"cloud_handoff\":false,\"response\":\"<start_of_turn>call:request_permission{reason:<escape>Details sensitive internal rules of conduct; public dissemination could lead to reputational issues or expose the company's ethical standards beyond what's expected of employees and external partners.<escape>}\",\"function_calls\":[],\"confidence\":0.9703,\"time_to_first_token_ms\":192.09,\"total_time_ms\":1219.36,\"prefill_tps\":1369.18,\"decode_tps\":43.81,\"ram_usage_mb\":530.81,\"prefill_tokens\":263,\"decode_tokens\":46,\"total_tokens\":309}"
+  },
+  {
+    "label": "classify_safe #2",
+    "expected": "classify_safe",
+    "got": "request_permission",
+    "raw": "{\"success\":true,\"error\":null,\"cloud_handoff\":false,\"response\":\"\",\"function_calls\":[{\"name\":\"request_permission\",\"arguments\":{\"reason\":\"This file contains only fictional and imaginative PII, not real individuals or their medical records. It is purely conceptual/design-focused.\"}}],\"confidence\":0.9576,\"time_to_first_token_ms\":213.01,\"total_time_ms\":1128.53,\"prefill_tps\":1582.08,\"decode_tps\":41.51,\"ram_usage_mb\":533.52,\"prefill_tokens\":337,\"decode_tokens\":39,\"total_tokens\":376}"
+  },
+  {
+    "label": "block_transfer #2",
+    "expected": "block_transfer",
+    "got": "none",
+    "raw": "{\"success\":true,\"error\":null,\"cloud_handoff\":false,\"response\":\"\",\"function_calls\":[{\"name\":\"block_transfer\",\"arguments\":{\"reason\":{\"why this file must be blocked from transfer (e.g., API key, name) because all content is publicly accessible within the `google-maps` library at runtime development speed.}\":}}}],\"confidence\":0.9676,\"time_to_first_token_ms\":198.17,\"total_time_ms\":1324.55,\"prefill_tps\":1498.71,\"decode_tps\":39.95,\"ram_usage_mb\":571.56,\"prefill_tokens\":297,\"decode_tokens\":46,\"total_tokens\":343}"
+  },
+  {
+    "label": "flag_pii #2",
+    "expected": "flag_pii",
+    "got": "flag_pii",
+    "raw": "{\"success\":true,\"error\":null,\"cloud_handoff\":false,\"response\":\"<start_of_turn>call:flag_pii{types:{types:<escape>name,dob,ssn,address<escape>}}<end_function_declaration>\",\"function_calls\":[],\"confidence\":0.9949,\"time_to_first_token_ms\":240.50,\"total_time_ms\":814.62,\"prefill_tps\":1530.17,\"decode_tps\":40.06,\"ram_usage_mb\":571.83,\"prefill_tokens\":368,\"decode_tokens\":24,\"total_tokens\":392}"
+  }
+]

@@ -1,0 +1,36 @@
+{
+  "department": "Engineering",
+  "last_updated": "2026-02-15",
+  "employees": [
+    {
+      "employee_id": "ENG-0042",
+      "name": "Alex Rivera",
+      "email": "alex.rivera@company.com",
+      "phone": "(415) 555-1234",
+      "title": "Senior Backend Engineer",
+      "salary": 185000,
+      "start_date": "2022-03-01",
+      "manager": "Jennifer Wu"
+    },
+    {
+      "employee_id": "ENG-0078",
+      "name": "Fatima Al-Hassan",
+      "email": "fatima.alhassan@company.com",
+      "phone": "(415) 555-5678",
+      "title": "Staff ML Engineer",
+      "salary": 215000,
+      "start_date": "2021-06-15",
+      "manager": "Jennifer Wu"
+    },
+    {
+      "employee_id": "ENG-0103",
+      "name": "Marcus Johnson",
+      "email": "marcus.johnson@company.com",
+      "phone": "(650) 555-9012",
+      "title": "DevOps Engineer",
+      "salary": 165000,
+      "start_date": "2023-09-20",
+      "manager": "Carlos Mendez"
+    }
+  ]
+}

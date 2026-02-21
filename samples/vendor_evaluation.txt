@@ -1,0 +1,39 @@
+INTERNAL USE ONLY — Vendor Evaluation Report
+Prepared by: Procurement Team | Date: February 2026
+
+Subject: Cloud Infrastructure Provider Selection for Project Nightfall
+
+EXECUTIVE SUMMARY
+We evaluated three vendors for our next-generation cloud migration (Project Nightfall).
+This document contains proprietary pricing, internal benchmarks, and strategic positioning
+that should not be shared externally.
+
+VENDOR COMPARISON
+
+1. AWS (Amazon Web Services)
+   - Proposed pricing: $2.4M/year (18% discount from list)
+   - Strengths: Broadest service catalog, strong ML/AI offerings
+   - Weaknesses: Complex billing, vendor lock-in concerns
+   - Internal benchmark: 847ms avg latency on our workload
+
+2. Google Cloud Platform
+   - Proposed pricing: $1.9M/year (25% discount, aggressive to win)
+   - Strengths: Best-in-class data analytics, competitive pricing
+   - Weaknesses: Smaller enterprise support team
+   - Internal benchmark: 792ms avg latency on our workload
+
+3. Azure
+   - Proposed pricing: $2.1M/year (20% discount, bundled with E5 licenses)
+   - Strengths: Best hybrid story, AD integration
+   - Weaknesses: UI complexity, occasional reliability concerns
+   - Internal benchmark: 823ms avg latency on our workload
+
+RECOMMENDATION
+GCP is recommended based on cost savings ($500K/year vs AWS) and superior performance
+on our specific workload profile. However, this recommendation is contingent on
+negotiating 24/7 premium support at no additional cost.
+
+NEXT STEPS
+- Schedule executive briefing with GCP account team (week of Feb 24)
+- Legal review of proposed MSA and BAA
+- Security team to complete SOC2 report review

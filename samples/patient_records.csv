@@ -1,0 +1,9 @@
+patient_id,full_name,date_of_birth,ssn,email,phone,diagnosis,medication,attending_physician
+P-10234,Margaret Williams,1958-03-14,329-44-8812,margaret.w@gmail.com,(415) 555-0123,Type 2 Diabetes,Metformin 500mg,Dr. Patel
+P-10235,Robert Chen,1972-11-28,551-23-9901,robert.chen@outlook.com,(650) 555-0456,Hypertension,Lisinopril 10mg,Dr. Nakamura
+P-10236,Lisa Thompson,1985-06-02,412-67-3345,lisa.t@yahoo.com,(510) 555-0789,Asthma,Albuterol inhaler,Dr. Garcia
+P-10237,James O'Brien,1990-01-19,228-91-5567,jobrien@protonmail.com,(408) 555-0321,Anxiety Disorder,Sertraline 50mg,Dr. Kim
+P-10238,Priya Sharma,1965-09-07,667-12-8834,priya.sharma@icloud.com,(925) 555-0654,Osteoarthritis,Ibuprofen 400mg,Dr. Williams
+P-10239,David Morales,1978-12-23,443-55-2218,d.morales@gmail.com,(707) 555-0987,GERD,Omeprazole 20mg,Dr. Anderson
+P-10240,Sarah Kim,1995-04-30,189-73-6602,sarah.kim@outlook.com,(831) 555-0147,Migraine,Sumatriptan 50mg,Dr. Lopez
+P-10241,William Foster,1943-08-11,334-88-1190,wfoster@yahoo.com,(209) 555-0258,COPD,Tiotropium 18mcg,Dr. Chang
