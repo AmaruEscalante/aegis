@@ -144,3 +144,12 @@ html, body {
   border-top: 1px solid var(--border-subtle);
   margin: 1.5em 0;
 }
+
+/* ── Aegis bridge status dot pulse ─────────────────────────────────────────── */
+@keyframes bridge-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.bridge-dot-online {
+  animation: bridge-pulse 2s ease-in-out infinite;
+}

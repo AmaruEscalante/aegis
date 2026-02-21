@@ -2,6 +2,7 @@
 import os
 import json
 import asyncio
+import httpx
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -12,12 +13,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
 
-# Import our core logic (we will move/refactor aegis.py slightly to be importable if needed, 
-# or just import specific functions if they exist. For now, we scaffold.)
 import sys
-sys.path.append("..") 
-# Assuming aegis.py has a class or function we can use. 
-# If not, we'll implementing the logic here for the demo.
+sys.path.append("..")
+
+# ── Aegis Bridge config ──────────────────────────────────────────────────────
+
+BRIDGE_URL = "http://127.0.0.1:7523"
+bridge_enabled: bool = True
 
 app = FastAPI()
 
@@ -31,69 +33,114 @@ app.add_middleware(
 )
 
 class ChatRequest(BaseModel):
-    messages: List[dict] # Format: [{"role": "user", "content": "..."}]
-    
-from fastapi import FastAPI, Response
-from fastapi.responses import StreamingResponse
-import asyncio
+    messages: List[dict]  # Format: [{"role": "user", "content": "..."}]
 
-# ... (other imports)
+
+# ── Aegis Bridge helper ──────────────────────────────────────────────────────
+
+async def analyze_via_bridge(text: str) -> dict:
+    """
+    Run text through the Aegis Bridge: summarize then classify.
+    Falls back to classify_safe on any network/bridge error so chat is never blocked.
+    """
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            # Step 1: Summarize (bridge truncates to first 8000 chars internally)
+            sum_resp = await client.post(f"{BRIDGE_URL}/summarize", json={"text": text})
+            sum_resp.raise_for_status()
+            sum_data = sum_resp.json()
+            summary = sum_data.get("summary", text[:2000])
+            summarize_time = sum_data.get("time_ms", 0)
+
+            # Step 2: Classify the summary
+            cls_resp = await client.post(f"{BRIDGE_URL}/classify", json={"summary": summary})
+            cls_resp.raise_for_status()
+            cls_data = cls_resp.json()
+
+            tool_name = cls_data.get("tool", "request_permission")
+            arguments = cls_data.get("arguments", {})
+            confidence = cls_data.get("confidence", 0.0)
+            classify_time = cls_data.get("time_ms", 0)
+
+            return {
+                "success": True,
+                "classification": tool_name,
+                "reason": arguments.get("reason", ""),
+                "pii_types": arguments.get("types", ""),  # only populated for flag_pii
+                "confidence": confidence,
+                "summary": summary,
+                "execution_time_ms": summarize_time + classify_time,
+            }
+    except httpx.ConnectError:
+        return {
+            "success": False,
+            "classification": "classify_safe",
+            "reason": "Bridge unreachable — proceeding without classification",
+            "confidence": 0.0,
+            "pii_types": "",
+            "summary": "",
+            "execution_time_ms": 0,
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "classification": "classify_safe",
+            "reason": f"Bridge error: {str(e)}",
+            "confidence": 0.0,
+            "pii_types": "",
+            "summary": "",
+            "execution_time_ms": 0,
+        }
+
+
+# ── Chat endpoint ────────────────────────────────────────────────────────────
 
 @app.post("/api/chat")
 async def chat_endpoint(request: ChatRequest):
-    """
-    Simulates streaming response for the demo.
-    """
     msgs = request.messages
     last_msg = msgs[-1]['content']
-    
-    # --- AEGIS LOGIC START ---
-    
+
     async def event_generator():
-        # 1. Simulate Local Analysis (SmolLM2 + FunctionGemma)
-        # In a real deployment, we would call `aegis.analyze(last_msg)` here.
-        yield "🛡️ **Aegis Local Security Layer**\n"
-        yield "Scanning content with FunctionGemma-270m..."
-        await asyncio.sleep(0.5)
-        
-        pii_detected = []
-        is_blocked = False
-        
-        if "secret" in last_msg.lower() or "password" in last_msg.lower() or "key" in last_msg.lower():
-            is_blocked = True
-            yield "\n\n🔴 **CRITICAL ALERT**: Secrets detected!\n"
-            yield f"• Blocked reasoning: Found keyword 'password/secret'.\n"
-            yield "• Action: **TRANSFER DENIED**.\n"
-            return
+        sanitized_msg = last_msg
 
-        if "@" in last_msg or "email" in last_msg.lower():
-            pii_detected = ["email"]
-            yield "\n\n⚠️ **PII Detected**: Found potential email addresses.\n"
-            yield "• Action: Redacting locally before cloud transfer...\n"
-            await asyncio.sleep(0.8)
-            # Redact
-            sanitized_msg = last_msg.replace("@", "[REDACTED_AT]")
-            yield f"• Sanitized: `{sanitized_msg[:20]}...`\n"
-        else:
-            yield "\n\n✅ **Content Safe**.\n"
-            yield "• Action: Authorizing transfer to Gemini Cloud...\n"
-            sanitized_msg = last_msg
+        # Real Aegis Bridge classification (when enabled)
+        if bridge_enabled:
+            analysis = await analyze_via_bridge(last_msg)
+            verdict = analysis["classification"]
 
-        # 2. REAL Cloud Call (Gemini)
+            if verdict == "block_transfer":
+                yield "🔴 **TRANSFER BLOCKED** — Aegis DataGuard\n\n"
+                yield f"**Reason**: {analysis['reason']}\n\n"
+                yield "*This content was NOT sent to any cloud service.*"
+                return  # Hard stop — do not call Gemini
+
+            elif verdict == "flag_pii":
+                pii_types = analysis.get("pii_types", "")
+                yield "⚠️ **PII Detected** — redacting before cloud transfer"
+                if pii_types:
+                    yield f" *(Types: {pii_types})*"
+                yield "\n\n"
+
+            elif verdict == "request_permission":
+                yield f"⚠️ **Review Required** — {analysis['reason']}\n\n"
+
+        # Gemini Cloud call
         try:
             from google import genai
             client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
             yield "\n---\n**☁️ Gemini 2.5 Flash**:\n"
-            
             response = client.models.generate_content(
-                model="gemini-2.5-flash", 
-                contents=sanitized_msg
+                model="gemini-2.5-flash",
+                contents=sanitized_msg,
             )
             yield response.text
         except Exception as e:
             yield f"\n\n❌ **Cloud Error**: {str(e)}"
 
     return StreamingResponse(event_generator(), media_type="text/plain")
+
+
+# ── Title endpoint ───────────────────────────────────────────────────────────
 
 class TitleRequest(BaseModel):
     message: str
@@ -112,6 +159,66 @@ async def generate_title(request: TitleRequest):
         return {"title": title}
     except Exception as e:
         return {"title": None, "error": str(e)}
+
+
+# ── Aegis Bridge proxy endpoints ─────────────────────────────────────────────
+
+class AnalyzeRequest(BaseModel):
+    text: str
+    filename: str = ""
+
+@app.post("/api/analyze")
+async def analyze_endpoint(request: AnalyzeRequest):
+    """Analyze file text through the Aegis Bridge. Called by frontend on file upload."""
+    if not bridge_enabled:
+        return {
+            "success": False,
+            "classification": "classify_safe",
+            "reason": "Bridge is disabled",
+            "confidence": 0.0,
+            "pii_types": "",
+            "summary": "",
+            "execution_time_ms": 0,
+            "filename": request.filename,
+        }
+    result = await analyze_via_bridge(request.text)
+    result["filename"] = request.filename
+    return result
+
+@app.get("/api/bridge/health")
+async def bridge_health():
+    """
+    Proxy the Aegis Bridge /health endpoint.
+    Always returns HTTP 200; 'status' field indicates bridge reachability.
+    """
+    try:
+        async with httpx.AsyncClient(timeout=3.0) as client:
+            resp = await client.get(f"{BRIDGE_URL}/health")
+            resp.raise_for_status()
+            data = resp.json()
+            return {
+                "status": data.get("status", "ok"),
+                "backend": data.get("backend", "unknown"),
+                "model": data.get("model", "unknown"),
+                "bridge_enabled": bridge_enabled,
+            }
+    except:
+        return {
+            "status": "unreachable",
+            "backend": "none",
+            "model": "none",
+            "bridge_enabled": bridge_enabled,
+        }
+
+@app.post("/api/bridge/toggle")
+async def bridge_toggle():
+    """Flip the bridge_enabled flag. Returns new state."""
+    global bridge_enabled
+    bridge_enabled = not bridge_enabled
+    return {"bridge_enabled": bridge_enabled}
+
+
+# ── Health check ─────────────────────────────────────────────────────────────
 
 @app.get("/health")
 def health_check():

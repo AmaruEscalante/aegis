@@ -15,6 +15,18 @@ interface Conversation {
   updatedAt: number;
 }
 
+interface FileAnalysisResult {
+  success: boolean;
+  classification: 'classify_safe' | 'flag_pii' | 'block_transfer' | 'request_permission';
+  reason: string;
+  confidence: number;
+  pii_types: string;
+  summary: string;
+  execution_time_ms: number;
+  filename: string;
+}
+type BridgeStatus = 'online' | 'offline' | 'unknown';
+
 // ── localStorage ─────────────────────────────────────────────────────────────
 
 const STORAGE_KEY = 'aegis_conversations';
@@ -58,6 +70,9 @@ function IconAttach() {
 }
 function IconShieldCheck() {
   return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>;
+}
+function IconShieldOff() {
+  return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19.69 14a6.9 6.9 0 0 0 .31-2V5l-8-3-3.16 1.18"/><path d="M4.73 4.73L4 5v7c0 6 8 10 8 10a20.29 20.29 0 0 0 5.62-4.38"/><line x1="1" y1="1" x2="23" y2="23"/></svg>;
 }
 function IconX() {
   return <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>;
@@ -117,6 +132,60 @@ const STARTERS = [
   { label: 'Classify data', desc: 'Label sensitivity levels in a dataset' },
 ];
 
+// ── Verdict config ────────────────────────────────────────────────────────────
+
+const VERDICT_CONFIG = {
+  classify_safe:      { color: '#34A853', bg: 'rgba(52,168,83,0.12)',  border: 'rgba(52,168,83,0.3)',  label: 'Safe to Send',    icon: '✓' },
+  flag_pii:           { color: '#FBBC04', bg: 'rgba(251,188,4,0.12)', border: 'rgba(251,188,4,0.3)', label: 'PII Detected',    icon: '⚠' },
+  block_transfer:     { color: '#EA4335', bg: 'rgba(234,67,53,0.12)', border: 'rgba(234,67,53,0.3)', label: 'Blocked',         icon: '✕' },
+  request_permission: { color: '#FF8C00', bg: 'rgba(255,140,0,0.12)', border: 'rgba(255,140,0,0.3)', label: 'Review Required', icon: '?' },
+} as const;
+
+function FileAnalysisCard({ analysis, isAnalyzing, onProceed, onCancel }: {
+  analysis: FileAnalysisResult; isAnalyzing: boolean;
+  onProceed: () => void; onCancel: () => void;
+}) {
+  if (isAnalyzing) {
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-md)', padding: '10px 14px', marginBottom: 8, fontSize: 12, color: 'var(--text-secondary)' }}>
+        <GeminiLoading />Analyzing with Aegis DataGuard...
+      </div>
+    );
+  }
+  const cfg = VERDICT_CONFIG[analysis.classification];
+  const confidencePct = Math.round(analysis.confidence * 100);
+  const timeMs = Math.round(analysis.execution_time_ms);
+  const showProceed = analysis.classification === 'request_permission';
+  const showCancel = analysis.classification === 'block_transfer' || analysis.classification === 'request_permission';
+
+  return (
+    <div style={{ background: cfg.bg, border: `1px solid ${cfg.border}`, borderRadius: 'var(--radius-md)', padding: '10px 14px', marginBottom: 8, fontSize: 12 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <span style={{ width: 18, height: 18, borderRadius: '50%', background: cfg.color, color: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>{cfg.icon}</span>
+          <span style={{ color: cfg.color, fontWeight: 600 }}>{cfg.label}</span>
+          {confidencePct > 0 && <span style={{ color: 'var(--text-tertiary)', fontSize: 11 }}>{confidencePct}% confidence</span>}
+        </div>
+        {timeMs > 0 && <span style={{ color: 'var(--text-tertiary)', fontSize: 10 }}>{timeMs}ms</span>}
+      </div>
+      {analysis.reason && <p style={{ margin: '0 0 4px 24px', color: 'var(--text-secondary)', fontSize: 11, lineHeight: 1.5 }}>{analysis.reason}</p>}
+      {analysis.pii_types && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginLeft: 24, marginBottom: 4 }}>
+          {analysis.pii_types.split(',').map(t => t.trim()).filter(Boolean).map(t => (
+            <span key={t} style={{ background: 'rgba(251,188,4,0.2)', border: '1px solid rgba(251,188,4,0.4)', borderRadius: 4, padding: '1px 6px', fontSize: 10, color: '#FBBC04', fontFamily: 'monospace' }}>{t}</span>
+          ))}
+        </div>
+      )}
+      {(showProceed || showCancel) && (
+        <div style={{ display: 'flex', gap: 8, marginLeft: 24, marginTop: 6 }}>
+          {showProceed && <button onClick={onProceed} style={{ background: 'rgba(66,133,244,0.2)', border: '1px solid rgba(66,133,244,0.4)', borderRadius: 6, padding: '4px 10px', fontSize: 11, color: '#4285F4', cursor: 'pointer', fontFamily: 'inherit' }}>Proceed anyway</button>}
+          {showCancel && <button onClick={onCancel} style={{ background: 'rgba(234,67,53,0.15)', border: '1px solid rgba(234,67,53,0.3)', borderRadius: 6, padding: '4px 10px', fontSize: 11, color: '#EA4335', cursor: 'pointer', fontFamily: 'inherit' }}>{analysis.classification === 'block_transfer' ? 'Remove file' : 'Cancel'}</button>}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function Chat() {
@@ -152,6 +221,7 @@ export default function Chat() {
     resetStream(conv.messages); // seed useChat so next submit sends correct history
     setInput('');
     setFileName(null);
+    setFileAnalysis(null);
   }, [resetStream, setInput]);
 
   // ── New chat ──
@@ -162,6 +232,7 @@ export default function Chat() {
     resetStream([]);
     setInput('');
     setFileName(null);
+    setFileAnalysis(null);
   }, [resetStream, setInput]);
 
   // ── Delete conversation ──
@@ -254,6 +325,12 @@ export default function Chat() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [hoveredConvId, setHoveredConvId] = useState<string | null>(null);
 
+  // ── Bridge state ──
+  const [bridgeEnabled, setBridgeEnabled] = useState<boolean>(true);
+  const [bridgeStatus, setBridgeStatus] = useState<BridgeStatus>('unknown');
+  const [fileAnalysis, setFileAnalysis] = useState<FileAnalysisResult | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [displayMessages, isLoading]);
@@ -265,15 +342,50 @@ export default function Chat() {
     ta.style.height = Math.min(ta.scrollHeight, 200) + 'px';
   }, [input]);
 
+  // ── Bridge health polling ──
+  const fetchBridgeHealth = useCallback(async () => {
+    try {
+      const res = await fetch('http://localhost:8000/api/bridge/health');
+      const data = await res.json();
+      setBridgeStatus(data.status === 'ok' ? 'online' : 'offline');
+      setBridgeEnabled(data.bridge_enabled);
+    } catch { setBridgeStatus('offline'); }
+  }, []);
+
+  useEffect(() => {
+    fetchBridgeHealth();
+    const interval = setInterval(fetchBridgeHealth, 30_000);
+    return () => clearInterval(interval);
+  }, [fetchBridgeHealth]);
+
+  // ── Bridge toggle ──
+  const handleBridgeToggle = useCallback(async () => {
+    try {
+      const res = await fetch('http://localhost:8000/api/bridge/toggle', { method: 'POST' });
+      const data = await res.json();
+      setBridgeEnabled(data.bridge_enabled);
+      if (!data.bridge_enabled) setFileAnalysis(null);
+    } catch {}
+  }, []);
+
+  // ── File analysis handlers ──
+  const handleAnalysisProceed = useCallback(() => { setFileAnalysis(null); }, []);
+
+  const handleAnalysisCancel = useCallback(() => {
+    setFileName(null); setFileAnalysis(null); setInput('');
+  }, [setInput]);
+
   // Ensure activeId is set when a new message is submitted
   const submitMessage = useCallback((e: { preventDefault: () => void }) => {
+    if (fileAnalysis?.classification === 'block_transfer') return;
     if (!activeId) {
       const newId = crypto.randomUUID();
       setActiveId(newId);
     }
     handleSubmit(e as unknown as React.SyntheticEvent<HTMLFormElement>);
     setFileName(null);
-  }, [activeId, handleSubmit]);
+    setFileAnalysis(null);
+  }, [activeId, handleSubmit, fileAnalysis]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -284,16 +396,31 @@ export default function Chat() {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setFileName(file.name);
+    setFileAnalysis(null);
     const reader = new FileReader();
-    reader.onload = (ev) => {
-      setInput(`[FILE: ${file.name}]\n${ev.target?.result as string}\n\nAnalyze this file for privacy risks.`);
+    reader.onload = async (ev) => {
+      const text = ev.target?.result as string;
+      setInput(`[FILE: ${file.name}]\n${text}\n\nAnalyze this file for privacy risks.`);
+      if (bridgeEnabled) {
+        setIsAnalyzing(true);
+        try {
+          const res = await fetch('http://localhost:8000/api/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text, filename: file.name }),
+          });
+          const data: FileAnalysisResult = await res.json();
+          setFileAnalysis(data);
+        } catch { /* bridge error: don't block upload */ }
+        finally { setIsAnalyzing(false); }
+      }
     };
     reader.readAsText(file);
-  };
+  }, [bridgeEnabled, setInput]);
 
   const hasMessages = displayMessages.length > 0;
   const headerTitle = activeConv?.title ?? (hasMessages ? deriveTitle(displayMessages) : null);
@@ -412,9 +539,28 @@ export default function Chat() {
           )}
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, justifyContent: 'flex-end' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: '#34A853', background: 'rgba(52,168,83,0.1)', borderRadius: 999, padding: '4px 12px' }}>
-              <IconShieldCheck />Privacy layer active
+            {/* Bridge ON/OFF toggle */}
+            <button
+              onClick={handleBridgeToggle}
+              title={bridgeEnabled ? 'Disable Aegis Bridge' : 'Enable Aegis Bridge'}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, background: bridgeEnabled ? 'rgba(52,168,83,0.15)' : 'rgba(255,255,255,0.06)', border: `1px solid ${bridgeEnabled ? 'rgba(52,168,83,0.4)' : 'var(--border-subtle)'}`, borderRadius: 999, padding: '5px 12px', cursor: 'pointer', fontSize: 11, fontFamily: 'inherit', color: bridgeEnabled ? '#34A853' : 'var(--text-tertiary)', transition: 'all 0.2s' }}
+            >
+              {bridgeEnabled ? <IconShieldCheck /> : <IconShieldOff />}
+              Aegis
+              <span style={{ background: bridgeEnabled ? '#34A853' : 'rgba(255,255,255,0.15)', color: bridgeEnabled ? '#fff' : 'var(--text-tertiary)', borderRadius: 4, padding: '1px 5px', fontSize: 10, fontWeight: 700 }}>
+                {bridgeEnabled ? 'ON' : 'OFF'}
+              </span>
+            </button>
+            {/* Status dot + DataGuard label */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: bridgeEnabled && bridgeStatus === 'online' ? '#34A853' : 'var(--text-tertiary)', background: bridgeEnabled && bridgeStatus === 'online' ? 'rgba(52,168,83,0.1)' : 'rgba(255,255,255,0.05)', borderRadius: 999, padding: '4px 12px' }}>
+              <span
+                className={bridgeStatus === 'online' ? 'bridge-dot-online' : ''}
+                style={{ width: 6, height: 6, borderRadius: '50%', display: 'inline-block', background: bridgeStatus === 'online' ? '#34A853' : bridgeStatus === 'offline' ? '#EA4335' : '#FBBC04', boxShadow: bridgeStatus === 'online' ? '0 0 4px #34A853' : 'none' }}
+              />
+              <IconShieldCheck />
+              {bridgeEnabled ? 'DataGuard' : 'DataGuard off'}
             </div>
+            {/* Avatar */}
             <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'linear-gradient(135deg, #4285F4, #8A6FF0)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 600, color: '#fff', cursor: 'pointer' }}>
               A
             </div>
@@ -476,11 +622,21 @@ export default function Chat() {
 
         <div style={{ padding: hasMessages ? '12px 24px 20px' : '0 24px 32px', maxWidth: 740, width: '100%', margin: '0 auto', flexShrink: 0 }}>
           {fileName && (
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--bg-surface)', border: '1px solid var(--border-input)', borderRadius: 999, padding: '4px 12px', marginBottom: 8, fontSize: 12, color: 'var(--text-secondary)' }}>
-              <IconAttach />{fileName}
-              <button onClick={() => { setFileName(null); setInput(''); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-tertiary)', display: 'flex', padding: 0, marginLeft: 2 }}>
-                <IconX />
-              </button>
+            <div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--bg-surface)', border: '1px solid var(--border-input)', borderRadius: 999, padding: '4px 12px', marginBottom: 8, fontSize: 12, color: 'var(--text-secondary)' }}>
+                <IconAttach />{fileName}
+                <button onClick={() => { setFileName(null); setInput(''); setFileAnalysis(null); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-tertiary)', display: 'flex', padding: 0, marginLeft: 2 }}>
+                  <IconX />
+                </button>
+              </div>
+              {(isAnalyzing || fileAnalysis) && (
+                <FileAnalysisCard
+                  analysis={fileAnalysis ?? { success: false, classification: 'classify_safe', reason: '', confidence: 0, pii_types: '', summary: '', execution_time_ms: 0, filename: fileName }}
+                  isAnalyzing={isAnalyzing}
+                  onProceed={handleAnalysisProceed}
+                  onCancel={handleAnalysisCancel}
+                />
+              )}
             </div>
           )}
 
@@ -508,7 +664,11 @@ export default function Chat() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                   {!input && <button type="button" style={inputIconBtn}><IconMic /></button>}
                   {input && (
-                    <button type="submit" disabled={isLoading} style={{ width: 36, height: 36, borderRadius: '50%', background: isLoading ? 'rgba(255,255,255,0.1)' : '#4285F4', border: 'none', cursor: isLoading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', transition: 'background 0.15s', flexShrink: 0 }}>
+                    <button
+                      type="submit"
+                      disabled={isLoading || fileAnalysis?.classification === 'block_transfer'}
+                      style={{ width: 36, height: 36, borderRadius: '50%', background: isLoading || fileAnalysis?.classification === 'block_transfer' ? 'rgba(255,255,255,0.1)' : '#4285F4', border: 'none', cursor: isLoading || fileAnalysis?.classification === 'block_transfer' ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', transition: 'background 0.15s', flexShrink: 0 }}
+                    >
                       <IconSend />
                     </button>
                   )}
