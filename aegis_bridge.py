@@ -19,6 +19,7 @@ import argparse
 import json
 import sys
 import time
+import urllib.request
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 # ── Shared constants (same as aegis.py) ────────────────────────────────────
@@ -240,11 +241,14 @@ class TransformersBackend:
     model-merge/merge_and_test.py.
     """
 
-    def __init__(self, model_path):
+    def __init__(self, model_path, lmstudio_url=None, lmstudio_model="smollm2-1.7b-instruct"):
         import torch
         from transformers import AutoTokenizer, AutoModelForCausalLM
 
         self._torch = torch
+        self._lmstudio_url = lmstudio_url
+        self._lmstudio_model = lmstudio_model
+
         print(f"[aegis-bridge] Loading model from {model_path} ...")
         self._tokenizer = AutoTokenizer.from_pretrained(model_path)
         self._model = AutoModelForCausalLM.from_pretrained(
@@ -255,6 +259,11 @@ class TransformersBackend:
         )
         self._model.eval()
         print(f"[aegis-bridge] Model loaded on {self._model.device}")
+
+        if self._lmstudio_url:
+            print(f"[aegis-bridge] Summarizer: SmolLM2 via LM Studio ({self._lmstudio_url})")
+        else:
+            print(f"[aegis-bridge] Summarizer: truncated text (no LM Studio)")
 
         # Wrap tools for apply_chat_template format
         self._tools = [{"type": "function", "function": t} for t in PRIVACY_TOOLS]
@@ -307,14 +316,52 @@ class TransformersBackend:
         }
 
     def summarize(self, text):
-        """Return a truncated excerpt as the summary.
+        """Summarize file text using LM Studio (SmolLM2) or truncation fallback.
 
         FunctionGemma-270M is a tool-calling model, not a summarizer.
-        For the Transformers backend we return truncated text; full
-        summarization requires a separate model (e.g., Gemma-3-1B via Cactus).
+        We use LM Studio's SmolLM2-1.7B (same as aegis.py) for security-focused
+        summaries that FunctionGemma was fine-tuned to classify accurately.
+        Falls back to truncated text if LM Studio is not available.
         """
-        truncated = text[:2000]
-        return {"summary": truncated, "time_ms": 0}
+        truncated = text[:8000]
+        if len(text) > 8000:
+            truncated += "\n[... file truncated ...]"
+
+        # Try LM Studio summarizer first
+        if self._lmstudio_url:
+            try:
+                return self._summarize_via_lmstudio(truncated)
+            except Exception as e:
+                print(f"[aegis-bridge] LM Studio summarizer failed: {e}")
+                print(f"[aegis-bridge] Falling back to truncated text")
+
+        return {"summary": text[:2000], "time_ms": 0}
+
+    def _summarize_via_lmstudio(self, truncated):
+        """Call SmolLM2 via LM Studio's OpenAI-compatible API (local)."""
+        payload = json.dumps({
+            "model": self._lmstudio_model,
+            "messages": [
+                {"role": "system", "content": SUMMARIZER_SYSTEM_PROMPT},
+                {"role": "user", "content": f"Scan this file:\n\n{truncated}"},
+            ],
+            "max_tokens": 300,
+            "temperature": 0.3,
+        }).encode("utf-8")
+
+        req = urllib.request.Request(
+            f"{self._lmstudio_url}/v1/chat/completions",
+            data=payload,
+            headers={"Content-Type": "application/json"},
+        )
+
+        start = time.time()
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            data = json.loads(resp.read())
+        elapsed_ms = (time.time() - start) * 1000
+
+        summary = data["choices"][0]["message"]["content"]
+        return {"summary": summary or truncated[:2000], "time_ms": elapsed_ms}
 
 
 # ── HTTP Server ────────────────────────────────────────────────────────────
@@ -322,6 +369,7 @@ class TransformersBackend:
 _backend = None   # Set at startup
 _backend_name = "unknown"
 _model_name = "unknown"
+_summarizer_name = "truncated"
 
 
 class BridgeHandler(BaseHTTPRequestHandler):
@@ -347,6 +395,7 @@ class BridgeHandler(BaseHTTPRequestHandler):
                 "status": "ok",
                 "backend": _backend_name,
                 "model": _model_name,
+                "summarizer": _summarizer_name,
             })
         else:
             self._send_json({"error": "not found"}, 404)
@@ -393,7 +442,7 @@ class BridgeHandler(BaseHTTPRequestHandler):
 # ── Main ───────────────────────────────────────────────────────────────────
 
 def main():
-    global _backend, _backend_name, _model_name
+    global _backend, _backend_name, _model_name, _summarizer_name
 
     parser = argparse.ArgumentParser(
         description="Aegis Bridge — HTTP server for FunctionGemma classification",
@@ -418,6 +467,18 @@ def main():
         "--host", default="127.0.0.1",
         help="Host to bind to (default: 127.0.0.1)",
     )
+    parser.add_argument(
+        "--lmstudio-url", default=None,
+        help="LM Studio URL for summarization (default: auto-detect http://127.0.0.1:1234)",
+    )
+    parser.add_argument(
+        "--lmstudio-model", default="smollm2-1.7b-instruct",
+        help="LM Studio model name (default: smollm2-1.7b-instruct)",
+    )
+    parser.add_argument(
+        "--no-lmstudio", action="store_true",
+        help="Disable LM Studio summarizer (use truncated text instead)",
+    )
 
     args = parser.parse_args()
     _backend_name = args.backend
@@ -430,13 +491,30 @@ def main():
         print(f"[aegis-bridge] Classifier model: {model_path}")
         print(f"[aegis-bridge] Summarizer model: {summarizer_path}")
         _backend = CactusBackend(model_path, summarizer_path)
+        _summarizer_name = f"Gemma-3-1B via Cactus ({summarizer_path})"
 
     elif args.backend == "transformers":
         model_path = args.model or "aegis-adapter"
         _model_name = model_path
         print(f"[aegis-bridge] Backend: HuggingFace Transformers")
         print(f"[aegis-bridge] Classifier model: {model_path}")
-        _backend = TransformersBackend(model_path)
+
+        # Auto-detect LM Studio for summarization unless disabled
+        lmstudio_url = None
+        if not args.no_lmstudio:
+            lmstudio_url = args.lmstudio_url or "http://127.0.0.1:1234"
+            try:
+                req = urllib.request.Request(f"{lmstudio_url}/v1/models")
+                with urllib.request.urlopen(req, timeout=3) as resp:
+                    data = json.loads(resp.read())
+                    model_ids = [m["id"] for m in data.get("data", [])]
+                    print(f"[aegis-bridge] LM Studio detected: {', '.join(model_ids)}")
+            except Exception:
+                print(f"[aegis-bridge] LM Studio not available at {lmstudio_url} — using truncated text")
+                lmstudio_url = None
+
+        _backend = TransformersBackend(model_path, lmstudio_url=lmstudio_url, lmstudio_model=args.lmstudio_model)
+        _summarizer_name = f"SmolLM2 via LM Studio ({lmstudio_url})" if lmstudio_url else "truncated"
 
     server = HTTPServer((args.host, args.port), BridgeHandler)
     print(f"[aegis-bridge] Listening on http://{args.host}:{args.port}")
