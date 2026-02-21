@@ -95,6 +95,24 @@ async def chat_endpoint(request: ChatRequest):
 
     return StreamingResponse(event_generator(), media_type="text/plain")
 
+class TitleRequest(BaseModel):
+    message: str
+
+@app.post("/api/title")
+async def generate_title(request: TitleRequest):
+    """Generate a short conversation title using Gemini."""
+    try:
+        from google import genai
+        client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=f"Generate a short, descriptive title (4-6 words max, no quotes, no punctuation at the end) for a conversation that starts with this message: {request.message[:300]}"
+        )
+        title = response.text.strip().strip('"\'').strip()
+        return {"title": title}
+    except Exception as e:
+        return {"title": None, "error": str(e)}
+
 @app.get("/health")
 def health_check():
     return {"status": "ok", "system": "Aegis Local Privacy Layer"}
