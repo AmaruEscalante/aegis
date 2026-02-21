@@ -4,25 +4,32 @@
   "description": "OpenClaw plugin for local-only PII sanitization and file-access guardrails",
   "main": "dist/plugin/index.js",
   "openclaw": {
-    "extensions": ["dist/plugin/index.js"]
+    "extensions": [
+      "dist/plugin/index.js"
+    ]
   },
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
     "test:watch": "vitest",
     "dev": "tsc --watch",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "mcp": "node dist/mcp-server.js",
+    "mcp:dev": "npx tsx src/mcp-server.ts"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.26.0",
     "mammoth": "^1.7.1",
     "minimatch": "^9.0.5",
     "pdf-lib": "^1.17.1",
     "pdf-parse": "^1.1.1",
-    "pdfjs-dist": "^4.4.168"
+    "pdfjs-dist": "^4.4.168",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "pdfkit": "^0.17.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.4.0",
     "vitest": "^1.6.0"
   },

@@ -141,7 +141,54 @@ curl http://127.0.0.1:7523/health
 # {"status":"ok","backend":"transformers","model":"./aegis-adapter","summarizer":"SmolLM2 via LM Studio (http://127.0.0.1:1234)"}
 ```
 
-### 2. Run the CLI Test Harness
+### 2. Connect an Agent via MCP
+
+The middleware runs as an MCP server. Any MCP-compatible agent can use Aegis tools.
+
+```bash
+cd middleware
+npm install
+npm run build
+```
+
+**Claude Code** — add to your project's `.claude/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "aegis": {
+      "command": "node",
+      "args": ["/Users/amaru-mac/Documents/hackathons/deepmind-cactus/middleware/dist/mcp-server.js"],
+      "cwd": "/Users/amaru-mac/Documents/hackathons/deepmind-cactus/middleware"
+    }
+  }
+}
+```
+
+**Claude Desktop** — add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "aegis": {
+      "command": "node",
+      "args": ["/Users/amaru-mac/Documents/hackathons/deepmind-cactus/middleware/dist/mcp-server.js"],
+      "cwd": "/Users/amaru-mac/Documents/hackathons/deepmind-cactus/middleware"
+    }
+  }
+}
+```
+
+Once connected, the agent has 4 tools:
+
+| Tool | Description |
+|------|-------------|
+| `aegis_read` | Read a file through the privacy router (classify + sanitize/block/escalate) |
+| `aegis_classify` | Classify a file's sensitivity without reading its content |
+| `aegis_sanitize_path` | Force re-sanitization of a file (bypasses cache) |
+| `aegis_policy_explain` | Show current security policy and session stats |
+
+### 3. Run the CLI Test Harness (no agent needed)
 
 ```bash
 # All sample files
@@ -154,11 +201,10 @@ python aegis_cli.py samples/patient_records.csv
 python aegis_cli.py --classify-only samples/api_config.env
 ```
 
-### 3. Run the Middleware Tests
+### 4. Run the Middleware Tests
 
 ```bash
 cd middleware
-npm install
 npm test                              # unit tests (no bridge needed)
 npx vitest run tests/e2e.test.ts      # e2e tests (bridge must be running)
 ```
@@ -175,6 +221,7 @@ samples/                 12 synthetic test files (all 4 categories)
 
 middleware/
   src/
+    mcp-server.ts        MCP server entry point (agent integration)
     plugin/index.ts      OpenClaw plugin entry point
     router/classify.ts   HTTP client for the bridge
     tools/
