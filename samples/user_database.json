@@ -1,0 +1,54 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Alice Johnson",
+      "email": "alice.johnson@gmail.com",
+      "phone": "(415) 555-0142",
+      "ssn": "123-45-6789",
+      "address": "742 Evergreen Terrace, San Francisco, CA 94102",
+      "account_balance": 15432.50
+    },
+    {
+      "id": 2,
+      "name": "Bob Martinez",
+      "email": "bob.martinez@yahoo.com",
+      "phone": "(650) 555-0198",
+      "ssn": "987-65-4321",
+      "address": "1600 Pennsylvania Ave, Palo Alto, CA 94301",
+      "account_balance": 8721.33
+    },
+    {
+      "id": 3,
+      "name": "Carol Chen",
+      "email": "carol.chen@outlook.com",
+      "phone": "(510) 555-0167",
+      "ssn": "456-78-9012",
+      "address": "221B Baker Street, Oakland, CA 94612",
+      "account_balance": 42150.00
+    },
+    {
+      "id": 4,
+      "name": "David Kim",
+      "email": "david.kim@protonmail.com",
+      "phone": "(408) 555-0134",
+      "ssn": "234-56-7890",
+      "address": "350 Fifth Avenue, San Jose, CA 95113",
+      "account_balance": 3299.75
+    },
+    {
+      "id": 5,
+      "name": "Emma Wilson",
+      "email": "emma.wilson@icloud.com",
+      "phone": "(925) 555-0156",
+      "ssn": "345-67-8901",
+      "address": "1 Infinite Loop, Walnut Creek, CA 94596",
+      "account_balance": 67890.12
+    }
+  ],
+  "metadata": {
+    "exported_at": "2025-09-15T14:30:00Z",
+    "total_records": 5,
+    "database": "production_users_v2"
+  }
+}

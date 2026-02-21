@@ -1,0 +1,47 @@
+CONFIDENTIAL PARTNERSHIP AGREEMENT
+
+Between Acme Corporation ("Company A") and TechNova Inc. ("Company B")
+Effective Date: October 1, 2025
+
+1. PROJECT OVERVIEW
+
+This agreement governs the joint development of "Project Titan" - a next-generation
+autonomous drone delivery platform targeting the North American market. Project Titan
+represents a $45 million investment over 18 months with an expected launch in Q2 2027.
+
+2. REVENUE SHARING
+
+Company A shall receive 60% of net revenues from Project Titan operations.
+Company B shall receive 40% of net revenues from Project Titan operations.
+Minimum guaranteed payment to Company B: $2.5 million per quarter post-launch.
+
+3. INTELLECTUAL PROPERTY
+
+All patents filed under Project Titan shall be jointly owned. The core flight
+control algorithm ("Phoenix Engine v3") is proprietary to Company B and licensed
+exclusively to this partnership for 5 years.
+
+4. KEY PERSONNEL
+
+Project Lead: Dr. Sarah Mitchell (Company A), employee ID: ACM-2847
+Technical Director: James Park (Company B), employee ID: TN-0592
+Board Liaison: Michael Torres, michael.torres@acmecorp.com, (415) 555-0199
+
+5. NON-COMPETE
+
+Neither party shall engage in autonomous delivery partnerships with Amazon,
+Google Wing, or Zipline for the duration of this agreement plus 24 months.
+
+6. TERMINATION CLAUSE
+
+Early termination requires 90 days written notice and a penalty of $8 million
+payable to the non-terminating party.
+
+SIGNATURES:
+_________________________
+Robert Chang, CEO - Acme Corporation
+Date: September 28, 2025
+
+_________________________
+Lisa Nakamura, CEO - TechNova Inc.
+Date: September 29, 2025

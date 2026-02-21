@@ -1,0 +1,31 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Environment / secrets
+.env
+
+# OS files
+.DS_Store
+
+# Model weights (too large for git)
+cactus/
+aegis-adapter/
+functiongemma-hackathon/
+
+# Large dataset files
+functiongemma-finetuning/dataset.jsonl
+functiongemma-finetuning/dataset600.jsonl
+
+# Zip archives
+*.zip
+
+# UV lock (optional — regenerated from pyproject.toml)
+uv.lock

@@ -1,0 +1,10 @@
+# Fine-tuning FunctionGemma for Aegis Privacy Classification
+# Run on Google Colab with T4/A100 GPU
+
+unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git
+xformers
+trl
+peft
+accelerate
+bitsandbytes
+datasets
