@@ -3,5 +3,12 @@
     "allow": [
       "Bash(npm install:*)"
     ]
+  },
+  "mcpServers": {
+    "aegis": {
+      "command": "node",
+      "args": ["dist/mcp-server.js"],
+      "cwd": "/Users/amaru-mac/Documents/hackathons/deepmind-cactus/middleware"
+    }
   }
 }
