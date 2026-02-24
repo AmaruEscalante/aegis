@@ -132,9 +132,10 @@ Return JSON array: [{{"summary": "...", "reason": "why safe"}}]
 
 Be diverse in industries (tech, healthcare marketing, retail, education, finance PR), file formats, and writing styles.""",
             },
-            # Batch 2: Hard negatives — look dangerous but are safe
+            # Batch 4: Hard negatives — look dangerous but are safe
             {
                 "count": 40,
+                "target_label": "classify_safe",
                 "prompt": """Generate {count} file summaries of SAFE files that CONTAIN MISLEADING SURFACE PATTERNS — files that LOOK sensitive but are actually safe. These are the hardest cases.
 
 HARD NEGATIVE SAFE FILES (look risky but aren't):
@@ -282,6 +283,7 @@ Return JSON array: [{{"summary": "...", "types": "specific pii types"}}]""",
             # Batch 4: Hard negatives for PII — not actually PII
             {
                 "count": 35,
+                "target_label": "classify_safe",
                 "prompt": """Generate {count} file summaries where files APPEAR to contain PII but are actually SAFE (classify_safe).
 
 IMPORTANT: These should be labeled classify_safe, NOT flag_pii. Generate them as tricky "safe" examples to help the model learn boundaries.
@@ -381,6 +383,7 @@ Return JSON array: [{{"summary": "...", "reason": "why it must be blocked"}}]"""
             # Batch 4: Hard negatives — looks like secrets but isn't
             {
                 "count": 30,
+                "target_label": "classify_safe",
                 "prompt": """Generate {count} file summaries where files APPEAR to contain secrets but DON'T — these are SAFE files (classify_safe).
 
 IMPORTANT: These are classify_safe, not block_transfer. The model must learn the difference.
@@ -485,6 +488,7 @@ Return JSON array: [{{"summary": "...", "reason": "why escalation needed"}}]""",
             # Batch 4: Hard negatives — looks like request_permission but is safe
             {
                 "count": 30,
+                "target_label": "classify_safe",
                 "prompt": """Generate {count} file summaries of documents that LOOK internal/confidential but are actually SAFE to share (classify_safe).
 
 IMPORTANT: These are classify_safe. The model must learn these subtle distinctions.
@@ -587,14 +591,9 @@ def main():
     for category, config in CATEGORIES.items():
         for i, batch in enumerate(config["batches"]):
             # The last batch in flag_pii, block_transfer, and request_permission
-            # generates classify_safe hard-negatives
-            is_hard_negative_for_safe = (
-                "reason" in batch["prompt"]
-                and "classify_safe" in batch["prompt"]
-                and "NOTE: These will be added to the classify_safe category"
-                in batch["prompt"]
-            )
-            output_category = "classify_safe" if is_hard_negative_for_safe else category
+            # generates classify_safe hard-negatives. 
+            # We use "target_label" if present, else default to the section category.
+            output_category = batch.get("target_label", category)
             batch_specs.append((category, i, batch, output_category))
 
     total_expected = sum(b["count"] for _, _, b, _ in batch_specs)
