@@ -34,7 +34,8 @@ aegis_read({ path: "data/users.csv" })
 
 The Aegis bridge must be running for classification to work:
 ```bash
-uv run python aegis_bridge.py --backend transformers --model ./aegis-adapter
+ollama serve  # if not already running
+python aegis_bridge.py
 ```
 
 If the bridge is down, Aegis degrades gracefully to sanitize-everything mode (all files get PII-scrubbed).

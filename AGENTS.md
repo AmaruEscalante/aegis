@@ -5,9 +5,9 @@ Guidance for AI coding agents operating in this repository.
 ## Project Overview
 
 Hackathon project ("Aegis") — a local privacy layer for agentic AI. Three sub-projects:
-- **Root (Python 3.12)**: On-device FunctionGemma + cloud Gemini hybrid routing, benchmarking, and ML fine-tuning.
-- **`aegis_bridge.py` (Python)**: HTTP bridge server wrapping FunctionGemma classification via Cactus or Transformers backends.
-- **`middleware/` (TypeScript)**: "Aegis" OpenClaw plugin — FunctionGemma router + DataGuard sanitization engine.
+- **Root (Python 3.12)**: Benchmarking, ML fine-tuning, and leaderboard submission utilities.
+- **`aegis_bridge.py` (Python)**: HTTP bridge server that proxies classification to a local Ollama model (`gemma4:31b`).
+- **`middleware/` (TypeScript)**: "Aegis" OpenClaw / MCP plugin — Ollama-backed router + DataGuard sanitization engine.
 
 ## Build / Run / Test Commands
 
@@ -17,12 +17,6 @@ Hackathon project ("Aegis") — a local privacy layer for agentic AI. Three sub-
 # Install dependencies
 uv sync
 
-# Run the hybrid routing engine
-GEMINI_API_KEY=<key> python main.py
-
-# Run the privacy pipeline
-GEMINI_API_KEY=<key> python aegis.py <file>
-
 # Run benchmarks (custom harness, no pytest)
 GEMINI_API_KEY=<key> python benchmark.py
 
@@ -31,24 +25,24 @@ python submit.py
 ```
 
 There is no formal Python test framework (no pytest/unittest). Testing is done through
-`benchmark.py` (30 cases with F1 scoring), `training_files/evaluate.py`, and
-`model-merge/test_cactus_model.py`.
+`benchmark.py` (30 cases with F1 scoring) and `training_files/evaluate.py`.
 
 ### Aegis Bridge (`aegis_bridge.py`)
 
 ```bash
-# Run with Cactus backend (default, requires converted model)
-python aegis_bridge.py --backend cactus
+# Default — gemma4:31b on local Ollama
+python aegis_bridge.py
 
-# Run with Transformers backend (any HuggingFace model)
-python aegis_bridge.py --backend transformers --model ./aegis-adapter
+# Custom model
+python aegis_bridge.py --model qwen2.5:3b
 
 # Custom port
-python aegis_bridge.py --backend transformers --port 7523
+python aegis_bridge.py --port 7523
 ```
 
-The bridge provides `POST /classify`, `POST /summarize`, and `GET /health` endpoints
-on `http://127.0.0.1:7523`. The TypeScript middleware calls it over localhost.
+The bridge provides `POST /classify` and `GET /health` endpoints on
+`http://127.0.0.1:7523`. Requires Ollama ≥ 0.5.0 running locally.
+The TypeScript middleware and the Python CLI both call it over localhost.
 
 ### TypeScript (`middleware/`) — managed by `npm`
 
@@ -187,9 +181,8 @@ if (check.verdict === "deny") {
 
 ### Imports
 
-- `sys.path.insert(0, ...)` at top for Cactus SDK path manipulation.
 - Standard library imports first (may be grouped on one line: `import json, os, time`).
-- Then third-party: `from google import genai`, `from cactus import cactus_init`.
+- Then third-party: `from google import genai`, `import httpx`.
 - No type annotations are used in the Python code.
 
 ### Naming

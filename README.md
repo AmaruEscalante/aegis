@@ -1,107 +1,47 @@
 # Aegis
 
-A local privacy layer for agentic AI. Aegis intercepts file access from AI agents, classifies sensitivity on-device using fine-tuned FunctionGemma, and routes to the appropriate action: passthrough, sanitize, block, or escalate for human review.
+A local privacy layer for agentic AI. Aegis intercepts file access from AI agents, classifies sensitivity on-device using a local Ollama model, and routes to the appropriate action: passthrough, sanitize, block, or escalate for human review.
 
 ## Architecture
 
 Three components work together:
 
-- **Aegis Bridge** (`aegis_bridge.py`) — Python HTTP server wrapping two on-device models: SmolLM2 for summarization and FunctionGemma-270M for classification. Dual backend support (Cactus SDK or HuggingFace Transformers).
-- **Middleware** (`middleware/`) — TypeScript OpenClaw plugin. Registers `aegis_read`, `aegis_classify`, and other tools. Routes files through the bridge, then applies DataGuard sanitization for PII files.
+- **Aegis Bridge** (`aegis_bridge.py`) — Python HTTP server that proxies file content to a local Ollama model (default: `gemma4:31b`) and returns one of four privacy verdicts as structured JSON.
+- **Middleware** (`middleware/`) — TypeScript OpenClaw / MCP plugin. Registers `aegis_read`, `aegis_classify`, and other tools. Routes files through the bridge, then applies DataGuard sanitization for PII files.
 - **CLI Test Harness** (`aegis_cli.py`) — Interactive Python script for testing the full pipeline with visible step-by-step output.
 
 ## Execution Flow
 
-When an AI agent tries to read a file, the full pipeline executes:
+When an AI agent tries to read a file:
 
 ```
 AI Agent (Claude, etc.)
   |
   |  calls aegis_read({ path: "samples/patient_records.csv" })
-  |
   v
-+-------------------------------------------------------------+
-|  plugin/index.ts                          [OpenClaw plugin]  |
-|  Registers tools + hooks at startup                          |
-|  -----------------------------------------------------------+
-|  also registers: before_tool_call hook                       |
-|  (blocks native Read/Glob/cat -- forces agent to use aegis)  |
-+----------------------------+--------------------------------+
-                             |
-                             v
-+-------------------------------------------------------------+
-|  tools/dataguard_read.ts                    [aegis_read]     |
-|                                                              |
-|  Step 1: checkPath()           <-- sanitize/policy.ts        |
-|          Deny globs (.env, .ssh, .pem)?                      |
-|          Under allowed roots?                                |
-|                                                              |
-|  Step 2: checkFileSize()       <-- sanitize/policy.ts        |
-|          Under 5MB limit?                                    |
-|                                                              |
-|  Step 3: extractText()         <-- sanitize/extract.ts       |
-|          PDF -> pdftotext/pdf-parse                          |
-|          DOCX -> mammoth                                     |
-|          Everything else -> UTF-8 read                       |
-|                                                              |
-|  Step 0: classifyFile(text)    <-- router/classify.ts        |
-|          +------------------------------+                    |
-|          | POST /summarize (8000 chars)  |                    |
-|          |         |                     |                    |
-|          |         v                     |                    |
-|          |  aegis_bridge.py ------------ | ---- Python ----  |
-|          |  |                            |                    |
-|          |  |  SmolLM2 (LM Studio)       |                    |
-|          |  |  "File contains SSNs,      |                    |
-|          |  |   emails, phone numbers"   |                    |
-|          |  |         |                  |                    |
-|          |  v         v                  |                    |
-|          | POST /classify (summary)      |                    |
-|          |  |                            |                    |
-|          |  |  FunctionGemma-270M        |                    |
-|          |  |  call:flag_pii{            |                    |
-|          |  |    types: "email,ssn"}     |                    |
-|          |  |         |                  |                    |
-|          |  v         v                  |                    |
-|          |  { verdict: "flag_pii" }      |                    |
-|          +------------------------------+                    |
-|                    |                                         |
-|                    v                                         |
-|  +--- ROUTE on verdict -----------------------------------+  |
-|  |                                                        |  |
-|  |  safe -------> Return raw text, 0 redactions           |  |
-|  |                method: "aegis-safe"                     |  |
-|  |                (NO sanitization, NO cache, NO LLM)      |  |
-|  |                                                        |  |
-|  |  flag_pii --> DataGuard sanitization pipeline           |  |
-|  |                |                                       |  |
-|  |                +-- Cache check                         |  |
-|  |                +-- detect() [regex+entropy]            |  |
-|  |                +-- applyRedactions() [placeholders]    |  |
-|  |                +-- vault (store originals)             |  |
-|  |                +-- LLM refinement (Ollama/OpenRouter)  |  |
-|  |                +-- Cache write                         |  |
-|  |                +-- Return sanitized text               |  |
-|  |                   method: "llm+regex" / "regex-only"   |  |
-|  |                                                        |  |
-|  |  block ------> THROW Error("Aegis blocked file")       |  |
-|  |                Content NEVER returned to agent          |  |
-|  |                                                        |  |
-|  |  escalate ---> Return { content: null,                 |  |
-|  |                  escalation: {                         |  |
-|  |                    message: "Ask user for              |  |
-|  |                    permission before proceeding"       |  |
-|  |                }}                                      |  |
-|  |                method: "aegis-escalate"                 |  |
-|  +--------------------------------------------------------+  |
-|                                                              |
-|  Bridge DOWN? --> Degrade to flag_pii (sanitize all)         |
-+--------------------------------------------------------------+
+middleware/src/plugin/index.ts (OpenClaw / MCP)
+  |
+  |  policy check → extract text → POST /classify
+  v
+aegis_bridge.py (this repo, port 7523)
+  |
+  |  POST {ollama_url}/api/chat with format: <json-schema>
+  v
+Ollama running gemma4:31b (port 11434)
+  |
+  |  returns {tool, arguments, confidence}
+  v
+ROUTE on tool:
+  classify_safe     → return raw text
+  flag_pii          → DataGuard sanitization (regex + placeholders)
+  block_transfer    → throw Error, content never returned
+  request_permission → return escalation object, ask the human
+  bridge unreachable → degrade to flag_pii (sanitize everything)
 ```
 
 ### The Four Verdicts
 
-| Verdict | FunctionGemma Tool | What Happens | Content Returned? |
+| Verdict | Ollama Tool Call | What Happens | Content Returned? |
 |---|---|---|---|
 | **safe** | `classify_safe` | Passthrough, no sanitization | Yes, raw text |
 | **flag_pii** | `flag_pii` | Full DataGuard pipeline (regex + LLM + cache) | Yes, sanitized with placeholders |
@@ -109,13 +49,13 @@ AI Agent (Claude, etc.)
 | **escalate** | `request_permission` | Return escalation object, ask human | No (`content: null`) |
 | **bridge down** | *(none)* | Degrade to `flag_pii`, sanitize everything | Yes, sanitized |
 
-**SAFE** (`open_source_readme.md`): FunctionGemma says "no sensitive data" -- raw file returned directly to agent. Zero overhead beyond classification. No regex, no LLM, no cache.
+**SAFE** (`open_source_readme.md`): Ollama says "no sensitive data" — raw file returned directly to agent. Zero overhead beyond classification. No regex, no LLM, no cache.
 
-**FLAG_PII** (`patient_records.csv`): FunctionGemma says "contains PII" -- full DataGuard pipeline runs. Regex detects SSNs/emails/phones, replaces with `__SSN_1__`, `__EMAIL_1__` placeholders, optionally LLM refines, cached, sanitized text returned to agent with redaction count.
+**FLAG_PII** (`patient_records.csv`): Ollama says "contains PII" — full DataGuard pipeline runs. Regex detects SSNs/emails/phones, replaces with `__SSN_1__`, `__EMAIL_1__` placeholders, optionally LLM refines, cached, sanitized text returned to agent with redaction count.
 
-**BLOCK** (`api_config.env`): FunctionGemma says "contains secrets" -- throws an Error. Agent gets an error message, never sees any file content. Two layers: path-based blocking (`.env` glob) AND content-based blocking (FunctionGemma classification).
+**BLOCK** (`api_config.env`): Ollama says "contains secrets" — throws an Error. Agent gets an error message, never sees any file content. Two layers: path-based blocking (`.env` glob) AND content-based blocking (Ollama classification).
 
-**ESCALATE** (`vendor_evaluation.txt`): FunctionGemma says "ambiguous, needs human" -- returns `content: null` with a structured escalation message telling the agent to ask the user for permission before proceeding.
+**ESCALATE** (`vendor_evaluation.txt`): Ollama says "ambiguous, needs human" — returns `content: null` with a structured escalation message telling the agent to ask the user for permission before proceeding.
 
 **BRIDGE DOWN**: Graceful degradation -- treats every file as `flag_pii`, sanitize-everything mode (same as before Aegis existed). Never crashes.
 
@@ -125,20 +65,24 @@ AI Agent (Claude, etc.)
 
 - Python 3.12+ with `uv`
 - Node.js 18+
-- LM Studio running with `smollm2-1.7b-instruct` loaded (port 1234)
-- The `aegis-adapter` model directory (FunctionGemma-270M fine-tuned weights)
+- Ollama ≥ 0.5.0 (`brew install ollama` or https://ollama.com/download)
+- The `gemma4:31b` model pulled (`ollama pull gemma4:31b`)
 
-### 1. Start the Bridge
+### 1. Start Ollama and the Bridge
 
 ```bash
-uv run python aegis_bridge.py --backend transformers --model ./aegis-adapter
+# In one terminal — start Ollama (if not already running as a daemon)
+ollama serve
+
+# In another terminal — start the bridge
+python aegis_bridge.py
 ```
 
-The bridge auto-detects LM Studio for summarization. Verify with:
+Verify:
 
 ```bash
 curl http://127.0.0.1:7523/health
-# {"status":"ok","backend":"transformers","model":"./aegis-adapter","summarizer":"SmolLM2 via LM Studio (http://127.0.0.1:1234)"}
+# {"status":"ok","backend":"ollama","model":"gemma4:31b","ollama_url":"http://127.0.0.1:11434"}
 ```
 
 ### 2. Connect an Agent via MCP
@@ -212,11 +156,10 @@ npx vitest run tests/e2e.test.ts      # e2e tests (bridge must be running)
 ## Project Structure
 
 ```
-aegis_bridge.py          Python HTTP bridge (FunctionGemma + SmolLM2)
+aegis_bridge.py          Python HTTP bridge (Ollama-backed, gemma4:31b)
 aegis_cli.py             CLI test harness
-aegis.py                 Original standalone privacy pipeline
-main.py                  Hybrid routing engine (Cactus confidence-based)
 benchmark.py             30-case benchmark with F1 scoring
+test_bridge_smoke.py     Smoke test for the bridge / Ollama integration
 samples/                 12 synthetic test files (all 4 categories)
 
 middleware/
@@ -248,15 +191,15 @@ middleware/
 ## Bridge Options
 
 ```bash
-# Transformers backend (default, any HuggingFace model)
-uv run python aegis_bridge.py --backend transformers --model ./aegis-adapter
+# Default — gemma4:31b on a local Ollama instance
+python aegis_bridge.py
 
-# Cactus backend (requires converted GGUF weights)
-uv run python aegis_bridge.py --backend cactus
+# Swap the model
+python aegis_bridge.py --model qwen2.5:3b
 
-# Custom port
-uv run python aegis_bridge.py --port 8080
+# Custom Ollama URL (e.g., remote dev box)
+python aegis_bridge.py --ollama-url http://192.168.1.10:11434
 
-# Disable LM Studio summarizer (use truncated text)
-uv run python aegis_bridge.py --backend transformers --no-lmstudio
+# Custom bridge port
+python aegis_bridge.py --port 8080
 ```
