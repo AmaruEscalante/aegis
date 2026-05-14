@@ -3,10 +3,9 @@ Aegis CLI — Interactive end-to-end test harness for the Aegis privacy router.
 
 Processes files through the full pipeline and shows every step visually:
   Step 1: Read file from disk
-  Step 2: Summarize (via bridge /summarize)
-  Step 3: Classify (via bridge /classify → FunctionGemma)
-  Step 4: Route decision (safe / flag_pii / block / escalate)
-  Step 5: Execute action (passthrough / regex redaction / deny / escalate)
+  Step 2: Classify (via bridge /classify → FunctionGemma)
+  Step 3: Route decision (safe / flag_pii / block / escalate)
+  Step 4: Execute action (passthrough / regex redaction / deny / escalate)
 
 Usage:
   # Single file
@@ -153,43 +152,14 @@ def step_read_file(file_path):
     return content
 
 
-def step_summarize(bridge_url, content):
-    """Step 2: Summarize via bridge."""
-    print(f"\n{BLUE}{BOLD}[AEGIS] Step 2: Summarizing file (on-device){RESET}")
-    print(f"  {DIM}Sending first 8000 chars to bridge /summarize ...{RESET}")
+def step_classify(bridge_url, content):
+    """Step 2: Classify via bridge (FunctionGemma)."""
+    print(f"\n{BLUE}{BOLD}[AEGIS] Step 2: Classifying sensitivity (FunctionGemma){RESET}")
+    print(f"  {DIM}Sending first 8000 chars to bridge /classify ...{RESET}")
 
     start = time.time()
     try:
-        resp = bridge_post(bridge_url, "/summarize", {"text": content[:8000]})
-    except Exception as e:
-        print(f"  {RED}ERROR: Bridge /summarize failed: {e}{RESET}")
-        # Fallback: use truncated content as summary
-        summary = content[:2000]
-        print(f"  {YELLOW}Falling back to truncated content as summary{RESET}")
-        return summary, 0
-
-    elapsed_ms = (time.time() - start) * 1000
-    summary = resp.get("summary", content[:2000])
-    bridge_ms = resp.get("time_ms", 0)
-
-    print(f"  {GREEN}Summary generated in {elapsed_ms:.0f}ms (bridge: {bridge_ms:.0f}ms){RESET}")
-    print(f"  {DIM}─── Summary ───{RESET}")
-    for line in summary[:500].split("\n"):
-        print(f"  {CYAN}{line}{RESET}")
-    if len(summary) > 500:
-        print(f"  {DIM}... ({len(summary)} chars total){RESET}")
-
-    return summary, elapsed_ms
-
-
-def step_classify(bridge_url, summary):
-    """Step 3: Classify via bridge (FunctionGemma)."""
-    print(f"\n{BLUE}{BOLD}[AEGIS] Step 3: Classifying sensitivity (FunctionGemma){RESET}")
-    print(f"  {DIM}Sending summary to bridge /classify ...{RESET}")
-
-    start = time.time()
-    try:
-        resp = bridge_post(bridge_url, "/classify", {"summary": summary})
+        resp = bridge_post(bridge_url, "/classify", {"text": content[:8000]})
     except Exception as e:
         print(f"  {RED}ERROR: Bridge /classify failed: {e}{RESET}")
         print(f"  {YELLOW}Falling back to: flag_pii (sanitize everything){RESET}")
@@ -234,11 +204,11 @@ def step_classify(bridge_url, summary):
 
 
 def step_execute(classification, content, file_path):
-    """Step 4: Execute the action based on classification."""
+    """Step 3: Execute the action based on classification."""
     tool = classification.get("tool", "flag_pii")
     args = classification.get("arguments", {})
 
-    print(f"\n{BLUE}{BOLD}[AEGIS] Step 4: Executing action{RESET}")
+    print(f"\n{BLUE}{BOLD}[AEGIS] Step 3: Executing action{RESET}")
 
     if tool == "classify_safe":
         print(f"  {GREEN}Action: PASSTHROUGH — returning raw file content{RESET}")
@@ -329,32 +299,28 @@ def process_file(file_path, bridge_url, classify_only=False):
     if content is None:
         return None
 
-    # Step 2: Summarize
-    summary, summarize_ms = step_summarize(bridge_url, content)
-
-    # Step 3: Classify
-    classification, classify_ms = step_classify(bridge_url, summary)
+    # Step 2: Classify
+    classification, classify_ms = step_classify(bridge_url, content)
 
     if classify_only:
-        total_ms = (time.time() - total_start) * 1000
         print(f"\n{DIM}  (--classify-only: skipping action execution){RESET}")
         print(f"\n{BLUE}{BOLD}[AEGIS] Pipeline complete{RESET}")
-        print(f"  {DIM}Total time: {total_ms:.0f}ms (summarize: {summarize_ms:.0f}ms + classify: {classify_ms:.0f}ms){RESET}")
+        print(f"  {DIM}Total time: {classify_ms:.0f}ms{RESET}")
         return {
             "file": basename,
             "verdict": classification.get("tool"),
             "confidence": classification.get("confidence"),
-            "time_ms": total_ms,
+            "time_ms": classify_ms,
         }
 
-    # Step 4: Execute action
+    # Step 3: Execute action
     result = step_execute(classification, content, file_path)
 
     total_ms = (time.time() - total_start) * 1000
 
     # Summary line
     print(f"\n{BLUE}{BOLD}[AEGIS] Pipeline complete{RESET}")
-    print(f"  {DIM}Total time: {total_ms:.0f}ms (summarize: {summarize_ms:.0f}ms + classify: {classify_ms:.0f}ms){RESET}")
+    print(f"  {DIM}Total time: {classify_ms:.0f}ms{RESET}")
 
     return {
         "file": basename,
