@@ -6,8 +6,7 @@
 # TypeScript e2e tests against real sample files, then cleans up.
 #
 # Usage:
-#   ./test_e2e.sh                          # uses transformers backend (default)
-#   ./test_e2e.sh --backend cactus         # uses cactus backend
+#   ./test_e2e.sh                          # run e2e tests
 #   ./test_e2e.sh --skip-bridge            # assume bridge is already running
 #
 # Prerequisites:
@@ -20,16 +19,12 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 BRIDGE_PID=""
-BACKEND="transformers"
-MODEL="./aegis-adapter"
 PORT=7523
 SKIP_BRIDGE=false
 
 # Parse args
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --backend) BACKEND="$2"; shift 2 ;;
-    --model) MODEL="$2"; shift 2 ;;
     --port) PORT="$2"; shift 2 ;;
     --skip-bridge) SKIP_BRIDGE=true; shift ;;
     *) echo "Unknown arg: $1"; exit 1 ;;
@@ -49,8 +44,6 @@ trap cleanup EXIT
 echo "============================================"
 echo "  Aegis End-to-End Test"
 echo "============================================"
-echo "  Backend:  $BACKEND"
-echo "  Model:    $MODEL"
 echo "  Port:     $PORT"
 echo ""
 
@@ -60,8 +53,6 @@ if [[ "$SKIP_BRIDGE" == "false" ]]; then
   cd "$SCRIPT_DIR"
 
   uv run python aegis_bridge.py \
-    --backend "$BACKEND" \
-    --model "$MODEL" \
     --port "$PORT" &
   BRIDGE_PID=$!
 
@@ -94,7 +85,7 @@ fi
 echo "[e2e] Smoke test: classifying a safe summary..."
 CLASSIFY_RESULT=$(curl -s -X POST "http://127.0.0.1:$PORT/classify" \
   -H "Content-Type: application/json" \
-  -d '{"summary": "A marketing blog post about new product features. No personal data, no API keys, no credentials."}' \
+  -d '{"text": "A marketing blog post about new product features. No personal data, no API keys, no credentials."}' \
   2>/dev/null || echo '{"error":"bridge unreachable"}')
 echo "[e2e] Classify result: $CLASSIFY_RESULT"
 echo ""
@@ -102,7 +93,7 @@ echo ""
 echo "[e2e] Smoke test: classifying a secrets summary..."
 CLASSIFY_RESULT=$(curl -s -X POST "http://127.0.0.1:$PORT/classify" \
   -H "Content-Type: application/json" \
-  -d '{"summary": "Kubernetes secrets YAML file with base64-encoded production credentials including STRIPE_SECRET_KEY, DATABASE_URL with admin password, and AWS access keys."}' \
+  -d '{"text": "Kubernetes secrets YAML file with base64-encoded production credentials including STRIPE_SECRET_KEY, DATABASE_URL with admin password, and AWS access keys."}' \
   2>/dev/null || echo '{"error":"bridge unreachable"}')
 echo "[e2e] Classify result: $CLASSIFY_RESULT"
 echo ""
