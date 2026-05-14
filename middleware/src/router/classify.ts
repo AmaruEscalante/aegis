@@ -1,5 +1,5 @@
 // ============================================================================
-// AEGIS ROUTER — HTTP client for the FunctionGemma classification bridge
+// AEGIS ROUTER — HTTP client for the Ollama-backed classification bridge
 // ============================================================================
 // Calls the Python aegis_bridge.py server over localhost to classify file
 // content before deciding whether to sanitize, pass through, block, or escalate.
@@ -124,11 +124,9 @@ function getJson(
 // ---- Public API ----
 
 /**
- * Classify file content via the Aegis bridge (summarize + classify).
+ * Classify file content via the Aegis bridge.
  *
- * Pipeline:
- *   1. POST /summarize  — sends first 8000 chars for on-device summarization
- *   2. POST /classify   — sends summary to FunctionGemma for classification
+ * Sends raw text (truncated server-side) to POST /classify on the bridge.
  *
  * On any failure (bridge down, timeout, malformed response) this function
  * degrades gracefully by returning verdict "flag_pii" — causing the caller
@@ -142,28 +140,17 @@ export async function classifyFile(
   const timeout = config.aegisBridgeTimeoutMs;
 
   try {
-    // --- Step 1: Summarize ---
-    const summarizeResp = await postJson(
-      bridgeUrl,
-      "/summarize",
-      { text: text.slice(0, 8000) },
-      timeout
-    );
-    const summary = (summarizeResp.summary as string) || text.slice(0, 2000);
-
-    // --- Step 2: Classify ---
     const classifyResp = await postJson(
       bridgeUrl,
       "/classify",
-      { summary },
+      { text },
       timeout
     );
 
     const toolName = classifyResp.tool as string;
     const args = classifyResp.arguments as Record<string, string> | undefined;
     const confidence = (classifyResp.confidence as number) ?? 0;
-    const timeSummarize = (summarizeResp.time_ms as number) ?? 0;
-    const timeClassify = (classifyResp.time_ms as number) ?? 0;
+    const timeMs = (classifyResp.time_ms as number) ?? 0;
 
     const verdict = VERDICT_MAP[toolName] ?? "flag_pii";
 
@@ -172,10 +159,9 @@ export async function classifyFile(
       reason: args?.reason ?? args?.types ?? `classified as ${toolName}`,
       confidence,
       pii_types: verdict === "flag_pii" ? (args?.types ?? "email,phone,ssn") : undefined,
-      time_ms: timeSummarize + timeClassify,
+      time_ms: timeMs,
     };
   } catch (err) {
-    // Bridge unavailable — degrade to sanitize-everything (flag_pii)
     console.error("[aegis-router] Bridge error, falling back to sanitize-everything:", err);
     return {
       verdict: "flag_pii",
