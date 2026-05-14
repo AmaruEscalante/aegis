@@ -105,7 +105,7 @@ def normalize_pii_types(types_str):
 
 # ── Bridge HTTP helpers ────────────────────────────────────────────────────
 
-def bridge_post(bridge_url, path, body, timeout=15):
+def bridge_post(bridge_url, path, body, timeout=180):
     """POST JSON to the bridge server."""
     url = f"{bridge_url}{path}"
     payload = json.dumps(body).encode("utf-8")
