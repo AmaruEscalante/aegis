@@ -36,7 +36,7 @@ def post_classify(text):
         data=payload,
         headers={"Content-Type": "application/json"},
     )
-    with urllib.request.urlopen(req, timeout=60) as resp:
+    with urllib.request.urlopen(req, timeout=180) as resp:
         return json.loads(resp.read())
 
 
