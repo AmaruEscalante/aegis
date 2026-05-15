@@ -1,0 +1,41 @@
+Embedding 12 samples with embeddinggemma ...
+  [ 1/12] samples/open_source_readme.md              dim=768 (7580ms)
+  [ 2/12] samples/marketing_copy.txt                 dim=768 (82ms)
+  [ 3/12] samples/blog_post_draft.txt                dim=768 (67ms)
+  [ 4/12] samples/patient_records.csv                dim=768 (90ms)
+  [ 5/12] samples/employee_directory.json            dim=768 (141ms)
+  [ 6/12] samples/user_database.json                 dim=768 (248ms)
+  [ 7/12] samples/api_config.env                     dim=768 (86ms)
+  [ 8/12] samples/kubernetes_secrets.yaml            dim=768 (88ms)
+  [ 9/12] samples/docker_compose_prod.yml            dim=768 (117ms)
+  [10/12] samples/vendor_evaluation.txt              dim=768 (107ms)
+  [11/12] samples/partnership_agreement.txt          dim=768 (108ms)
+  [12/12] samples/board_meeting_minutes.txt          dim=768 (95ms)
+
+file                                       expected               predicted                sim
+-----------------------------------------------------------------------------------------------
+XX samples/open_source_readme.md           classify_safe          block_transfer          0.43
+XX samples/marketing_copy.txt              classify_safe          request_permission      0.40
+XX samples/blog_post_draft.txt             classify_safe          request_permission      0.36
+OK samples/patient_records.csv             flag_pii               flag_pii                0.49
+OK samples/employee_directory.json         flag_pii               flag_pii                0.67
+OK samples/user_database.json              flag_pii               flag_pii                0.67
+OK samples/api_config.env                  block_transfer         block_transfer          0.63
+OK samples/kubernetes_secrets.yaml         block_transfer         block_transfer          0.60
+OK samples/docker_compose_prod.yml         block_transfer         block_transfer          0.63
+OK samples/vendor_evaluation.txt           request_permission     request_permission      0.45
+OK samples/partnership_agreement.txt       request_permission     request_permission      0.47
+OK samples/board_meeting_minutes.txt       request_permission     request_permission      0.47
+
+class                         P      R     F1
+--------------------------------------------------
+classify_safe              0.00   0.00   0.00
+flag_pii                   1.00   1.00   1.00
+block_transfer             0.75   1.00   0.86
+request_permission         0.60   1.00   0.75
+
+Cases:               12
+Accuracy:            75.00% (9/12)
+Macro F1:            0.652
+Avg embed latency:   734 ms
+k-NN k:              1

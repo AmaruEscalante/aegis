@@ -1,0 +1,27 @@
+
+file                                       expected               predicted               conf     ms
+----------------------------------------------------------------------------------------------------
+OK samples/open_source_readme.md           classify_safe          classify_safe           0.99   8595
+OK samples/marketing_copy.txt              classify_safe          classify_safe           0.90    664
+OK samples/blog_post_draft.txt             classify_safe          classify_safe           0.99    511
+XX samples/patient_records.csv             flag_pii               classify_safe           0.00    675
+XX samples/employee_directory.json         flag_pii               classify_safe           0.90    594
+XX samples/user_database.json              flag_pii               classify_safe           0.90    681
+XX samples/api_config.env                  block_transfer         classify_safe           0.95    656
+XX samples/kubernetes_secrets.yaml         block_transfer         classify_safe           0.90    651
+XX samples/docker_compose_prod.yml         block_transfer         classify_safe           0.90    626
+XX samples/vendor_evaluation.txt           request_permission     classify_safe           0.95    649
+XX samples/partnership_agreement.txt       request_permission     classify_safe           0.95    613
+XX samples/board_meeting_minutes.txt       request_permission     classify_safe           0.95    602
+
+class                         P      R     F1
+--------------------------------------------------
+classify_safe              0.25   1.00   0.40
+flag_pii                   0.00   0.00   0.00
+block_transfer             0.00   0.00   0.00
+request_permission         0.00   0.00   0.00
+
+Cases:       12
+Accuracy:    25.00% (3/12)
+Macro F1:    0.100
+Avg latency: 1293 ms
