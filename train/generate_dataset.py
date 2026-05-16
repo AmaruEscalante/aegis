@@ -1,8 +1,8 @@
 """
 Synthetic dataset generator for Aegis privacy classification.
 
-Reads scenarios from train/prompts.py, calls Gemini per scenario,
-validates the output, and appends to train/dataset.jsonl.
+Reads scenarios from train/prompts.py, calls a local Ollama model per
+scenario, validates the output, and appends to train/dataset.jsonl.
 
 Each line of dataset.jsonl is a JSON object:
     {"scenario_id": "<class>:<n>", "label": "<class>", "text": "<file content>"}
@@ -11,25 +11,24 @@ Resumes from existing dataset.jsonl on rerun — skips scenarios whose
 scenario_id is already present.
 
 Usage:
-    GEMINI_API_KEY=... python train/generate_dataset.py            # 50/class = 200 total
-    GEMINI_API_KEY=... python train/generate_dataset.py --limit 2  # 2/class = 8 (smoke)
-    GEMINI_API_KEY=... python train/generate_dataset.py --limit 4  # 4/class = 16 (validate)
+    python train/generate_dataset.py                       # 50/class = 200 total, gemma4:e2b
+    python train/generate_dataset.py --limit 2             # 2/class = 8 (smoke)
+    python train/generate_dataset.py --limit 4             # 4/class = 16 (validate)
+    python train/generate_dataset.py --model gemma4:31b    # higher quality, ~10x slower
 
 Phased rollout (matches the spec):
-    Stage 1 (smoke):    --limit 2  -> ~8 examples,  ~$0.01
-    Stage 2 (validate): --limit 4  -> ~16 examples, ~$0.03
-    Stage 3 (full):     (no limit) -> 200 examples, ~$0.20
+    Stage 1 (smoke):    --limit 2  -> ~8 examples
+    Stage 2 (validate): --limit 4  -> ~16 examples
+    Stage 3 (full):     (no limit) -> 200 examples
 """
 
 import argparse
 import json
-import os
-import re
 import sys
 import time
+import urllib.error
+import urllib.request
 from pathlib import Path
-
-from google import genai
 
 # train/ is a sibling of the repo root scripts; import the local prompts module.
 # When run as `python train/generate_dataset.py` from the repo root, sys.path
@@ -37,16 +36,20 @@ from google import genai
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from prompts import SYSTEM_PROMPT, SCENARIOS  # noqa: E402
 
+import re  # noqa: E402
 
-DEFAULT_MODEL = "gemini-2.5-flash"
+
+DEFAULT_OLLAMA_URL = "http://127.0.0.1:11434"
+DEFAULT_MODEL = "gemma4:e2b"
 DEFAULT_OUTPUT = Path(__file__).resolve().parent / "dataset.jsonl"
+OLLAMA_TIMEOUT_SECONDS = 180
 
 MIN_OUTPUT_CHARS = 300
 MAX_RETRIES = 2
 RETRY_TEMPERATURES = [0.4, 0.7, 0.9]  # used by retry attempts in order
 
 # Regex patterns that flag_pii outputs MUST contain at least one of, to be
-# considered a valid PII-bearing file. Loose intentionally — Gemini sometimes
+# considered a valid PII-bearing file. Loose intentionally — Gemma sometimes
 # produces dates as YYYY-MM-DD, sometimes MM/DD/YYYY, etc.
 PII_PATTERNS = [
     re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}"),  # email
@@ -56,7 +59,6 @@ PII_PATTERNS = [
 ]
 
 # Regex patterns that block_transfer outputs SHOULD contain at least one of.
-# Same intent as PII_PATTERNS — looseness is intentional.
 SECRET_HINT_PATTERNS = [
     re.compile(r"sk_live_[A-Za-z0-9]+"),                              # Stripe live key prefix
     re.compile(r"sk-[A-Za-z0-9]{20,}"),                               # OpenAI-ish key prefix
@@ -112,18 +114,28 @@ def validate(label: str, text: str, scenario: str) -> tuple[bool, str]:
     return True, ""
 
 
-def generate_one(client, model: str, scenario: str, temperature: float) -> str:
-    """One Gemini call. Returns the raw text content."""
-    full_prompt = f"{SYSTEM_PROMPT}\n\nScenario: {scenario}\n\nFile content:"
-    response = client.models.generate_content(
-        model=model,
-        contents=full_prompt,
-        config={"temperature": temperature},
+def ollama_chat(ollama_url: str, model: str, scenario: str, temperature: float) -> str:
+    """One Ollama /api/chat call. Returns the raw generated text content."""
+    payload = json.dumps({
+        "model": model,
+        "messages": [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": f"Scenario: {scenario}\n\nFile content:"},
+        ],
+        "stream": False,
+        "options": {"temperature": temperature},
+    }).encode("utf-8")
+    req = urllib.request.Request(
+        f"{ollama_url}/api/chat",
+        data=payload,
+        headers={"Content-Type": "application/json"},
     )
-    return (response.text or "").strip()
+    with urllib.request.urlopen(req, timeout=OLLAMA_TIMEOUT_SECONDS) as resp:
+        data = json.loads(resp.read())
+    return (data.get("message", {}).get("content") or "").strip()
 
 
-def generate_with_retries(client, model: str, label: str, scenario: str) -> tuple[str, str]:
+def generate_with_retries(ollama_url: str, model: str, label: str, scenario: str) -> tuple[str, str]:
     """
     Try to generate a valid example for `scenario`. Returns (text, status).
     status is "ok" on success or the validation failure reason on giving up.
@@ -131,9 +143,9 @@ def generate_with_retries(client, model: str, label: str, scenario: str) -> tupl
     last_reason = "no attempt"
     for attempt, temp in enumerate(RETRY_TEMPERATURES[: MAX_RETRIES + 1]):
         try:
-            text = generate_one(client, model, scenario, temp)
+            text = ollama_chat(ollama_url, model, scenario, temp)
         except Exception as exc:
-            last_reason = f"api error: {exc}"
+            last_reason = f"ollama error: {exc}"
             time.sleep(1.0)
             continue
         ok, reason = validate(label, text, scenario)
@@ -144,7 +156,7 @@ def generate_with_retries(client, model: str, label: str, scenario: str) -> tupl
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Synthetic Aegis dataset generator")
+    parser = argparse.ArgumentParser(description="Synthetic Aegis dataset generator (Ollama backend)")
     parser.add_argument(
         "--limit",
         type=int,
@@ -160,16 +172,14 @@ def main():
     parser.add_argument(
         "--model",
         default=DEFAULT_MODEL,
-        help=f"Gemini model (default {DEFAULT_MODEL})",
+        help=f"Ollama model tag (default {DEFAULT_MODEL})",
+    )
+    parser.add_argument(
+        "--ollama-url",
+        default=DEFAULT_OLLAMA_URL,
+        help=f"Ollama base URL (default {DEFAULT_OLLAMA_URL})",
     )
     args = parser.parse_args()
-
-    api_key = os.environ.get("GEMINI_API_KEY")
-    if not api_key:
-        print("ERROR: GEMINI_API_KEY environment variable is not set.", file=sys.stderr)
-        sys.exit(1)
-
-    client = genai.Client(api_key=api_key)
 
     done = load_done_ids(args.output)
     if done:
@@ -193,7 +203,7 @@ def main():
                     continue
 
                 print(f"[{generated + skipped + len(failed) + 1:3d}/{total_planned:3d}] {scenario_id:30s} {scenario[:50]:50s} ", end="", flush=True)
-                text, status = generate_with_retries(client, args.model, label, scenario)
+                text, status = generate_with_retries(args.ollama_url, args.model, label, scenario)
                 if status != "ok":
                     failed.append((scenario_id, status))
                     print(f"FAIL ({status})")
