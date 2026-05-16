@@ -31,3 +31,6 @@ functiongemma-finetuning/latest/
 
 # UV lock (optional — regenerated from pyproject.toml)
 uv.lock
+
+# Phase 1 synthetic dataset
+train/dataset.jsonl
