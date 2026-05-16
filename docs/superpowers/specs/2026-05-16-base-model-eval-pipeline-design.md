@@ -144,15 +144,19 @@ python eval.py --model <ollama-tag>                  # one model, all eval sampl
 python eval.py --model embeddinggemma --protocol knn # for embedding models
 python eval.py --model gemma4:e2b --bridge-url ...   # generative models via bridge
 python eval.py --all                                 # runs all 3 base models sequentially
+python eval.py --warmup-calls 1                      # default 1; throwaway calls before timing
 ```
+
+**Warm-up:** Before timing any case, the runner does N throwaway calls (default 1) so the first real measurement reflects warm-cache latency, not Ollama's model-load cost. The throwaway call's latency is logged separately as `cold_start_ms` in the per-model output but is **not** included in p50/p95/p99 calculations.
 
 **Eval set composition:**
 
-- All 200 synthetic samples from `dataset.jsonl`
 - All 12 hand-curated real samples from `samples/`
-- Total = 212 evaluation cases
+- **Eval set = 12 cases total.** Synthetic data is **not** in the eval set.
 
-The 12 real samples are NOT held out from a future training run — they exist as a ground-truth anchor that any synthetic-trained model is tested against. This is the same role they played in Phase 0.
+Rationale: The 200 synthetic samples in `train/dataset.jsonl` will be used as *training data* in Phase 2. Evaluating on data the model trained on (in Phase 2) would be data leakage. Keeping the eval set strictly to hand-curated real samples — held out from any training, in any phase — gives apples-to-apples comparisons across Phase 1 (base models) and Phase 2 (trained models).
+
+Tradeoff acknowledged: 12 samples is a small eval set; F1 confidence intervals are wide. We accept this as a honest constraint of available labeled real data. If a Phase 1 result is ambiguous due to small-sample noise, we can hand-label more real samples before Phase 2.
 
 **Per-model paths:**
 
@@ -163,22 +167,25 @@ The 12 real samples are NOT held out from a future training run — they exist a
 | `embeddinggemma` | Direct Ollama `/api/embed`, k-NN LOO-CV against labeled set | Extension of existing `eval_embeddinggemma.py` |
 
 **Output per run:** `docs/eval-results/2026-05-XX-<model>-base.txt` with:
-- Per-case rows (file, expected, predicted, confidence, latency_ms)
+- Cold-start latency (one throwaway call, reported separately)
+- Per-case rows (file, expected, predicted, confidence, latency_ms — all warm)
 - Per-class P/R/F1
 - Overall accuracy, macro F1
-- Latency p50, p95, p99
+- Warm-call latency p50, p95, p99
 - Confusion matrix
 
 **Aggregate output:** `docs/eval-results/scorecard.md` updated with one row per model:
 
 ```markdown
-| Model | Accuracy | Macro F1 | p50 latency | p95 latency | Notes |
-|---|---|---|---|---|---|
-| gemma4:e2b (untuned)       | XX% | 0.XX | XXXms | XXXms | False-negative bias |
-| functiongemma (untuned)    | XX% | 0.XX | XXXms | XXXms | Collapses to one class |
-| embeddinggemma (k=1 NN)    | XX% | 0.XX | XXXms | XXXms | Heterogeneous-safe failure |
-| gemma4:31b (Phase 0 ref)   | 92% | —    | 30s   | 60s   | Production baseline |
+| Model | Accuracy | Macro F1 | Cold start | p50 (warm) | p95 (warm) | Notes |
+|---|---|---|---|---|---|---|
+| gemma4:e2b (untuned)       | XX% | 0.XX | XXXms | XXXms | XXXms | False-negative bias |
+| functiongemma (untuned)    | XX% | 0.XX | XXXms | XXXms | XXXms | Collapses to one class |
+| embeddinggemma (k=1 NN)    | XX% | 0.XX | XXXms | XXXms | XXXms | Heterogeneous-safe failure |
+| gemma4:31b (Phase 0 ref)   | 92% | —    | ~60s  | ~30s  | ~60s  | Production baseline |
 ```
+
+All warm latencies are measured **after a single throwaway warm-up call**. Cold start is the throwaway call's wall time — useful operationally (will we keep models hot in Ollama's RAM?) but not a model-capability number.
 
 ## Data flow
 
@@ -196,10 +203,11 @@ train/dataset.jsonl (200 rows)
     │  + samples/ (12 hand-curated rows)
     ▼
 eval.py --model <tag>
+    │  warm-up: 1 throwaway call (cold-start time recorded separately)
     │  for each row:
     │    POST /classify (generative) OR /api/embed + kNN (embedding)
     │    record (predicted, latency)
-    │  compute P/R/F1, latency percentiles
+    │  compute P/R/F1, warm-call latency percentiles (p50/p95/p99)
     ▼
 docs/eval-results/<date>-<model>-base.txt + scorecard.md
     │
@@ -209,14 +217,15 @@ DECISION: pick training direction → Phase 2 spec
 
 ## What we measure
 
-For each of the 3 base models on the 212-case eval set:
+For each of the 3 base models on the **12-case eval set**:
 
 | Metric | Why it matters |
 |---|---|
 | Overall accuracy | Sanity check; can it do the task at all? |
 | Per-class precision / recall / F1 | Where does it fail? Symmetric failure (random) vs. bias (false-negatives)? |
 | Macro F1 | Single number summary; weights all classes equally |
-| p50 / p95 / p99 latency | Production reality; tail latency matters more than average for a hot path |
+| Cold-start latency | Operational — model load time when Ollama swaps weights in. Reported once per model from the throwaway warm-up call. |
+| Warm p50 / p95 / p99 latency | Production reality; tail matters more than average for a hot-path gate. Measured *after* warm-up so model-load is excluded. |
 | Confusion matrix | Diagnostic — is the failure mode fixable with more training data, or architectural? |
 
 ## Decision criteria for Phase 2
