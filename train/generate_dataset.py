@@ -55,21 +55,66 @@ PII_PATTERNS = [
     re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}"),  # email
     re.compile(r"\b\d{3}-\d{2}-\d{4}\b"),                            # SSN
     re.compile(r"\b\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b"),           # phone
-    re.compile(r"\b\d{1,5}\s+\w+\s+(?:Street|St|Avenue|Ave|Road|Rd|Drive|Dr|Lane|Ln|Court|Ct)\b", re.IGNORECASE),  # address
+    re.compile(
+        r"\b\d{1,5}\s+(?:[NSEW]{1,2}\s+)?(?:\w+\s+){1,4}"
+        r"(?:Street|St|Avenue|Ave|Road|Rd|Drive|Dr|Lane|Ln|Court|Ct|Way|Boulevard|Blvd|Plaza|Place|Pl)\b",
+        re.IGNORECASE,
+    ),  # address (handles directionals + multi-word names)
 ]
 
 # Regex patterns that block_transfer outputs SHOULD contain at least one of.
 SECRET_HINT_PATTERNS = [
-    re.compile(r"sk_live_[A-Za-z0-9]+"),                              # Stripe live key prefix
-    re.compile(r"sk-[A-Za-z0-9]{20,}"),                               # OpenAI-ish key prefix
-    re.compile(r"AKIA[0-9A-Z]{16}"),                                  # AWS access key id
-    re.compile(r"AIza[A-Za-z0-9_-]{20,}"),                            # GCP API key prefix
-    re.compile(r"ghp_[A-Za-z0-9]{20,}"),                              # GitHub PAT
-    re.compile(r"BEGIN\s+(RSA|OPENSSH|EC|PGP)\s+PRIVATE KEY"),        # PEM private key marker
-    re.compile(r"(?i)password\s*[:=]\s*\S{6,}"),                      # password=...
-    re.compile(r"(?i)secret(_key|_token)?\s*[:=]\s*\S{10,}"),         # secret=, secret_key=
-    re.compile(r"(?i)api[_-]?key\s*[:=]\s*\S{10,}"),                  # api_key=, apiKey=
-    re.compile(r"xox[bpoa]-[A-Za-z0-9-]{10,}"),                       # Slack token
+    # Specific provider token prefixes (high specificity)
+    re.compile(r"sk_live_[A-Za-z0-9]+"),                                       # Stripe live key
+    re.compile(r"sk-[A-Za-z0-9_-]{20,}"),                                      # OpenAI/Anthropic-style key
+    re.compile(r"rk_live_[A-Za-z0-9]+"),                                       # Stripe restricted key
+    re.compile(r"whsec_[A-Za-z0-9]+"),                                         # Stripe webhook secret
+    re.compile(r"AKIA[0-9A-Z]{16}"),                                           # AWS access key id
+    re.compile(r"ASIA[0-9A-Z]{16}"),                                           # AWS STS temporary key
+    re.compile(r"AIza[A-Za-z0-9_-]{20,}"),                                     # GCP API key prefix
+    re.compile(r"ghp_[A-Za-z0-9]{20,}"),                                       # GitHub PAT
+    re.compile(r"glpat-[A-Za-z0-9_-]{10,}"),                                   # GitLab PAT
+    re.compile(r"GOCSPX-[A-Za-z0-9_-]{10,}"),                                  # Google OAuth client secret
+    re.compile(r"xox[bpoa]-[A-Za-z0-9-]{10,}"),                                # Slack bot/user/admin token
+    re.compile(r"xapp-[A-Za-z0-9-]{10,}"),                                     # Slack app token
+    re.compile(r"npm_[A-Za-z0-9]{30,}"),                                       # npm auth token
+    re.compile(r"pypi-[A-Za-z0-9_-]{30,}"),                                    # PyPI token
+    re.compile(r"DO00[A-Z0-9]{16,}"),                                          # DigitalOcean Spaces key
+    re.compile(r"WAS4[A-Z0-9]{16,}"),                                          # Wasabi access key
+    re.compile(r"K004[A-Za-z0-9]{20,}"),                                       # Backblaze B2 app key
+    re.compile(r"SG\.[A-Za-z0-9_.-]{20,}\.[A-Za-z0-9_.-]{20,}"),               # SendGrid full key
+    re.compile(r"\bs\.[A-Za-z0-9]{20,}"),                                      # HashiCorp Vault token
+
+    # PEM blocks (any private key)
+    re.compile(r"-----BEGIN[^-]*PRIVATE KEY-----"),
+    re.compile(r"-----BEGIN PGP PRIVATE KEY BLOCK-----"),
+
+    # Generic secret-style assignments — no word boundaries (handles UPPER_PASSWORD), permissive separators (handles JSON colons and YAML)
+    re.compile(r"(?i)password[\s\"'_:=]+[\"']?[A-Za-z0-9+/=._!@#$%^&*-]{6,}"),
+    re.compile(r"(?i)passphrase[\s\"'_:=]+[\"']?[A-Za-z0-9+/=._!@#$%^&*-]{6,}"),
+    re.compile(r"(?i)secret[\s\"'_:=]+[\"']?[A-Za-z0-9+/=._-]{8,}"),
+    re.compile(r"(?i)api[_-]?key[\s\"'_:=]+[\"']?[A-Za-z0-9+/=._-]{8,}"),
+    re.compile(r"(?i)api[_-]?token[\s\"'_:=]+[\"']?[A-Za-z0-9+/=._-]{10,}"),
+    re.compile(r"(?i)auth[_-]?token[\s\"'_:=]+[\"']?[A-Za-z0-9+/=._-]{10,}"),
+    re.compile(r"(?i)bot[_-]?token[\s\"'_:=]+[\"']?[A-Za-z0-9+/=._:-]{10,}"),
+    re.compile(r"(?i)client[_-]?secret[\s\"'_:=]+[\"']?[A-Za-z0-9+/=._-]{8,}"),
+    re.compile(r"(?i)access[_-]?key[\s\"'_:=]+[\"']?[A-Za-z0-9+/=._-]{8,}"),
+    re.compile(r"(?i)access[_-]?token[\s\"'_:=]+[\"']?[A-Za-z0-9+/=._-]{10,}"),
+    re.compile(r"(?i)refresh[_-]?token[\s\"'_:=]+[\"']?[A-Za-z0-9+/=._-]{10,}"),
+    re.compile(r"(?i)signing[_-]?key[\s\"'_:=]+[\"']?[A-Za-z0-9+/=._-]{8,}"),
+    re.compile(r"(?i)private[_-]?key[\s\"'_:=]+[\"']?[A-Za-z0-9+/=._-]{8,}"),
+    re.compile(r"(?i)encryption[_-]?key[\s\"'_:=]+[\"']?[A-Za-z0-9+/=._-]{8,}"),
+    re.compile(r"(?i)webhook[_-]?(?:secret|token)[\s\"'_:=]+[\"']?[A-Za-z0-9+/=._-]{8,}"),
+    re.compile(r"(?i)bearer\s+[A-Za-z0-9_.-]{20,}"),
+    re.compile(r"\"auth\"\s*:\s*\"[A-Za-z0-9+/=]{20,}\""),  # Docker config.json
+    re.compile(r"\bcsv\s*header.*password", re.IGNORECASE),  # CSV header signal
+
+    # URI with embedded user:password@host
+    re.compile(r"[a-z]+://[^:\s/]+:[^@\s/]{4,}@[a-zA-Z0-9.-]+"),
+
+    # Stand-alone long random strings (64+ hex chars, or 80+ base64 chars with no spaces) — pure key files
+    re.compile(r"^[A-Fa-f0-9]{32,}$", re.MULTILINE),
+    re.compile(r"^[A-Za-z0-9+/=]{80,}$", re.MULTILINE),
 ]
 
 
