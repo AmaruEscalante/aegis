@@ -124,7 +124,7 @@ Each verdict gets exactly **50 pre-defined scenarios** that drive Gemini generat
 Reads `prompts.py`, calls Gemini per scenario, writes `dataset.jsonl`.
 
 **Key behaviors:**
-- One Gemini call per scenario (200 total). Estimated cost: ~$0.10-0.30 on Gemini 2.5 Flash.
+- One Gemini call per scenario (up to 200 total). Estimated cost: ~$0.10-0.30 on Gemini 2.5 Flash at full scale.
 - Per-scenario prompt template asks Gemini to produce *full file content* (not a summary): 500-3000 chars of realistic text in the appropriate file format (CSV, JSON, YAML, env, prose, etc.).
 - Validates each output: must contain at least 300 chars, must not echo the scenario instruction back verbatim, must include format-appropriate features (e.g., flag_pii scenarios must contain at least one regex-detectable PII pattern).
 - Retries with a different temperature on failed validation (up to 2 retries).
@@ -132,6 +132,24 @@ Reads `prompts.py`, calls Gemini per scenario, writes `dataset.jsonl`.
 - Streams progress to stdout: `[ 47/200] block_transfer:23 (k8s secrets) — generated 1842 chars`.
 
 **Failure mode:** If `GEMINI_API_KEY` is unset, fail loudly. If a scenario fails after retries, log it and continue (the eval can tolerate a small number of missing scenarios).
+
+**`--limit N` flag for incremental rollout:** Generate at most N scenarios per class (default: no limit = 50/class = 200 total). Used by the phased rollout (below) to smoke-test the pipeline before paying full cost.
+
+### Phased rollout
+
+Synthetic data generation runs in three stages with validation gates between them. Don't commit to a stage until the previous stage's gate passes.
+
+| Stage | Command | Output | Cost | Time | Validation gate |
+|---|---|---|---|---|---|
+| **1. Smoke** | `python train/generate_dataset.py --limit 2` | ~8 examples (1-2/class) | <$0.01 | ~1 min | Gemini API connects; JSONL writes valid rows; validation logic catches/passes correctly; manual eyeball check: does generated content look plausible? |
+| **2. Validate** | `python train/generate_dataset.py --limit 4` | ~16 examples (3-4/class) | ~$0.03 | ~3 min | Random-sample 5 examples per class and manually verify: realistic content, correctly labeled, diverse scenarios. Identify any systematic generation failures (Gemini ignoring scenario, format wrong, length too short). |
+| **3. Full** | `python train/generate_dataset.py` | 200 examples (50/class) | ~$0.20 | ~15 min | Spot-check the new examples added beyond stage 2. Confirm class balance (exactly 50 each). Move to Phase 2 training. |
+
+Each stage **appends** to `dataset.jsonl` (does not overwrite). The generator resumes from where it left off using a `scenario_id` lookup — if `classify_safe:0` through `classify_safe:1` are already in the file, stage 2 starts at `classify_safe:2`.
+
+If a gate fails — bad content, missing PII patterns, instruction echo, etc. — **stop, fix the prompt or scenario, and `rm dataset.jsonl` to restart cleanly** before re-running.
+
+The eval pipeline (`eval.py` against the 12 real samples) does NOT depend on synthetic data and can be run independently at any stage.
 
 ### `eval.py`
 
@@ -250,9 +268,9 @@ We don't pre-commit to any of these branches; the scorecard data picks the branc
 
 ## Testing
 
-- **Smoke test** for `generate_dataset.py`: run with `--limit 8` (2 per class) to verify Gemini integration and JSONL writes correctly. ~30 seconds, <$0.01 of Gemini cost.
-- **Smoke test** for `eval.py`: run against a single model with a 4-sample test set (one per class, hand-picked). Verify output formatting matches the scorecard template.
-- **Sanity check** the dataset post-generation: random-sample 5 examples per class, manually verify they're realistic and correctly labeled.
+- **`generate_dataset.py` is tested in production** by the phased rollout itself: stage 1 (smoke) and stage 2 (validate) ARE the tests. Don't write separate unit tests for the generator — the smoke + validate stages give better signal than mocks would.
+- **Smoke test for `eval.py`:** run against `gemma4:31b` (already pulled, known-working) on the 12 real samples, verify the scorecard format is correct, and the warm-up + warm latency separation works. ~5 min wall time, no Gemini cost.
+- **Sanity check the dataset** between stages 2 and 3: random-sample 5 examples per class, manually verify they're realistic, correctly labeled, and diverse.
 
 ## Open questions
 
