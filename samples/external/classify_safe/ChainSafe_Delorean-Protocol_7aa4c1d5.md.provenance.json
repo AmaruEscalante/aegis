@@ -1,0 +1,17 @@
+{
+  "label": "classify_safe",
+  "source_repo": "ChainSafe/Delorean-Protocol",
+  "source_path": "IPC-README.md",
+  "source_blob_sha": "e777843e9ee22621949253a2f89e0d7dee8dfe10",
+  "source_url": "https://github.com/ChainSafe/Delorean-Protocol/blob/7f0f8b8a48f44486434bae881ba85785f6f7cf64/IPC-README.md",
+  "fetched_at": "2026-05-17T22:32:22.381787+00:00",
+  "length_chars": 5595,
+  "collector_query_terms": [
+    "##",
+    "Installation"
+  ],
+  "collector_extra_flags": [
+    "--filename=README.md",
+    "--limit=20"
+  ]
+}

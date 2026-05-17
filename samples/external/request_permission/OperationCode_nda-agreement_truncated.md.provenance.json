@@ -1,0 +1,10 @@
+{
+  "label": "request_permission",
+  "source_repo": "OperationCode/operationcode_docs",
+  "source_path": "board/nda-agreement.md",
+  "source_blob_sha": "e62d7ee05f94a9fe3b34f42a324ce8e6141c4cf4",
+  "source_url": "https://github.com/OperationCode/operationcode_docs/blob/main/board/nda-agreement.md",
+  "fetched_at": "2026-05-17T00:00:00Z",
+  "length_chars": 6500,
+  "note": "Truncated from 9435 chars to fit MAX_INPUT_CHARS. Original is a real Mutual NDA template used by the OperationCode 501(c)3 nonprofit board. Public-license content, manually collected because automated tool's <=8000-char filter rejected the full version."
+}

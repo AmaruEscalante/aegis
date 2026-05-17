@@ -1,0 +1,88 @@
+{
+  "event": "DataConf 2026 — Vendor Sponsorship Attendee List",
+  "date_range": "2026-06-08 to 2026-06-10",
+  "venue": "Moscone West, San Francisco",
+  "total_attendees": 8,
+  "attendees": [
+    {
+      "registration_id": "DC26-00184",
+      "first_name": "Jonas",
+      "last_name": "Lindqvist",
+      "title": "Senior Data Engineer",
+      "company": "Helix Pharmaceuticals",
+      "email": "jonas.lindqvist@helixpharma.com",
+      "phone": "+46-8-555-3318",
+      "dietary": "vegetarian"
+    },
+    {
+      "registration_id": "DC26-00185",
+      "first_name": "Yusra",
+      "last_name": "Al-Maktoum",
+      "title": "Principal Architect",
+      "company": "Emirates Digital Authority",
+      "email": "yusra.almaktoum@eda.gov.ae",
+      "phone": "+971-4-555-7702",
+      "dietary": "halal"
+    },
+    {
+      "registration_id": "DC26-00186",
+      "first_name": "Tomohiro",
+      "last_name": "Saito",
+      "title": "VP Engineering",
+      "company": "Kawasaki Mobility Labs",
+      "email": "t.saito@kawasakimobility.jp",
+      "phone": "+81-3-555-1894",
+      "dietary": null
+    },
+    {
+      "registration_id": "DC26-00187",
+      "first_name": "Beatriz",
+      "last_name": "Carvalho-Mendes",
+      "title": "Director of AI Research",
+      "company": "Embraer Aerospace",
+      "email": "beatriz.carvalho@embraer-research.br",
+      "phone": "+55-12-555-0428",
+      "dietary": "gluten-free"
+    },
+    {
+      "registration_id": "DC26-00188",
+      "first_name": "Daniel",
+      "last_name": "Okafor",
+      "title": "Head of Platform",
+      "company": "Lagos FinTech Collective",
+      "email": "daniel.okafor@lagosfintech.ng",
+      "phone": "+234-1-555-9912",
+      "dietary": null
+    },
+    {
+      "registration_id": "DC26-00189",
+      "first_name": "Astrid",
+      "last_name": "Bergström",
+      "title": "Staff Software Engineer",
+      "company": "Spotify Engineering",
+      "email": "astrid.bergstrom@spotify.com",
+      "phone": "+46-8-555-4471",
+      "dietary": "vegan"
+    },
+    {
+      "registration_id": "DC26-00190",
+      "first_name": "Carmelo",
+      "last_name": "Restrepo-Ortiz",
+      "title": "VP of Data Platform",
+      "company": "Rappi Technologies",
+      "email": "carmelo.r@rappi-tech.co",
+      "phone": "+57-1-555-6603",
+      "dietary": null
+    },
+    {
+      "registration_id": "DC26-00191",
+      "first_name": "Naledi",
+      "last_name": "van der Merwe",
+      "title": "Engineering Manager, ML Infra",
+      "company": "Standard Bank Group",
+      "email": "naledi.vandermerwe@standardbank.co.za",
+      "phone": "+27-11-555-7780",
+      "dietary": "vegetarian"
+    }
+  ]
+}

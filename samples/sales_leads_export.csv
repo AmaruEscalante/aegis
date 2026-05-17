@@ -1,0 +1,9 @@
+lead_id,full_name,job_title,company,company_size,email,phone,linkedin_url,source,first_contacted,status,notes
+L-2026-0481,Diana Vasquez,VP of Engineering,Northwind Robotics,250-500,diana.vasquez@northwindrobotics.com,(415) 555-2891,linkedin.com/in/dvasquez,inbound-demo,2026-04-12,qualified,interested in usage-based pricing tier
+L-2026-0482,Marcus Tang,Head of Platform,Sumiko Systems,500-1000,marcus.t@sumikosystems.com,(206) 555-7341,linkedin.com/in/marcustang,referral,2026-04-15,negotiating,procurement review in progress
+L-2026-0483,Priya Subramaniam,Director of Data Engineering,Atlas Vector Inc,50-250,p.subramaniam@atlasvector.io,(617) 555-4429,linkedin.com/in/priyasubr,outbound-cold,2026-04-18,nurturing,follow up Q3 — currently on competitor contract
+L-2026-0484,Kenji Watanabe,CTO,Lumen Studios,10-50,kenji@lumenstudios.com,+81-3-5555-8821,linkedin.com/in/kwatanabe,event-conferenceXYZ,2026-04-20,qualified,signing pilot agreement this week
+L-2026-0485,Rachel Okonkwo,Engineering Manager,Pelican Health,1000+,rachel.okonkwo@pelicanhealth.org,(312) 555-9012,linkedin.com/in/rokonkwo,inbound-content,2026-04-22,qualified,HIPAA compliance is the blocker — need legal review
+L-2026-0486,Stefan Albrecht,Staff Engineer,GroupBuy GmbH,250-500,stefan.albrecht@groupbuy.de,+49-30-555-2840,linkedin.com/in/salbrecht,outbound-warm,2026-04-25,early-stage,early conversations, decision Q4 at earliest
+L-2026-0487,Aisha Mwangi,VP Product,Mojave Analytics,50-250,aisha.m@mojaveanalytics.com,(602) 555-6618,linkedin.com/in/amwangi,referral,2026-04-27,demo-scheduled,demo set for May 18
+L-2026-0488,Robert Pemberton-Hayes,Director of Infrastructure,Caldwell Capital,100-250,r.pemberton@caldwellcap.com,(212) 555-0341,linkedin.com/in/rpemberton,inbound-demo,2026-04-29,qualified,wants quote for enterprise tier

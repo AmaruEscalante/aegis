@@ -1,0 +1,17 @@
+{
+  "label": "classify_safe",
+  "source_repo": "tindy2013/stairspeedtest-reborn",
+  "source_path": "README.md",
+  "source_blob_sha": "f19018d9fa724f5e1139fb4e09bfe5766f485c33",
+  "source_url": "https://github.com/tindy2013/stairspeedtest-reborn/blob/42f14a3a2b742d04df1c375ae6b846c27bd3b0e0/README.md",
+  "fetched_at": "2026-05-17T22:32:21.754332+00:00",
+  "length_chars": 3369,
+  "collector_query_terms": [
+    "##",
+    "Installation"
+  ],
+  "collector_extra_flags": [
+    "--filename=README.md",
+    "--limit=20"
+  ]
+}

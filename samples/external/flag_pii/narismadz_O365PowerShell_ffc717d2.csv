@@ -1,0 +1,4 @@
+Email,PhoneNumber,Extension,PhoneNumberType,VRPolicyName
+aaa@example.com,6627777210,22,DirectRouting,NT Teams VRP1
+bbb@example.com,6627777211,10,DirectRouting,NT Teams VRP1
+ccc@example.com,6627777212,,DirectRouting,NT Teams VRP1

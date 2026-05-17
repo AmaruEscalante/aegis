@@ -1,0 +1,17 @@
+{
+  "label": "block_transfer",
+  "source_repo": "fonoster/fonoster",
+  "source_path": ".env.example.dev",
+  "source_blob_sha": "b8c887f6dccae0c1545b1311b488da1d23dde882",
+  "source_url": "https://github.com/fonoster/fonoster/blob/73636664ac7eba6a8e432c31d057f9df0d5f6b7e/.env.example.dev",
+  "fetched_at": "2026-05-17T22:32:32.793100+00:00",
+  "length_chars": 5971,
+  "collector_query_terms": [
+    "SECRET",
+    "TOKEN"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.example",
+    "--limit=20"
+  ]
+}

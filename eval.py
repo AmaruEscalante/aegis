@@ -44,8 +44,14 @@ def _import_numpy():
         sys.exit(1)
 
 
-# Hand-curated samples — must match what existed for Phase 0.
+# Hand-curated samples — Phase 1 original 12, plus 18 added in Phase 3a (eval
+# expansion) for a 30-sample eval set. The 18 new samples are sourced from two
+# channels described in docs/roadmap.md:
+#   - Channel A (hand-curated by the project author): 11 files in samples/
+#   - Channel C (mined from public GitHub via tools/sample_collector.py):
+#     7 files under samples/external/, each with a sibling .provenance.json
 CASES = [
+    # ── Phase 1 originals (12) ────────────────────────────────────────────
     ("samples/open_source_readme.md",      "classify_safe"),
     ("samples/marketing_copy.txt",         "classify_safe"),
     ("samples/blog_post_draft.txt",        "classify_safe"),
@@ -58,6 +64,28 @@ CASES = [
     ("samples/vendor_evaluation.txt",      "request_permission"),
     ("samples/partnership_agreement.txt",  "request_permission"),
     ("samples/board_meeting_minutes.txt",  "request_permission"),
+
+    # ── Phase 3a Channel A: hand-curated additions (11) ───────────────────
+    ("samples/git_commit_message.txt",         "classify_safe"),
+    ("samples/ci_build_log.txt",               "classify_safe"),
+    ("samples/changelog_release_notes.md",     "classify_safe"),
+    ("samples/sales_leads_export.csv",         "flag_pii"),
+    ("samples/conference_attendees.json",      "flag_pii"),
+    ("samples/donor_pledge_tracker.csv",       "flag_pii"),
+    ("samples/openssh_private_key.pem",        "block_transfer"),
+    ("samples/gcp_service_account_key.json",   "block_transfer"),
+    ("samples/draft_press_release.txt",        "request_permission"),
+    ("samples/internal_pricing_strategy.md",   "request_permission"),
+    ("samples/layoff_communication_draft.md",  "request_permission"),
+
+    # ── Phase 3a Channel C: mined from public GitHub (7) ──────────────────
+    ("samples/external/classify_safe/ChainSafe_Delorean-Protocol_7aa4c1d5.md",      "classify_safe"),
+    ("samples/external/classify_safe/tindy2013_stairspeedtest-reborn_145bd434.md",  "classify_safe"),
+    ("samples/external/flag_pii/narismadz_O365PowerShell_ffc717d2.csv",             "flag_pii"),
+    ("samples/external/flag_pii/delphix_dxtoolkit_f6fdab90.example",                "flag_pii"),
+    ("samples/external/block_transfer/tambo-ai_tambo_4bac536a.example",             "block_transfer"),
+    ("samples/external/block_transfer/fonoster_fonoster_fba18535.dev",              "block_transfer"),
+    ("samples/external/request_permission/OperationCode_nda-agreement_truncated.md","request_permission"),
 ]
 
 LABELS = ["classify_safe", "flag_pii", "block_transfer", "request_permission"]

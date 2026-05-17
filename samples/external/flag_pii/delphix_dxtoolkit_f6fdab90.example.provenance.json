@@ -1,0 +1,17 @@
+{
+  "label": "flag_pii",
+  "source_repo": "delphix/dxtoolkit",
+  "source_path": "bin/dxusers.csv.example",
+  "source_blob_sha": "6d946112956d49177b53802c1ddf9a95b6b83aea",
+  "source_url": "https://github.com/delphix/dxtoolkit/blob/7bcdbb746b28fcc17b5d6518b9e93b685ef50028/bin/dxusers.csv.example",
+  "fetched_at": "2026-05-17T22:32:27.247243+00:00",
+  "length_chars": 746,
+  "collector_query_terms": [
+    "email",
+    "phone"
+  ],
+  "collector_extra_flags": [
+    "--filename=users.csv",
+    "--limit=20"
+  ]
+}
