@@ -1,8 +1,8 @@
 # Aegis Base-Model Scorecard
 
-**Phase:** Phase 1 (base-model eval, no training)
+**Phase:** Phase 1 (base-model eval) + Phase 2 (trained head)
 **Eval set:** 12 hand-curated real samples in `samples/` (3 per verdict class)
-**Date:** 2026-05-16
+**Dates:** Phase 1 — 2026-05-16; Phase 2 — 2026-05-17
 **Hardware:** local M-class Mac
 **Spec:** [`docs/superpowers/specs/2026-05-16-base-model-eval-pipeline-design.md`](../superpowers/specs/2026-05-16-base-model-eval-pipeline-design.md)
 
@@ -10,10 +10,11 @@
 
 | Model | Protocol | Accuracy | Macro F1 | Cold start | Warm p50 | Warm p95 | Warm p99 | Notes |
 |---|---|---|---|---|---|---|---|---|
-| `gemma4:31b` (current prod) | bridge | **91.67%** | 0.914 | 20,817 ms | 30,074 ms | 52,863 ms | 58,906 ms | Strongest accuracy, slowest. One miss: marketing_copy.txt → flag_pii (defensible — file contains `press@acmecorp.com`). |
-| `gemma4:e2b` (untuned) | bridge | 58.33% | 0.511 | 9,667 ms | 6,597 ms | 8,643 ms | 8,795 ms | Confidently-wrong false negatives — collapses flag_pii (2/3 missed) and request_permission (3/3 missed) to classify_safe. |
-| `functiongemma` (untuned) | bridge | 25.00% | 0.100 | 1,760 ms | 644 ms | 684 ms | 693 ms | Collapses everything to classify_safe (chance-level). Tool-calling SLM with zero task knowledge until fine-tuned (Google docs report 58% → 85% after fine-tune on the Mobile Actions benchmark). |
-| `embeddinggemma` (k=1 NN LOO-CV) | knn | 75.00% | 0.652 | 1,233 ms | **103 ms** | 196 ms | 237 ms | Perfect on flag_pii, block_transfer, request_permission. Fails ALL 3 classify_safe cases — heterogeneous safe corpus (README, marketing, blog) too diverse to cluster with only 3 labeled neighbors. |
+| `gemma4:31b` (current prod) | bridge | 91.67% | 0.914 | 20,817 ms | 30,074 ms | 52,863 ms | 58,906 ms | Strongest accuracy of the untuned baselines, slowest. One miss: `marketing_copy.txt` → `flag_pii` (defensible — file contains `press@acmecorp.com`). |
+| `gemma4:e2b` (untuned) | bridge | 58.33% | 0.511 | 9,667 ms | 6,597 ms | 8,643 ms | 8,795 ms | Confidently-wrong false negatives — collapses `flag_pii` (2/3 missed) and `request_permission` (3/3 missed) to `classify_safe`. |
+| `functiongemma` (untuned) | bridge | 25.00% | 0.100 | 1,760 ms | 644 ms | 684 ms | 693 ms | Collapses everything to `classify_safe` (chance-level). Tool-calling SLM with zero task knowledge until fine-tuned (Google docs report 58% → 85% after fine-tune on the Mobile Actions benchmark). |
+| `embeddinggemma` (k=1 NN LOO-CV) | knn | 75.00% | 0.652 | 1,233 ms | 103 ms | 196 ms | 237 ms | Perfect on `flag_pii`, `block_transfer`, `request_permission`. Fails ALL 3 `classify_safe` cases — heterogeneous safe corpus (README, marketing, blog) too diverse to cluster with only 3 labeled neighbors. |
+| **`embeddinggemma` + LR head** | **head (Phase 2)** | **100.00%** | **1.000** | **~700 ms** | **98 ms** | **163 ms** | **249 ms** | **12/12 on the real eval. 5-fold CV macro-F1 on training set = 0.980 @ C=10.0. Head is 25 KB (`aegis-head/lr.joblib`). 300× faster than `gemma4:31b`, ties or beats on accuracy. See [Bear case](#bear-case-worth-flagging).** |
 
 ## Reading the scorecard
 
@@ -48,13 +49,24 @@
 - **`functiongemma`** untuned is chance-level (25%, collapses to one class — same pattern Google's docs predict pre-fine-tune). LoRA fine-tuning could plausibly get it to 80%+ at ~600ms, but it's still slower than embedding-based inference, and the training is harder (LoRA on a tool-calling SLM via Unsloth/Colab vs. sklearn on a laptop). Keep functiongemma as a "rescue path" if EmbeddingGemma head training underperforms.
 
 ### Bear case worth flagging
+<a name="bear-case-worth-flagging"></a>
 
-The eval set is **12 samples**. F1 confidence intervals are wide. If Phase 2 training pushes EmbeddingGemma + head to 11/12 or 12/12, that's not statistically distinguishable from the 91.67% baseline. To make a confident production decision, we may need to hand-label ~30-50 additional real samples before declaring victory.
+The eval set is **12 samples**. F1 confidence intervals are wide. The trained-head 12/12 result is best-in-class on this set, but the gap from 11/12 (the `gemma4:31b` baseline) is exactly one example — within the statistical noise floor. To make a confident production decision, we'd want ~30–50 additional hand-labeled real samples. The 5-fold cross-validation macro-F1 of 0.980 on the 200 training examples is corroborating evidence that the trained head generalizes, but neither number on its own definitively beats the LLM baseline.
 
-### Suggested Phase 2 spec scope
+### Phase 2 outcome
 
-1. Dataset is ready (`train/curated_data.py` → 200 hand-curated examples, 50/class; regenerates `train/dataset.jsonl` in ~1s). See `train/README.md` for the secret-placeholder policy used to keep `block_transfer` examples push-protection-safe.
-2. Write `train/train_head.py` — embed all 200 samples via the Ollama embeddinggemma endpoint, fit sklearn LR + a small PyTorch MLP, save weights to `aegis-head/`. Report eval on the 12 real `samples/` files for both heads.
-3. Add `HeadBackend` to `aegis_bridge.py` that loads the LR weights and serves classification at ~50-150ms end-to-end (embed via Ollama + LR predict in-process).
-4. Update middleware contract handling (fixed reason strings per class — see design spec).
-5. Decision gate after step 2: if both heads underperform on the 12 real samples (<85% acc), pivot to FunctionGemma LoRA fine-tune as the rescue path. Otherwise ship the better of LR vs. MLP.
+✅ **Phase 2 deliverable shipped (2026-05-17):**
+
+1. `train/train_head.py` — embeds the 200 curated examples via Ollama → embeddinggemma, sweeps C ∈ {0.1, 1.0, 10.0} under 5-fold stratified CV, fits a final `LogisticRegression` head on all 200 examples at the winning C, saves to `aegis-head/lr.joblib` with metadata (CV scores, embed model name, chosen C).
+2. `train/eval_head.py` — re-uses the same 12 `CASES` defined in `eval.py` so the Phase 2 row is apples-to-apples with the four Phase 1 rows.
+3. `aegis-head/lr.joblib` — 25 KB serialized head (3,076 trained parameters: 4 × 768 weights + 4 biases). Committed to the repo.
+4. New row in this scorecard above.
+
+We **dropped the MLP** from the planned scope. The LR head hit 100% on the real eval and 98% on training-set CV; an MLP could only add training-data overfit, not capability. We can revisit if the eval set expands and new failure modes show up.
+
+### Suggested next steps
+
+1. **Expand the eval set** to ~30–50 real samples to break the 11/12-vs-12/12 statistical tie. Hand-label new files in `samples/` covering edge cases the current 12 don't reach (mixed-class files, near-boundary examples, multilingual content).
+2. **Wire `HeadBackend` into `aegis_bridge.py`** — load the joblib at startup, expose it via `/classify` alongside (or replacing) the current `OllamaBackend`. Keep `gemma4:31b` reachable via a flag for A/B comparison.
+3. **Middleware contract handling** (per design spec) — fixed reason strings per class.
+4. **Rescue path remains FunctionGemma LoRA fine-tune** if the expanded eval set surfaces failures the LR head can't address.
