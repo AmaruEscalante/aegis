@@ -2,7 +2,7 @@
 
 ## What Was Done
 
-Wired the real **FunctionGemma classification bridge** into the chat and file-upload flows, replacing the mock keyword PII simulation in the backend. Added a live toggle, health indicator, and file analysis card to the frontend UI.
+Wired the real **Aegis classification bridge** into the chat and file-upload flows, replacing the mock keyword PII simulation in the backend. Added a live toggle, health indicator, and file analysis card to the frontend UI.
 
 ---
 
@@ -18,9 +18,8 @@ Frontend (Next.js :3000)
                                                            ▼
 Backend (FastAPI :8000)  ──────────► Aegis Bridge (:7523)
   │  api.py                            aegis_bridge.py
-  │  • analyze_via_bridge()            POST /summarize
-  │  • bridge_enabled flag             POST /classify
-  │                                    GET  /health
+  │  • analyze_via_bridge()            POST /classify
+  │  • bridge_enabled flag             GET  /health
   └─────────────────────────────────► Gemini 2.5 Flash (cloud)
                                        (only if not blocked)
 ```
@@ -51,10 +50,9 @@ bridge_enabled: bool = True   # toggled via /api/bridge/toggle
 ```
 
 **`analyze_via_bridge(text)`** — async helper that:
-1. `POST /summarize` → gets 2000-char summary from bridge
-2. `POST /classify` → gets `{tool, arguments, confidence, time_ms}`
-3. Maps response to a unified dict returned to callers
-4. Falls back to `classify_safe` on `ConnectError` or any exception (never blocks chat)
+1. `POST /classify` → gets `{tool, arguments, confidence, time_ms}`
+2. Maps response to a unified dict returned to callers
+3. Falls back to `classify_safe` on `ConnectError` or any exception (never blocks chat)
 
 **`/api/chat`** — replaced mock `if "@" in msg` logic with:
 - Calls `analyze_via_bridge()` when `bridge_enabled`
@@ -153,21 +151,21 @@ const [isAnalyzing, setIsAnalyzing]     = useState<boolean>(false);
 ## Running the Stack
 
 ```bash
-# 1. Aegis Bridge (FunctionGemma)
-python aegis_bridge.py                          # requires cactus SDK
-python aegis_bridge.py --backend transformers   # requires torch + model
+# 1. Ollama (if not running)
+ollama serve
 
-# 2. Backend
+# 2. Aegis Bridge
+python aegis_bridge.py
+
+# 3. Backend
 cd backend
-pip install -r requirements.txt   # includes httpx now
+pip install -r requirements.txt
 uvicorn api:app --port 8000
 
-# 3. Frontend
+# 4. Frontend
 cd frontend
 npm run dev
 ```
-
-> **Note:** If the bridge is unavailable, the backend falls back to `classify_safe` and chat continues normally. The frontend status dot turns red.
 
 ---
 
@@ -175,19 +173,10 @@ npm run dev
 
 The backend calls the bridge at `http://127.0.0.1:7523`:
 
-**`POST /summarize`**
-```json
-// Request
-{ "text": "<raw file content>" }
-
-// Response
-{ "summary": "<2000-char excerpt>", "time_ms": 12.3 }
-```
-
 **`POST /classify`**
 ```json
 // Request
-{ "summary": "<text to classify>" }
+{ "text": "<raw file content>" }
 
 // Response
 {
@@ -211,8 +200,7 @@ The backend calls the bridge at `http://127.0.0.1:7523`:
 
 ## Bridge Not Available?
 
-The bridge requires either:
-- **Cactus backend** — Cactus C++ SDK built + `cactus/weights/` model files present
-- **Transformers backend** — `torch`, `transformers` installed + `aegis-adapter` model directory
+The bridge needs:
+- **Ollama** running locally with `gemma4:31b` pulled
 
 When the bridge is down the frontend shows a red status dot and all classification gracefully degrades to pass-through.

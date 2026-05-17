@@ -2,8 +2,8 @@
   "mcpServers": {
     "aegis": {
       "command": "node",
-      "args": ["/Users/amaru-mac/Documents/hackathons/deepmind-cactus/middleware/dist/mcp-server.js"],
-      "cwd": "/Users/amaru-mac/Documents/hackathons/deepmind-cactus/middleware"
+      "args": ["/Users/excallibur/dev/aegis/middleware/dist/mcp-server.js"],
+      "cwd": "/Users/excallibur/dev/aegis/middleware"
     }
   }
 }

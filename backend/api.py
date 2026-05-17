@@ -40,20 +40,12 @@ class ChatRequest(BaseModel):
 
 async def analyze_via_bridge(text: str) -> dict:
     """
-    Run text through the Aegis Bridge: summarize then classify.
+    Run text through the Aegis Bridge: single /classify call.
     Falls back to classify_safe on any network/bridge error so chat is never blocked.
     """
     try:
-        async with httpx.AsyncClient(timeout=15.0) as client:
-            # Step 1: Summarize (bridge truncates to first 8000 chars internally)
-            sum_resp = await client.post(f"{BRIDGE_URL}/summarize", json={"text": text})
-            sum_resp.raise_for_status()
-            sum_data = sum_resp.json()
-            summary = sum_data.get("summary", text[:2000])
-            summarize_time = sum_data.get("time_ms", 0)
-
-            # Step 2: Classify the summary
-            cls_resp = await client.post(f"{BRIDGE_URL}/classify", json={"summary": summary})
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            cls_resp = await client.post(f"{BRIDGE_URL}/classify", json={"text": text})
             cls_resp.raise_for_status()
             cls_data = cls_resp.json()
 
@@ -68,8 +60,8 @@ async def analyze_via_bridge(text: str) -> dict:
                 "reason": arguments.get("reason", ""),
                 "pii_types": arguments.get("types", ""),  # only populated for flag_pii
                 "confidence": confidence,
-                "summary": summary,
-                "execution_time_ms": summarize_time + classify_time,
+                "summary": "",  # No separate summary stage anymore; field kept for FE compat
+                "execution_time_ms": classify_time,
             }
     except httpx.ConnectError:
         return {

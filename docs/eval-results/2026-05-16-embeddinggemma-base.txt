@@ -1,0 +1,42 @@
+Aegis base-model eval
+Date:     2026-05-16
+Model:    embeddinggemma
+Protocol: knn
+Cases:    12
+Warmup:   1 call(s); cold_start_ms=1233
+
+file                                       expected               predicted               conf      ms
+---------------------------------------------------------------------------------------------------------
+XX samples/open_source_readme.md           classify_safe          block_transfer          0.43     126
+XX samples/marketing_copy.txt              classify_safe          request_permission      0.40      80
+XX samples/blog_post_draft.txt             classify_safe          request_permission      0.36      69
+OK samples/patient_records.csv             flag_pii               flag_pii                0.49      80
+OK samples/employee_directory.json         flag_pii               flag_pii                0.67     155
+OK samples/user_database.json              flag_pii               flag_pii                0.67     247
+OK samples/api_config.env                  block_transfer         block_transfer          0.63      86
+OK samples/kubernetes_secrets.yaml         block_transfer         block_transfer          0.60      88
+OK samples/docker_compose_prod.yml         block_transfer         block_transfer          0.63     126
+OK samples/vendor_evaluation.txt           request_permission     request_permission      0.45     117
+OK samples/partnership_agreement.txt       request_permission     request_permission      0.47     105
+OK samples/board_meeting_minutes.txt       request_permission     request_permission      0.47     100
+
+class                         P      R     F1
+--------------------------------------------------
+classify_safe              0.00   0.00   0.00
+flag_pii                   1.00   1.00   1.00
+block_transfer             0.75   1.00   0.86
+request_permission         0.60   1.00   0.75
+
+Confusion matrix (rows=expected, cols=predicted):
+             classify_s   flag_pii block_tran request_pe
+classify_safe          0          0          1          2
+flag_pii              0          3          0          0
+block_transfer          0          0          3          0
+request_permission          0          0          0          3
+
+Accuracy:                75.00% (9/12)
+Macro F1:                0.652
+Warm latency p50:        103 ms
+Warm latency p95:        196 ms
+Warm latency p99:        237 ms
+Cold start (1 throwaway): 1233 ms
