@@ -1,0 +1,27 @@
+# GitGuardian ignore — Aegis is an on-device privacy classifier.
+# The repo intentionally contains content shaped like sensitive material
+# so the classifier can learn to recognize it. None of it is real:
+#   - samples/                 30-file eval corpus across 4 verdict
+#                              classes. Includes synthetic .env files,
+#                              k8s Secret YAMLs, PEM keys, and
+#                              placeholder service-account JSON.
+#   - samples/external/        Files mined from public GitHub repos
+#                              via tools/sample_collector.py. The
+#                              source files are already public; this
+#                              repo didn't introduce them to the world.
+#   - train/curated_data.py    200 hand-curated training examples.
+#                              50 are deliberately shaped like leaked
+#                              credentials so the classifier learns
+#                              to flag them.
+#   - aegis-head/              Serialized trained-classifier weights
+#                              (LR head). 25 KB joblib file; not
+#                              credential material, but excluded for
+#                              completeness.
+#
+# Everything outside these paths is still scanned normally.
+
+samples/**
+samples/external/**
+train/curated_data.py
+train/dataset.jsonl
+aegis-head/**
