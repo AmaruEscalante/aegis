@@ -1,0 +1,45 @@
+[CI] Started at 2026-05-14T08:14:22Z
+[CI] Branch: feature/new-onboarding-flow
+[CI] Commit: 8f2a91c4
+[CI] Triggered by: push event
+
+==> Setting up Node.js 22.4.0
+==> Restoring node_modules cache (key: deps-v2-8f2a91c4)
+    cache HIT, restored 247MB from cache
+
+==> Installing dependencies
+    npm ci --silent
+    added 0 packages from 0 contributors in 1.234s
+    audited 1284 packages, 0 vulnerabilities
+
+==> Type checking
+    tsc --noEmit
+    Found 0 errors in 1284 files.
+
+==> Linting
+    eslint --max-warnings=0 src/
+    No errors, no warnings.
+
+==> Running unit tests
+    PASS  src/auth/refresh-token.test.ts (1.42s)
+    PASS  src/onboarding/welcome.test.tsx (0.88s)
+    PASS  src/billing/invoice.test.ts (2.14s)
+    PASS  src/api/middleware.test.ts (0.92s)
+    Test Suites: 47 passed, 47 total
+    Tests:       312 passed, 312 total
+    Snapshots:   18 passed, 18 total
+    Time:        14.847s
+    Ran all test suites.
+
+==> Running integration tests
+    integration: 28 passed in 1m12s
+
+==> Building production bundle
+    Bundle size: 412KB gzipped (under 500KB budget ✓)
+    Build artifacts uploaded to s3://ci-artifacts-public/builds/8f2a91c4/
+
+==> Deploying preview environment
+    Preview URL: https://feature-new-onboarding-flow.preview.example.com
+
+[CI] Completed in 4m38s
+[CI] Status: SUCCESS

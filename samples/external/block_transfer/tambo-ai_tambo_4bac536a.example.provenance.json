@@ -1,0 +1,17 @@
+{
+  "label": "block_transfer",
+  "source_repo": "tambo-ai/tambo",
+  "source_path": "docker.env.example",
+  "source_blob_sha": "a1b51a26975925b3113388007b7abed173523b95",
+  "source_url": "https://github.com/tambo-ai/tambo/blob/5be04b099d6c5d463b466c8935a2493e7631ec4b/docker.env.example",
+  "fetched_at": "2026-05-17T22:32:32.439619+00:00",
+  "length_chars": 3453,
+  "collector_query_terms": [
+    "SECRET",
+    "TOKEN"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.example",
+    "--limit=20"
+  ]
+}

@@ -1,0 +1,23 @@
+commit 7a9c3f2bd14e6a8c0492e5b3f1d7a8c0492e5b3f
+Author: Alice Werner <alice@example.com>
+Date:   Tue May 13 10:42:18 2026 -0700
+
+    fix(auth): handle expired refresh tokens gracefully
+
+    When a refresh token expires while a long-running request is in flight,
+    the previous behavior was to bubble up a 401 from the upstream identity
+    provider as a 500 to the caller. This was both confusing for clients
+    and made dashboarding harder because the error rate looked elevated
+    for reasons unrelated to actual upstream availability.
+
+    This change catches the TokenExpiredError in the refresh path and
+    surfaces it as a proper 401 with a structured `code: "token_expired"`
+    payload. Clients that follow the documented retry-with-fresh-token
+    flow will recover transparently; clients that don't will see the same
+    401 they would have seen on initial auth failure.
+
+    Tests: added unit coverage for the expired-during-refresh path,
+    integration test for the 401 surface, removed the now-redundant
+    catch-all 500 mapper.
+
+    Refs: AUTH-1842

@@ -1,0 +1,21 @@
+FOR IMMEDIATE RELEASE — DRAFT, EMBARGOED UNTIL 2026-06-15 09:00 ET
+DO NOT DISTRIBUTE EXTERNALLY UNTIL EMBARGO LIFT
+
+Pelican Health Announces Series D Funding of $180M and Acquisition of Vesper Labs
+
+CHICAGO, June 15, 2026 — Pelican Health, the integrated clinical-data platform serving 1,200+ hospitals across North America, today announced the closing of a $180M Series D funding round led by Northgate Ventures, with participation from existing investors Spruce Capital, Calliope Partners, and a new strategic investor whose identity will be disclosed at the company's June 18 investor briefing.
+
+In conjunction with the financing, Pelican has acquired Vesper Labs, the privately-held clinical-imaging AI company founded in 2021 by former Stanford radiologists. Terms of the acquisition were not disclosed publicly; internal records show a combined cash-and-stock consideration of $94M, with $22M held in escrow contingent on 18-month integration milestones.
+
+"This combination accelerates our roadmap by an estimated three quarters," said Pelican CEO Dr. Renata Vázquez-Holstrom. "Vesper's imaging models, integrated with our existing clinical-record platform, will give frontline radiologists a single workflow surface for the first time."
+
+The funding will be used to:
+  - Accelerate Pelican's expansion into the EU market (target: 12 partner hospitals by Q4 2026)
+  - Complete the Vesper integration on a 14-month timeline
+  - Hire approximately 140 additional engineering and clinical-affairs roles
+  - Begin pilot deployments of the combined Imaging+Records product at three flagship customer sites (Mayo Clinic, Cleveland Clinic, and a third site to be announced)
+
+Internal projections shared with the board (not for external release) target combined annual recurring revenue of $312M by end of FY2027, a 47% YoY growth rate, contingent on full Vesper retention and successful EU launch.
+
+Media contact: press@pelicanhealth.org (do not use this contact until embargo lifts)
+Investor contact: ir@pelicanhealth.org

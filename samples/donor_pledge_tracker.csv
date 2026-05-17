@@ -1,0 +1,9 @@
+donor_id,first_name,last_name,address,city,state,zip,email,phone,pledge_amount_usd,pledge_date,fulfillment_status,recurring,notes
+D-7841,Margaret,Whitfield-Aoki,4471 Walnut Crest Drive,Pasadena,CA,91103,maggie.aoki@protonmail.com,(626) 555-1188,500,2026-03-04,partial,monthly,"upgraded from 250 in Feb; long-time supporter"
+D-7842,Harold,Pemberton III,1290 East 89th Street Apt 4A,New York,NY,10128,harold.pemberton3@gmail.com,(212) 555-9047,2500,2026-03-07,fulfilled,annual,"prefers anonymous recognition"
+D-7843,Anika,Bhardwaj,887 Sunset Lane,Cupertino,CA,95014,anika.b@yahoo.com,(408) 555-3320,100,2026-03-09,fulfilled,one-time,"first-time donor, found us via social"
+D-7844,Theodore,Falkenberg-Ramos,2204 Lakeshore Boulevard,Burlington,VT,05401,ted.falkramos@example.com,(802) 555-7748,1000,2026-03-12,fulfilled,quarterly,"corporate match from employer pending"
+D-7845,Constance,Adeyemi,5618 Park Avenue North,Minneapolis,MN,55419,c.adeyemi@hotmail.com,(612) 555-4490,250,2026-03-14,partial,monthly,"requested no email solicitations after pledge"
+D-7846,Lawrence,O'Donnell-Smith,711 Maple Ridge Court,Asheville,NC,28801,larry.odsmith@gmail.com,(828) 555-6651,5000,2026-03-18,fulfilled,one-time,"major gift; thank-you letter sent 2026-03-21"
+D-7847,Helga,Christoffersen,3340 Pine Grove Avenue,Chicago,IL,60657,helga.christoffersen@aol.com,(773) 555-8807,75,2026-03-22,fulfilled,monthly,
+D-7848,Ramón,Esquivel-Beltrán,1882 Cactus Bloom Way,Tucson,AZ,85718,ramon.esquivel@protonmail.com,(520) 555-2241,300,2026-03-26,pending,quarterly,"awaiting first installment"
