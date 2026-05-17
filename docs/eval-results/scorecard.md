@@ -53,10 +53,8 @@ The eval set is **12 samples**. F1 confidence intervals are wide. If Phase 2 tra
 
 ### Suggested Phase 2 spec scope
 
-1. Generate the synthetic dataset (currently blocked on `GEMINI_API_KEY` — needs Phase 1 Tasks 3-5).
-2. Write `train/train_head.py` — embed all 200 synthetic samples, fit sklearn LR + a small PyTorch MLP, save both serialized weights to `aegis-head/`. Report eval on the 12 real samples for both heads.
+1. Dataset is ready (`train/curated_data.py` → 200 hand-curated examples, 50/class; regenerates `train/dataset.jsonl` in ~1s). See `train/README.md` for the secret-placeholder policy used to keep `block_transfer` examples push-protection-safe.
+2. Write `train/train_head.py` — embed all 200 samples via the Ollama embeddinggemma endpoint, fit sklearn LR + a small PyTorch MLP, save weights to `aegis-head/`. Report eval on the 12 real `samples/` files for both heads.
 3. Add `HeadBackend` to `aegis_bridge.py` that loads the LR weights and serves classification at ~50-150ms end-to-end (embed via Ollama + LR predict in-process).
 4. Update middleware contract handling (fixed reason strings per class — see design spec).
 5. Decision gate after step 2: if both heads underperform on the 12 real samples (<85% acc), pivot to FunctionGemma LoRA fine-tune as the rescue path. Otherwise ship the better of LR vs. MLP.
-
-The synthetic dataset generation pipeline is built and tested (Tasks 1-2 of this Phase 1 plan); only `GEMINI_API_KEY` is needed to run it.
