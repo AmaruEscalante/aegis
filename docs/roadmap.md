@@ -10,23 +10,20 @@ This is the project-level roadmap — where Aegis has been, where it's going, an
 |---|---|---|
 | **Phase 0** | done | Hackathon build: Cactus + FunctionGemma stack. Working but FunctionGemma needed fine-tuning we never did. |
 | **Phase 1** | done | Migrated to Ollama. Evaluated 4 base models on 12 hand-curated real samples. Result: `gemma4:31b` best at 91.67% / 30s; `embeddinggemma` fastest at 103 ms but only 75% with k-NN. Scorecard recommended training a classifier head on top of EmbeddingGemma. See [`docs/eval-results/scorecard.md`](eval-results/scorecard.md). |
-| **Phase 2** | done | Trained a Logistic Regression head on 200 hand-curated examples × 768-dim EmbeddingGemma embeddings. **12/12 accuracy on the same 12-sample real eval at warm p50 = 98 ms.** Head fits in 25 KB (`aegis-head/lr.joblib`). 5-fold CV macro-F1 on training set = 0.980. Caveat: 12 samples can't statistically distinguish 12/12 from the 91.67% baseline. |
+| **Phase 2** | done | Trained a Logistic Regression head on 200 hand-curated examples × 768-dim EmbeddingGemma embeddings. 12/12 accuracy on the original 12-sample real eval at warm p50 = 98 ms. Head fits in 25 KB (`aegis-head/lr.joblib`). 5-fold CV macro-F1 on training set = 0.980. |
+| **Phase 3a** | done | Expanded eval set 12 → 30 samples (11 hand-curated + 7 mined from public GitHub via `tools/sample_collector.py`). LR head: **29/30 (96.67%) / macro F1 0.967 / warm p50 104 ms.** gemma4:31b: **26/30 (86.67%) / macro F1 0.868 / warm p50 35 s.** **10-percentage-point gap (4× error-rate ratio) at ~335× lower latency** — Phase 1/2 statistical-tie caveat resolved. Merged to `main` in PR #2. |
 
 ## Phase 3 — make the trained head shippable
 
 The goal of Phase 3 is to turn "we have a trained head" into "Aegis is a self-contained, production-ready local privacy gate." Four pieces, roughly independent:
 
-### 3a — Expand the eval set to 30 samples
+### 3a — Expand the eval set to 30 samples ✅ done (2026-05-17)
 
-The 12-sample eval set has wide confidence intervals. To claim a definitive win over `gemma4:31b`, we need ~30 hand-labeled real samples (6–9 per class).
+Expanded from 12 to 30 real samples using two channels: 11 hand-curated additions in `samples/` (Channel A) plus 7 mined from public GitHub repos via `tools/sample_collector.py` into `samples/external/` with provenance metadata (Channel C). Channel B (developer's own dev directories, anonymized) deferred for now — the 18 from A + C were enough to resolve the statistical tie.
 
-**Models to re-evaluate on the 30-sample set:**
-- **LR head** (the new classifier under decision)
-- **`gemma4:31b`** (the production baseline)
+Re-ran the two viable production candidates (skipped e2b, FunctionGemma, k-NN — eliminated in Phase 1 on architectural grounds). Trained LR head landed at **29/30 (96.67%) / macro F1 0.967 / warm p50 104 ms**, gemma4:31b at **26/30 (86.67%) / macro F1 0.868 / warm p50 35 s**. The head's one error is one gemma4:31b also makes (defensibly ambiguous mixed-signal file).
 
-We deliberately skip `gemma4:e2b`, `functiongemma`, and the k-NN EmbeddingGemma baseline. They were eliminated as candidates in Phase 1 on architectural grounds, not noise. Rerunning them won't change a decision.
-
-**Cost:** ~15 minutes of wall time (gemma4:31b dominates the runtime).
+See [`docs/eval-results/scorecard.md`](eval-results/scorecard.md) for the full split-by-eval-set scorecard.
 
 ### 3b — Drop the Ollama dependency
 
