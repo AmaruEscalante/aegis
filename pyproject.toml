@@ -10,7 +10,19 @@ dependencies = [
     "joblib>=1.5.3",
     "peft>=0.18.1",
     "scikit-learn>=1.8.0",
+    "sentence-transformers>=3.0.0",
     "torch>=2.10.0",
     "tqdm>=4.67.3",
     "transformers>=5.2.0",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+]
+
+[tool.pytest.ini_options]
+markers = [
+    "slow: tests that load the real embeddinggemma model (gated, run manually)",
+]
+testpaths = ["tests"]
