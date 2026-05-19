@@ -111,3 +111,47 @@ def test_mismatched_model_id_raises():
         mock_st_cls.side_effect = OSError("bogus/nonexistent does not exist on HF Hub")
         with pytest.raises(RuntimeError, match="bogus"):
             Embedder(model_id="bogus/nonexistent")
+
+
+def test_none_task_uses_empty_prefix():
+    """`task='none'` must apply no prefix — raw text only."""
+    with patch("aegis.embedding.SentenceTransformer") as mock_st_cls:
+        mock_model = _make_mock_st()
+        mock_st_cls.return_value = mock_model
+        embedder = Embedder()
+        embedder.encode("hello world", task="none")
+    encoded_arg = mock_model.encode.call_args[0][0]
+    s = encoded_arg[0] if isinstance(encoded_arg, list) else encoded_arg
+    # The prompt for "none" is empty, so the encoded text should be the
+    # raw input (possibly truncated to MAX_INPUT_CHARS).
+    assert s == "hello world"
+
+
+def test_classify_short_task_uses_short_prefix():
+    """`task='classify_short'` must apply 'Classify: ' prefix."""
+    with patch("aegis.embedding.SentenceTransformer") as mock_st_cls:
+        mock_model = _make_mock_st()
+        mock_st_cls.return_value = mock_model
+        embedder = Embedder()
+        embedder.encode("hello world", task="classify_short")
+    encoded_arg = mock_model.encode.call_args[0][0]
+    s = encoded_arg[0] if isinstance(encoded_arg, list) else encoded_arg
+    assert s == "Classify: hello world"
+
+
+def test_classify_doc_task_uses_doc_prefix():
+    """`task='classify_doc'` must apply Google's docs-style prefix."""
+    with patch("aegis.embedding.SentenceTransformer") as mock_st_cls:
+        mock_model = _make_mock_st()
+        mock_st_cls.return_value = mock_model
+        embedder = Embedder()
+        embedder.encode("hello world", task="classify_doc")
+    encoded_arg = mock_model.encode.call_args[0][0]
+    s = encoded_arg[0] if isinstance(encoded_arg, list) else encoded_arg
+    assert s == "Classify the following document: hello world"
+
+
+def test_all_sweep_tasks_are_supported():
+    """The 5 sweep candidates must all be in DEFAULT_PROMPTS."""
+    expected = {"none", "classify_short", "classify_doc", "classification", "retrieval"}
+    assert expected.issubset(set(Embedder.DEFAULT_PROMPTS))

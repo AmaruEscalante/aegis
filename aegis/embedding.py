@@ -14,8 +14,12 @@ class Embedder:
 
     DEFAULT_MODEL_ID = "google/embeddinggemma-300m"
     DEFAULT_PROMPTS: dict[str, str] = {
-        "classification": "task: classification | query: ",
-        "retrieval": "task: retrieval | query: ",
+        # Phase 3b prompt-sweep candidates.
+        "none":            "",
+        "classify_short":  "Classify: ",
+        "classify_doc":    "Classify the following document: ",
+        "classification":  "task: classification | query: ",   # original 3b attempt; underperformed at 28/30
+        "retrieval":       "task: retrieval | query: ",
     }
     MAX_INPUT_CHARS = 8000
 
