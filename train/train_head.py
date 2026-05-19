@@ -41,7 +41,7 @@ C_GRID = [0.1, 1.0, 10.0]
 
 # ── Step A: embedding one piece of text ─────────────────────────────
 _EMBEDDER: Embedder | None = None
-TASK_PROMPT = "classify_doc"  # Phase 3b T7d sweep winner (CV macro-F1 0.9850 ± 0.0123)
+TASK_PROMPT = "none"  # Phase 3b T7g rollback test — classify_doc failed held-out at 88/98
 
 
 def _get_embedder() -> Embedder:
