@@ -204,8 +204,9 @@ class LocalBackend:
 # ── HTTP server ────────────────────────────────────────────────────────────
 
 _backend = None
-_model_name = "unknown"
-_ollama_url = "unknown"
+_backend_name = "unknown"  # "local" or "ollama"
+_model_name = "unknown"     # ollama-specific, kept for backwards-compat /health
+_ollama_url = "unknown"     # ollama-specific
 
 
 class BridgeHandler(BaseHTTPRequestHandler):
@@ -225,12 +226,22 @@ class BridgeHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == "/health":
-            self._send_json({
-                "status": "ok",
-                "backend": "ollama",
-                "model": _model_name,
-                "ollama_url": _ollama_url,
-            })
+            if _backend_name == "local":
+                self._send_json({
+                    "status": "ok",
+                    "backend": "local",
+                    "embed_model": getattr(_backend, "_embed_model", "unknown"),
+                    "embed_task_prompt": getattr(_backend, "_embed_task_prompt", "unknown"),
+                    "head_path": str(getattr(_backend, "_head_path", "unknown")),
+                    "head_classes": list(getattr(_backend._model, "classes_", [])),
+                })
+            else:
+                self._send_json({
+                    "status": "ok",
+                    "backend": "ollama",
+                    "model": _model_name,
+                    "ollama_url": _ollama_url,
+                })
         else:
             self._send_json({"error": "not found"}, 404)
 
@@ -279,15 +290,17 @@ def _probe_ollama(ollama_url, model):
 # ── Main ───────────────────────────────────────────────────────────────────
 
 def main():
-    global _backend, _model_name, _ollama_url
+    global _backend, _backend_name, _model_name, _ollama_url
 
     parser = argparse.ArgumentParser(
-        description="Aegis Bridge — HTTP server for Ollama-backed privacy classification",
+        description="Aegis Bridge — HTTP server for on-device privacy classification",
     )
+    parser.add_argument("--backend", choices=["local", "ollama"], default="local",
+                        help="Which inference backend to run (default: local)")
     parser.add_argument("--model", default=DEFAULT_MODEL,
-                        help=f"Ollama model tag (default: {DEFAULT_MODEL})")
+                        help=f"Ollama model tag, if --backend ollama (default: {DEFAULT_MODEL})")
     parser.add_argument("--ollama-url", default=DEFAULT_OLLAMA_URL,
-                        help=f"Ollama base URL (default: {DEFAULT_OLLAMA_URL})")
+                        help=f"Ollama base URL, if --backend ollama (default: {DEFAULT_OLLAMA_URL})")
     parser.add_argument("--host", default=DEFAULT_HOST,
                         help=f"Host to bind to (default: {DEFAULT_HOST})")
     parser.add_argument("--port", type=int, default=DEFAULT_PORT,
@@ -295,16 +308,25 @@ def main():
 
     args = parser.parse_args()
 
-    _model_name = args.model
-    _ollama_url = args.ollama_url
+    _backend_name = args.backend
 
-    print(f"[aegis-bridge] Backend: Ollama")
-    print(f"[aegis-bridge] Model:   {_model_name}")
-    print(f"[aegis-bridge] Ollama:  {_ollama_url}")
-
-    _probe_ollama(_ollama_url, _model_name)
-
-    _backend = OllamaBackend(_ollama_url, _model_name)
+    if args.backend == "local":
+        print(f"[aegis-bridge] Backend: local (in-process embeddinggemma + LR head)")
+        try:
+            _backend = LocalBackend()
+        except Exception as e:
+            print(f"[aegis-bridge] ERROR: failed to start LocalBackend: {e}", file=sys.stderr)
+            sys.exit(1)
+        print(f"[aegis-bridge] Embed model: {_backend._embed_model}")
+        print(f"[aegis-bridge] Task prompt: {_backend._embed_task_prompt}")
+    else:
+        _model_name = args.model
+        _ollama_url = args.ollama_url
+        print(f"[aegis-bridge] Backend: Ollama")
+        print(f"[aegis-bridge] Model:   {_model_name}")
+        print(f"[aegis-bridge] Ollama:  {_ollama_url}")
+        _probe_ollama(_ollama_url, _model_name)
+        _backend = OllamaBackend(_ollama_url, _model_name)
 
     server = HTTPServer((args.host, args.port), BridgeHandler)
     print(f"[aegis-bridge] Listening on http://{args.host}:{args.port}")
