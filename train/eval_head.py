@@ -1,20 +1,17 @@
 """
-Phase 2 eval — score the trained LR head on the 12 real samples/ files.
+Phase 3b eval — score the trained LR head on the 30 real samples/ files.
 
-Same eval set Phase 1 used for gemma4:31b / gemma4:e2b / functiongemma / embeddinggemma-kNN,
-so the resulting accuracy and macro-F1 are directly comparable to the existing scorecard rows.
+Same eval set used across Phase 1-3, so results are directly comparable.
 
 Usage:
     .venv/bin/python train/eval_head.py
 """
 from __future__ import annotations
 
-import json
 import pathlib
 import statistics
 import sys
 import time
-import urllib.request
 
 import joblib
 import numpy as np
@@ -25,20 +22,12 @@ from sklearn.metrics import (
     f1_score,
 )
 
-# Re-use the 12 CASES from eval.py exactly, to keep the comparison apples-to-apples.
-sys.path.insert(0, str(pathlib.Path(__file__).parent.parent))
+# Add repo root to import path
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
+from aegis.embedding import Embedder  # noqa: E402
 from eval import CASES, LABELS  # noqa: E402
 
-OLLAMA_URL = "http://localhost:11434/api/embed"
 HEAD_PATH = pathlib.Path("aegis-head/lr.joblib")
-
-
-def embed_text(text: str, model: str) -> np.ndarray:
-    payload = json.dumps({"model": model, "input": text}).encode()
-    req = urllib.request.Request(OLLAMA_URL, data=payload, headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        resp = json.loads(r.read())
-    return np.asarray(resp["embeddings"][0], dtype=np.float32)
 
 
 def main() -> int:
@@ -49,16 +38,27 @@ def main() -> int:
     bundle = joblib.load(HEAD_PATH)
     model = bundle["model"]
     embed_model = bundle["embed_model"]
+    task_prompt = bundle.get("embed_task_prompt")
+    if task_prompt is None:
+        print(
+            f"ERROR: head at {HEAD_PATH} predates Phase 3b (no embed_task_prompt field). "
+            f"Retrain via train/train_head.py.",
+            file=sys.stderr,
+        )
+        return 1
+    if "embeddinggemma" not in embed_model.lower():
+        print(f"ERROR: unexpected embed_model {embed_model!r}", file=sys.stderr)
+        return 1
+
+    embedder = Embedder(model_id=embed_model, default_task=task_prompt)
     print(f"Loaded head from {HEAD_PATH}")
     print(f"  embed_model:        {embed_model}")
+    print(f"  embed_task_prompt:  {task_prompt}")
     print(f"  classes:            {list(model.classes_)}")
     print(f"  trained-at C:       {bundle.get('C')}")
     print(f"  CV macro-F1 (train): {bundle['cv_results'][bundle['C']]['macro_f1_mean']:.4f}")
 
-    # Warm-up call so the first eval timing isn't a cold-start artifact.
-    _ = embed_text("warmup", embed_model)
-
-    # --- Score each of the 12 cases
+    # --- Score each of the 30 cases
     y_true, y_pred, latencies = [], [], []
     print(f"\n{'file':50s}  {'true':>20s}  {'pred':>20s}  {'lat (ms)':>10}  {'ok':>4}")
     print("-" * 110)
@@ -66,7 +66,7 @@ def main() -> int:
         path = pathlib.Path(path_str)
         text = path.read_text()
         t0 = time.perf_counter()
-        vec = embed_text(text, embed_model)
+        vec = embedder.encode(text)
         pred = model.predict(vec.reshape(1, -1))[0]
         ms = (time.perf_counter() - t0) * 1000
         ok = "✓" if pred == true_label else "✗"
