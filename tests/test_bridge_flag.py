@@ -81,6 +81,43 @@ def test_health_endpoint_reports_backend_type():
         server.server_close()
 
 
+def test_health_endpoint_includes_head_metadata_and_device():
+    """Phase 3b T12 — /health on a LocalBackend bridge includes the head's C, CV F1, and device."""
+    import aegis_bridge
+    mock_backend = MagicMock()
+    mock_backend.__class__.__name__ = "LocalBackend"
+    mock_backend._embed_model = "google/embeddinggemma-300m"
+    mock_backend._embed_task_prompt = "none"
+    mock_backend._head_path = "aegis-head/lr.joblib"
+    mock_backend._head_C = 10.0
+    mock_backend._head_cv_macro_f1 = 0.9799
+    mock_embedder = MagicMock()
+    mock_embedder.device = "mps"
+    mock_backend._embedder = mock_embedder
+    mock_backend._model = MagicMock()
+    mock_backend._model.classes_ = ["block_transfer", "classify_safe", "flag_pii", "request_permission"]
+    aegis_bridge._backend = mock_backend
+    aegis_bridge._backend_name = "local"
+
+    from http.client import HTTPConnection
+    from threading import Thread
+    from http.server import HTTPServer
+    server = HTTPServer(("127.0.0.1", 0), aegis_bridge.BridgeHandler)
+    port = server.server_port
+    t = Thread(target=server.handle_request, daemon=True)
+    t.start()
+    try:
+        conn = HTTPConnection("127.0.0.1", port)
+        conn.request("GET", "/health")
+        resp = conn.getresponse()
+        body = json.loads(resp.read())
+        assert body["head_trained_at_C"] == 10.0
+        assert body["head_cv_macro_f1"] == 0.9799
+        assert body["device"] == "mps"
+    finally:
+        server.server_close()
+
+
 def test_classify_endpoint_round_trip():
     """POST /classify with mocked backend returns the expected JSON contract."""
     import aegis_bridge

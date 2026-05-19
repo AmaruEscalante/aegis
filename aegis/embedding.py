@@ -52,6 +52,11 @@ class Embedder:
     def dim(self) -> int:
         return self._model.get_sentence_embedding_dimension()
 
+    @property
+    def device(self) -> str:
+        """The torch device the underlying model is running on (e.g. 'cpu', 'mps', 'cuda:0')."""
+        return str(self._model.device)
+
     def encode(self, text: str, task: str | None = None) -> np.ndarray:
         """Embed one text. Returns (768,) float32 L2-normalized."""
         out = self.encode_batch([text], task=task)

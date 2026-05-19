@@ -171,6 +171,12 @@ class LocalBackend:
                 f"Expected something containing 'embeddinggemma'."
             )
         self._embed_task_prompt = bundle["embed_task_prompt"]
+        self._head_C = bundle.get("C")
+        # CV macro-F1 at the chosen C — defensive lookup in case cv_results structure varies.
+        self._head_cv_macro_f1 = None
+        cv = bundle.get("cv_results", {})
+        if self._head_C is not None and self._head_C in cv:
+            self._head_cv_macro_f1 = cv[self._head_C].get("macro_f1_mean")
         self._head_path = head_path
         self._embedder = Embedder(
             model_id=self._embed_model,
@@ -227,6 +233,8 @@ class BridgeHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/health":
             if _backend_name == "local":
+                _head_C_raw = getattr(_backend, "_head_C", None)
+                _head_f1_raw = getattr(_backend, "_head_cv_macro_f1", None)
                 self._send_json({
                     "status": "ok",
                     "backend": "local",
@@ -234,6 +242,9 @@ class BridgeHandler(BaseHTTPRequestHandler):
                     "embed_task_prompt": getattr(_backend, "_embed_task_prompt", "unknown"),
                     "head_path": str(getattr(_backend, "_head_path", "unknown")),
                     "head_classes": list(getattr(_backend._model, "classes_", [])),
+                    "head_trained_at_C": float(_head_C_raw) if isinstance(_head_C_raw, (int, float)) else None,
+                    "head_cv_macro_f1": float(_head_f1_raw) if isinstance(_head_f1_raw, (int, float)) else None,
+                    "device": str(getattr(getattr(_backend, "_embedder", None), "device", "unknown")),
                 })
             else:
                 self._send_json({
