@@ -1,6 +1,6 @@
 # Aegis Roadmap
 
-**Last updated:** 2026-05-17
+**Last updated:** 2026-05-18
 
 This is the project-level roadmap — where Aegis has been, where it's going, and the explicit decisions we've parked for later phases. Specs and execution plans for each phase live in `docs/superpowers/`.
 
@@ -12,6 +12,7 @@ This is the project-level roadmap — where Aegis has been, where it's going, an
 | **Phase 1** | done | Migrated to Ollama. Evaluated 4 base models on 12 hand-curated real samples. Result: `gemma4:31b` best at 91.67% / 30s; `embeddinggemma` fastest at 103 ms but only 75% with k-NN. Scorecard recommended training a classifier head on top of EmbeddingGemma. See [`docs/eval-results/scorecard.md`](eval-results/scorecard.md). |
 | **Phase 2** | done | Trained a Logistic Regression head on 200 hand-curated examples × 768-dim EmbeddingGemma embeddings. 12/12 accuracy on the original 12-sample real eval at warm p50 = 98 ms. Head fits in 25 KB (`aegis-head/lr.joblib`). 5-fold CV macro-F1 on training set = 0.980. |
 | **Phase 3a** | done | Expanded eval set 12 → 30 samples (11 hand-curated + 7 mined from public GitHub via `tools/sample_collector.py`). LR head: **29/30 (96.67%) / macro F1 0.967 / warm p50 104 ms.** gemma4:31b: **26/30 (86.67%) / macro F1 0.868 / warm p50 35 s.** **10-percentage-point gap (4× error-rate ratio) at ~335× lower latency** — Phase 1/2 statistical-tie caveat resolved. Merged to `main` in PR #2. |
+| **Phase 3b** | done | Dropped the Ollama dependency from the bridge's default path. New `aegis/embedding.py` module wraps `sentence-transformers` and is shared by the bridge (via `LocalBackend`), training, and eval scripts. Eval set expanded 30 → 98 real samples. Trained head retrained with no-prompt embeddings (CV-selected `classify_doc` prompt failed held-out gate; rolled back). **93/98 = 94.90% on the held-out eval (Wilson CI [88.6%, 97.8%]).** Ollama backend remains reachable via `--backend ollama`. See `docs/superpowers/specs/2026-05-18-phase-3b-drop-ollama-design.md`. |
 
 ## Phase 3 — make the trained head shippable
 
@@ -25,13 +26,13 @@ Re-ran the two viable production candidates (skipped e2b, FunctionGemma, k-NN �
 
 See [`docs/eval-results/scorecard.md`](eval-results/scorecard.md) for the full split-by-eval-set scorecard.
 
-### 3b — Drop the Ollama dependency
+### 3b — Drop the Ollama dependency ✅ done (2026-05-18)
 
-Ollama is a great development backend (one daemon, one HTTP API, one model pull) but a poor distribution dependency. End users would have to install Ollama, pull `embeddinggemma:latest`, and keep `ollama serve` running before Aegis works.
+Replaced the Ollama HTTP backend with in-process inference via `sentence-transformers`. New `aegis/embedding.py` module owns the `Embedder` class, used by the bridge, `train/train_head.py`, and `train/eval_head.py`. Bridge gains a `--backend {local,ollama}` flag (default `local`); the Ollama path is preserved for dev / A/B comparison but is no longer required for normal use.
 
-**Replacement:** in-process inference via `sentence-transformers` or HuggingFace `transformers`. EmbeddingGemma loads into the Aegis process at startup, weights cached locally on first run, embeddings served at the same ~100 ms per call without the localhost HTTP hop.
+Eval set was expanded from 30 to 98 samples (Channels A + C) to give shipping decisions a defensible noise floor. The plan's bet on task-specific prompts ("Classify the following document: ") was tested via a 4-prompt CV sweep and selected as the winner by CV macro-F1 — but failed the held-out decision gate at 88/98. Rolled back to no-prompt (`TASK_PROMPT="none"`) and shipped at **93/98 = 94.90%** (Wilson 95% CI [88.6%, 97.8%]).
 
-**Keep an `--backend ollama` flag** so the existing dev workflow keeps working. Default to `--backend local` for distribution builds.
+See [`docs/eval-results/scorecard.md`](eval-results/scorecard.md) for the full 98-sample row + Phase 3b outcome write-up, including the failed-prompt experiment and lessons learned.
 
 ### 3c — Wire `HeadBackend` into `aegis_bridge.py`
 
