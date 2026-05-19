@@ -1,0 +1,17 @@
+{
+  "label": "block_transfer",
+  "source_repo": "denysdovhan/smart-home",
+  "source_path": "common.env.example",
+  "source_blob_sha": "2b3547a9af90882dadfa668973e6a289a50195cf",
+  "source_url": "https://github.com/denysdovhan/smart-home/blob/90fe64349c08614eda87e9a2daf5cff18d157666/common.env.example",
+  "fetched_at": "2026-05-19T01:07:23.740349+00:00",
+  "length_chars": 929,
+  "collector_query_terms": [
+    "SECRET",
+    "TOKEN"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.example",
+    "--limit=20"
+  ]
+}

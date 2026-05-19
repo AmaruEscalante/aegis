@@ -1,0 +1,54 @@
+ANNUAL PERFORMANCE REVIEW
+CONFIDENTIAL — HR EYES ONLY UNTIL CALIBRATION COMPLETE
+
+Employee:       Natalia Sorokina
+Title:          Staff Software Engineer
+Department:     Platform Engineering
+Manager:        Dev Krishnamurthy
+Review Period:  January 1 – December 31, 2025
+Review Date:    January 22, 2026
+
+─────────────────────────────────────────────────────────────────────
+OVERALL RATING: Exceeds Expectations (4/5)
+─────────────────────────────────────────────────────────────────────
+
+SELF-ASSESSMENT SUMMARY (submitted by employee):
+"In 2025 I led the observability overhaul that reduced mean time to detect (MTTD)
+from 22 minutes to 6 minutes. I also mentored two junior engineers who both received
+strong reviews this cycle. I'm proud of the incident post-mortem process I designed —
+it's now used across three teams."
+
+MANAGER ASSESSMENT:
+
+Technical Excellence (Rating: 5/5):
+Natalia delivered the distributed tracing integration ahead of schedule and under
+budget ($180K actual vs. $220K approved). Her design choices have held up well under
+3x traffic growth. Code quality is consistently high; PR review turnaround is a model
+for the team.
+
+Collaboration & Leadership (Rating: 4/5):
+Strong cross-team influence. Occasionally too direct in tech discussions with product
+stakeholders, which has caused friction twice this year. Recommend coaching on
+communication style for non-technical audiences.
+
+Growth & Development (Rating: 4/5):
+Completed AWS Solutions Architect Professional certification. Expressed interest in
+management track; discussed path in 1:1. Recommend engineering manager shadowing in H1 2026.
+
+─────────────────────────────────────────────────────────────────────
+COMPENSATION RECOMMENDATION (CONFIDENTIAL)
+─────────────────────────────────────────────────────────────────────
+Current base salary:  $182,000
+Proposed increase:    +5.5% → $192,010 effective March 1, 2026
+Bonus (FY2025):       $27,300 (15% of base, target met)
+Equity refresh:       25,000 RSUs (4-year vest, 1-year cliff)
+
+Justification: Market adjustment + performance. Comparable band: $175K–$205K.
+─────────────────────────────────────────────────────────────────────
+PROMOTION CONSIDERATION
+─────────────────────────────────────────────────────────────────────
+Not recommended this cycle. On track for Principal Engineer by H2 2026 if she
+demonstrates broader organizational influence in H1.
+
+Manager signature: ________________________ Date: 2026-01-22
+HR review:         ________________________ Date: _________

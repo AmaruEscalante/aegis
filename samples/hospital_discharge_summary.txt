@@ -1,0 +1,49 @@
+HOSPITAL DISCHARGE SUMMARY
+St. Catherine's Medical Center — Department of Internal Medicine
+4100 Lakeview Blvd, Minneapolis, MN 55408
+
+─────────────────────────────────────────────────────────────
+PATIENT: Erika Lindqvist-Hansson         MRN: SCM-1037821
+DOB: 1952-09-14       Sex: Female        Insurance: BlueCross MN #BCX-4401-88231
+Address: 318 Hennepin Ave S, Minneapolis MN 55408
+Emergency Contact: Lars Lindqvist (son), (612) 503-9918, l.lindqvist@gmail.com
+
+ATTENDING: Dr. Anand Mehrotra, MD (Internal Medicine, NPI 1245789032)
+HOSPITALIST: Dr. Sarah Nowicki, MD
+Admit Date: 2026-04-10      Discharge Date: 2026-04-14
+
+─────────────────────────────────────────────────────────────
+ADMITTING DIAGNOSIS
+─────────────────────────────────────────────────────────────
+Community-acquired pneumonia (right lower lobe), moderate severity
+Dehydration, secondary
+
+─────────────────────────────────────────────────────────────
+HOSPITAL COURSE
+─────────────────────────────────────────────────────────────
+Patient presented to ED on 04/10 with 4-day history of productive cough, fever
+(T 38.9°C), and dyspnea on exertion. CXR confirmed right lower lobe infiltrate.
+Blood cultures x2 drawn; subsequently negative. Sputum culture: Streptococcus
+pneumoniae, penicillin-sensitive.
+
+Treated with IV ceftriaxone x3 days, then transitioned to oral amoxicillin
+upon clinical improvement. IV fluids 2L NS over 24h for dehydration. O2 via
+nasal cannula 2L/min; weaned off by day 3. Afebrile >48h prior to discharge.
+
+─────────────────────────────────────────────────────────────
+DISCHARGE MEDICATIONS
+─────────────────────────────────────────────────────────────
+1. Amoxicillin 875 mg PO BID x 5 days (complete course)
+2. Continue home medications: Lisinopril 10mg daily, Atorvastatin 20mg nightly
+
+─────────────────────────────────────────────────────────────
+FOLLOW-UP INSTRUCTIONS
+─────────────────────────────────────────────────────────────
+- Follow up with Dr. Mehrotra in 7–10 days; call (612) 555-0200 to schedule
+- Repeat CXR at 6 weeks to confirm resolution
+- Return to ED for: worsening dyspnea, fever > 38.5°C, chest pain
+
+Patient verbalized understanding. Discharge instructions provided in English and
+Swedish. Discharge arranged with son Lars; patient ambulatory, stable.
+─────────────────────────────────────────────────────────────
+Attending Signature: Dr. Anand Mehrotra, MD    Date: 2026-04-14

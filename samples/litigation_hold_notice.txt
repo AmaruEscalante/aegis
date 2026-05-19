@@ -1,0 +1,56 @@
+LITIGATION HOLD NOTICE — CONFIDENTIAL ATTORNEY-CLIENT COMMUNICATION
+FROM:  Legal Department — Helix Platform Inc.
+TO:    All Employees Listed Below
+DATE:  March 3, 2026
+RE:    Preservation of Documents and Data — Matter: Helix v. Orion Works, Inc.
+
+─────────────────────────────────────────────────────────────────────
+URGENT: YOU MUST READ AND COMPLY IMMEDIATELY
+─────────────────────────────────────────────────────────────────────
+
+Helix Platform Inc. ("Company") has initiated legal proceedings against Orion Works, Inc.
+related to alleged misappropriation of trade secrets and tortious interference with
+contractual relations. This notice places you on LEGAL HOLD effective immediately.
+
+─────────────────────────────────────────────────────────────────────
+WHAT YOU MUST DO
+─────────────────────────────────────────────────────────────────────
+You must PRESERVE (do not delete, modify, or destroy) ALL documents, data, and
+communications — in any format — related to:
+
+1. The departure of employees Tomas Reyes and Ji-Young Park from Helix (Oct–Dec 2025)
+2. Any communications with individuals employed by or affiliated with Orion Works, Inc.
+3. The development of Helix's "Project Phoenix" workflow automation features
+4. Any competitive intelligence or sales information shared with Orion personnel
+5. Source code repositories and commit history for modules: FlowEngine, TriggerLayer, AIAssist
+
+SCOPE: Preserve all emails, Slack messages, text messages, calendar events, files
+(local and cloud), code commits, and meeting notes from January 1, 2024 to present.
+
+─────────────────────────────────────────────────────────────────────
+RECIPIENTS (hold applies to each named person)
+─────────────────────────────────────────────────────────────────────
+1. Marcus Chen, VP Product
+2. Priya Subramaniam, VP Engineering
+3. Lena Fischer, Senior Engineer — AI Team
+4. Dev Krishnamurthy, Engineering Manager
+5. Sandra Vega, VP Sales
+6. IT / System Administrators (blanket hold on all production infrastructure logs)
+
+─────────────────────────────────────────────────────────────────────
+NORMAL DELETION POLICIES SUSPENDED
+─────────────────────────────────────────────────────────────────────
+ALL standard document retention schedules, email auto-deletion rules, and Slack
+message purge policies are SUSPENDED for materials covered by this hold.
+
+Do NOT discuss the existence of this litigation or this hold with anyone outside
+the Legal Department, executives, and your direct counsel.
+
+Questions: Contact General Counsel Rachel O'Brien (r.obrien@helixplatform.com)
+or outside counsel at Whitmore & Lund LLP, (415) 392-8800.
+
+─────────────────────────────────────────────────────────────────────
+ACKNOWLEDGE RECEIPT: Return signed copy to Legal no later than March 7, 2026.
+
+Name: _______________________________ Signature: _____________________
+Date: _______________

@@ -1,0 +1,8 @@
+application_id,applicant_name,ssn,dob,email,phone,address,annual_income,employer,loan_amount,loan_purpose,credit_score,decision
+LA-20240301,Dmitri Volkov,550-44-7821,1980-06-15,dmitri.volkov@mailpro.net,"(312) 554-8823","1402 N Milwaukee Ave, Chicago IL 60622",88000,Volkov Contracting LLC,25000,Home renovation,718,Approved
+LA-20240302,Yolanda Ferreira-Santos,612-77-3304,1993-03-28,yolanda.fs@icloud.com,"(415) 203-7761","88 Clement St Apt 2, San Francisco CA 94118",73500,Pacific Temp Agency,12000,Debt consolidation,682,Approved
+LA-20240303,James Thornton Jr.,489-21-0093,1967-11-02,j.thornton.jr@comcast.net,"(614) 887-4400","5521 Olentangy River Rd, Columbus OH 43235",105000,Ohio Department of Transportation,40000,Business start-up,701,Approved
+LA-20240304,Mei-Ling Zhao,771-55-9907,1998-08-17,meiling.zhao98@gmail.com,"(626) 310-5590","2017 San Gabriel Blvd, Rosemead CA 91770",52000,Pacific Rim Exports Inc.,8000,Medical expenses,644,Denied — insufficient income
+LA-20240305,Kwame Asante,334-60-1142,1985-04-09,kwame.asante@yahoo.com,"(770) 598-2244","1155 Peachtree Industrial Blvd, Norcross GA 30071",141000,Delta Air Lines,55000,Real estate down payment,762,Approved
+LA-20240306,Isabella Martinez-Rojas,509-88-4477,1990-12-30,imarrojas@hotmail.com,"(305) 771-3391","7842 SW 104th Ave, Miami FL 33173",67000,Miami-Dade School District,18000,Vehicle purchase,698,Approved
+LA-20240307,Pavel Nowak,228-13-6652,1975-07-21,p.nowak@gmx.de,"(414) 502-1187","2230 N Farwell Ave, Milwaukee WI 53202",79000,Northwestern Mutual,30000,Home renovation,721,Approved

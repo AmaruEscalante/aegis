@@ -1,0 +1,17 @@
+{
+  "label": "flag_pii",
+  "source_repo": "dittofeed/dittofeed",
+  "source_path": "packages/dashboard/sample-uploads/users.csv",
+  "source_blob_sha": "485831b83dedb19c259072de102ecd1d71465d50",
+  "source_url": "https://github.com/dittofeed/dittofeed/blob/52b2bee909744d07dd5d409fd3974d4b95c66766/packages/dashboard/sample-uploads/users.csv",
+  "fetched_at": "2026-05-19T01:07:12.205904+00:00",
+  "length_chars": 424,
+  "collector_query_terms": [
+    "email",
+    "phone"
+  ],
+  "collector_extra_flags": [
+    "--filename=users.csv",
+    "--limit=20"
+  ]
+}

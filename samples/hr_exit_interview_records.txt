@@ -1,0 +1,71 @@
+HUMAN RESOURCES — EXIT INTERVIEW SUMMARY FILE
+Acme Digital Inc.  |  Confidential HR Record  |  FY2025 Q1
+
+──────────────────────────────────────────────────────────
+RECORD 1
+──────────────────────────────────────────────────────────
+Employee:        Tamsin Beaumont
+Employee ID:     EMP-40922
+Title:           Senior UX Designer
+Department:      Product Design
+Manager:         Ravi Sundaram
+Last Day:        2025-01-31
+Reason:          Voluntary resignation
+New Employer:    Declared: Stripe, Inc.
+
+Interview conducted by: HR Partner Sandra Figueroa
+Date: 2025-01-29
+
+Key feedback:
+- Compensation below market for SF Bay Area; rejected counter-offer
+- Enjoyed team culture but felt career progression was slow
+- Requests: improve design leadership pipeline, clearer promo criteria
+- Would consider returning in 2–3 years
+
+Contact for alumni network: t.beaumont@protonmail.com
+──────────────────────────────────────────────────────────
+RECORD 2
+──────────────────────────────────────────────────────────
+Employee:        Chinedu Okafor
+Employee ID:     EMP-38501
+Title:           Backend Engineer II
+Department:      Infrastructure
+Manager:         Ling Wei
+Last Day:        2025-02-14
+Reason:          Voluntary — relocating to Nigeria (family)
+New Employer:    Not disclosed
+
+Interview conducted by: HR Partner Sandra Figueroa
+Date: 2025-02-10
+
+Key feedback:
+- Overall positive experience; departure driven by personal circumstances
+- Highlights: strong team mentorship, flexible remote policy
+- Suggestion: expand APAC/Africa timezone coverage for on-call rotation
+- No grievances filed
+
+Contact: chinedu.okafor.work@gmail.com | +234 803 555 7729
+──────────────────────────────────────────────────────────
+RECORD 3
+──────────────────────────────────────────────────────────
+Employee:        Brigitte Moreau-Lefevre
+Employee ID:     EMP-44107
+Title:           Director of Product Marketing
+Department:      Marketing
+Manager:         VP Marketing, Jason Kline
+Last Day:        2025-03-07
+Reason:          Involuntary — position eliminated (reorg)
+Severance:       12 weeks + COBRA 6 months
+
+Interview conducted by: HR Business Partner Darrell Hughes
+Date: 2025-03-05
+
+Key feedback:
+- Expressed frustration about communication around reorg decision
+- Requested reference letter; approved by Manager
+- Filed no legal claims
+
+Contact: brigitte.ml@outlook.fr | (415) 729-3308
+──────────────────────────────────────────────────────────
+END OF BATCH Q1-2025 EXIT INTERVIEWS
+Total records: 3 | Compiled by: HR Information Systems

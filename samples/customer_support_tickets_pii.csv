@@ -1,0 +1,6 @@
+ticket_id,created_at,customer_name,email,phone,account_id,issue_summary,agent_notes
+TKT-88201,2025-03-12 09:14:22,Anika Patel,anika.patel92@gmail.com,(617) 338-7720,ACC-991002,Billing charge dispute — says she was charged twice for March subscription,Confirmed duplicate charge; issued refund $29.99 to card ending 4481. Customer satisfied.
+TKT-88202,2025-03-12 10:45:01,Roberto Cisneros,r.cisneros@live.com,(562) 440-8891,ACC-773341,Cannot log in — locked out after 5 attempts,Reset password; sent reset link to r.cisneros@live.com. Verified identity via last 4 of SSN on file: 5502.
+TKT-88203,2025-03-12 11:03:55,Hannah Osei-Bonsu,hannah.osei@yahoo.co.uk,(020) 7946 0388,ACC-104837,Wants to update shipping address — moving house,Old address: 14 Blenheim Rd, London W4 1EA. New address: 22 Clarence Street, Bristol BS1 5JW. Updated.
+TKT-88204,2025-03-12 13:22:10,Thaddeus Wierzbicki,thad.w@frontiermail.com,(715) 889-2241,ACC-209913,Item never arrived — order #ORD-448821,Reshipped to 308 Pine Lake Dr, Wausau WI 54401. Apologized for delay. Left voicemail on (715) 889-2241.
+TKT-88205,2025-03-12 14:58:44,Sunita Krishnamurthy,s.krishnamurthy@workmail.in,+91 98412 33071,ACC-880024,Account closure request — please delete personal data,Processed closure. PII scheduled for deletion per retention policy. Sent confirmation to s.krishnamurthy@workmail.in.

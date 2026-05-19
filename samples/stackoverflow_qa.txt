@@ -1,0 +1,49 @@
+Q: How do I reverse a string in Python?
+Asked by: user_devguru | Tags: python, string
+
+I need to reverse a string in Python. I know there's a simple way but I keep forgetting the syntax. What's the most idiomatic approach?
+
+---
+
+ANSWER (accepted, 1,423 upvotes):
+answered by: pythonista_pro
+
+The most Pythonic way is to use slice notation with a step of -1:
+
+    s = "hello"
+    reversed_s = s[::-1]
+    print(reversed_s)  # "olleh"
+
+This works because Python's slice notation is `[start:stop:step]`. When `step` is -1, it iterates the sequence backwards from end to start.
+
+**Other approaches (less idiomatic but correct):**
+
+1. Using `reversed()` + `join()`:
+
+       reversed_s = "".join(reversed(s))
+
+2. Using a loop:
+
+       reversed_s = ""
+       for char in s:
+           reversed_s = char + reversed_s
+
+**Performance note:** The slice method (`s[::-1]`) is generally the fastest for small to medium strings. For very large strings (millions of chars), the difference is negligible.
+
+---
+
+COMMENT by user_devguru: Thanks! The `[::-1]` slice is exactly what I needed. Marking as accepted.
+
+---
+
+ANSWER (892 upvotes):
+answered by: algo_wizard
+
+Worth noting: Python strings are immutable, so all three methods above create a *new* string rather than modifying in place. This is fine for most use cases, but if you're working with very large data and need mutation, consider using a `bytearray` or working with lists of characters.
+
+---
+
+Q: What is the time complexity of the slice reversal?
+
+ANSWER by pythonista_pro:
+O(n) where n is the length of the string — you have to copy every character once.

@@ -1,0 +1,18 @@
+{
+  "label": "request_permission",
+  "source_repo": "sanddeveloper1-dev/heatseakerbackend",
+  "source_path": "CONTRACTOR_AGREEMENT.md",
+  "source_blob_sha": "14eecc499867941ff7fa080ff7c7408fe95ba1fb",
+  "source_url": "https://github.com/sanddeveloper1-dev/heatseakerbackend/blob/46f0752b6b8c54f34240d0d8ba5b8da365441f13/CONTRACTOR_AGREEMENT.md",
+  "fetched_at": "2026-05-19T01:07:33.479602+00:00",
+  "length_chars": 4808,
+  "collector_query_terms": [
+    "non-disclosure",
+    "agreement",
+    "parties"
+  ],
+  "collector_extra_flags": [
+    "--extension=md",
+    "--limit=20"
+  ]
+}

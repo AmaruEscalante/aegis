@@ -1,0 +1,52 @@
+Issue #4821: CSV export silently truncates rows when column contains embedded newlines
+
+Repository: notebox/notebox
+Labels: bug, csv, export
+Opened by: sveltekit_fan
+Status: open
+
+---
+
+**Describe the bug**
+
+When a table cell contains a newline character (entered via Shift+Enter inside a cell), the CSV export cuts off all rows after the first row that contains a newline. The resulting file has fewer rows than the original table with no error message shown to the user.
+
+**To Reproduce**
+
+1. Create a note with a table (3+ rows, 2+ columns)
+2. In any cell in the middle of the table, press Shift+Enter to insert a line break within the cell
+3. Type some text after the line break so the cell has multi-line content
+4. Use File → Export → CSV
+5. Open the downloaded CSV in Excel or a text editor
+
+**Expected behavior**
+
+All rows should be exported. Multi-line cell content should be wrapped in double-quotes and the newline preserved, per RFC 4180.
+
+**Actual behavior**
+
+The CSV file contains only the rows before the row with the embedded newline. No error is shown.
+
+**Environment**
+
+- OS: macOS 14.4.1
+- Browser: Safari 17.4.1
+- Notebox version: 2.11.3 (web)
+
+**Relevant logs**
+
+No errors in browser console. Network tab shows the download request completes successfully (200 OK).
+
+**Additional context**
+
+This is a regression — it worked correctly in 2.9.x. I bisected using the changelog and the behavior changed around the 2.10.0 release ("Rewrite CSV exporter for streaming support").
+
+Workaround: remove all embedded newlines from cells before exporting.
+
+---
+
+Comment by @prism-maintainer:
+Thanks for the detailed report and the bisect! You're right, the streaming rewrite broke RFC 4180 quoting. I can reproduce with the steps above. Assigning to @csv-module-owner.
+
+Comment by @csv-module-owner:
+Confirmed. The bug is in `packages/exporter/csv.ts` line 147 — we split on `\n` before quoting instead of after. Fix is straightforward, will have a PR up today.

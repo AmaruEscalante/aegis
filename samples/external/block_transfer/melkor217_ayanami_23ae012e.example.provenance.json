@@ -1,0 +1,17 @@
+{
+  "label": "block_transfer",
+  "source_repo": "melkor217/ayanami",
+  "source_path": "secrets.env.example",
+  "source_blob_sha": "3acc61f18005a71f84e215cd190ec50b41703cbf",
+  "source_url": "https://github.com/melkor217/ayanami/blob/34dacb8e2e374e6b6f755477ab2c87c2337e8984/secrets.env.example",
+  "fetched_at": "2026-05-19T01:07:21.336035+00:00",
+  "length_chars": 541,
+  "collector_query_terms": [
+    "SECRET",
+    "TOKEN"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.example",
+    "--limit=20"
+  ]
+}

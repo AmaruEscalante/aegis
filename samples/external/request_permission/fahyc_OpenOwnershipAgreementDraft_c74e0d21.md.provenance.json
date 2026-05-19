@@ -1,0 +1,18 @@
+{
+  "label": "request_permission",
+  "source_repo": "fahyc/OpenOwnershipAgreementDraft",
+  "source_path": "agreement.md",
+  "source_blob_sha": "e56cb25dfd8565f7a110332706abd762667e408b",
+  "source_url": "https://github.com/fahyc/OpenOwnershipAgreementDraft/blob/00ed8ce02336df7359a746c62cd6d0cde5516b9b/agreement.md",
+  "fetched_at": "2026-05-19T01:07:32.467698+00:00",
+  "length_chars": 7869,
+  "collector_query_terms": [
+    "non-disclosure",
+    "agreement",
+    "parties"
+  ],
+  "collector_extra_flags": [
+    "--extension=md",
+    "--limit=20"
+  ]
+}

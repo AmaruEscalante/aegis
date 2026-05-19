@@ -1,0 +1,17 @@
+{
+  "label": "flag_pii",
+  "source_repo": "phanbaominh/PTUDW-17TN-Nhom13",
+  "source_path": "public/sample-users.csv",
+  "source_blob_sha": "1497622b49e63b5d469f75ec75612d64e1e6de70",
+  "source_url": "https://github.com/phanbaominh/PTUDW-17TN-Nhom13/blob/024861a0adbda7462157b030db1a8a0f14b34c35/public/sample-users.csv",
+  "fetched_at": "2026-05-19T01:07:16.999003+00:00",
+  "length_chars": 340,
+  "collector_query_terms": [
+    "email",
+    "phone"
+  ],
+  "collector_extra_flags": [
+    "--filename=users.csv",
+    "--limit=20"
+  ]
+}

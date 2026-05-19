@@ -1,0 +1,24 @@
+# ===================================================================
+# UPS Monitor Client Configuration (v4.3.0 - API-Only Edition)
+# ===================================================================
+
+# --- Required API Configuration ---
+# This feature is designed to work with the UPS_Server_Docker project. 
+
+# The address of your central UPS Hub API server.
+API_SERVER_URI="http://<UPS_SERVER_IP>:5000"
+
+# The secret token to authenticate with the API Hub.
+# The API_TOKEN value MUST exactly match the API_TOKEN set in the server's power_manager.conf file.
+API_TOKEN="your_secret_api_token_here"
+
+# --- Fallback Configuration ---
+# Used if the API Hub is unreachable or does not provide configuration.
+
+# The delay in minutes before the system shuts down after a low battery is detected.
+# The script will monitor for power restoration during this period.
+SHUTDOWN_DELAY_MINUTES=10
+
+# Optional: You can override the default paths/names for the flag file and log tag.
+# FLAG_FILE="/var/run/ups_shutdown.flag"
+# LOG_TAG="Proxmox_UPS_Monitor"

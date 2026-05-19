@@ -1,0 +1,17 @@
+{
+  "label": "block_transfer",
+  "source_repo": "pulsarbot/Pulsar",
+  "source_path": "secret.env.example",
+  "source_blob_sha": "3c7c819dace266de26b307da4f5be5c45a4347ae",
+  "source_url": "https://github.com/pulsarbot/Pulsar/blob/79652977405e5a6382d529391e57599a0ad91db9/secret.env.example",
+  "fetched_at": "2026-05-19T01:07:21.688618+00:00",
+  "length_chars": 337,
+  "collector_query_terms": [
+    "SECRET",
+    "TOKEN"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.example",
+    "--limit=20"
+  ]
+}

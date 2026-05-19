@@ -1,0 +1,17 @@
+{
+  "label": "classify_safe",
+  "source_repo": "rumblefrog/Source-Map-Thumbnails",
+  "source_path": "README.md",
+  "source_blob_sha": "000a68fe71759ebfcaa77bd8ea34a6511495bd5b",
+  "source_url": "https://github.com/rumblefrog/Source-Map-Thumbnails/blob/c508cc5acdd28ce1b069ed26ca042211c1df69ec/README.md",
+  "fetched_at": "2026-05-19T01:07:05.790410+00:00",
+  "length_chars": 3267,
+  "collector_query_terms": [
+    "##",
+    "Installation"
+  ],
+  "collector_extra_flags": [
+    "--filename=README.md",
+    "--limit=20"
+  ]
+}

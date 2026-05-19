@@ -1,0 +1,17 @@
+{
+  "label": "block_transfer",
+  "source_repo": "premieroctet/photoshot",
+  "source_path": ".env.example",
+  "source_blob_sha": "14eb5a01b42c61e9dadd3a09730c6429e474c7ed",
+  "source_url": "https://github.com/premieroctet/photoshot/blob/890fdc0cbb3bf4de41139f879b23b0d9fddb99a3/.env.example",
+  "fetched_at": "2026-05-19T01:07:22.030639+00:00",
+  "length_chars": 496,
+  "collector_query_terms": [
+    "SECRET",
+    "TOKEN"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.example",
+    "--limit=20"
+  ]
+}

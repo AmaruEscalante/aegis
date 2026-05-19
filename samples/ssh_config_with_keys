@@ -1,0 +1,39 @@
+# SSH Client Configuration
+# ~/.ssh/config
+# WARNING: This file references private key paths — do not share
+
+Host bastion-prod
+    HostName bastion.example-corp.com
+    User deployer
+    Port 22
+    IdentityFile ~/.ssh/id_rsa_prod_bastion
+    IdentitiesOnly yes
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+
+Host db-primary
+    HostName 10.0.1.45
+    User postgres-admin
+    Port 22
+    IdentityFile ~/.ssh/id_ed25519_db_primary
+    ProxyJump bastion-prod
+    StrictHostKeyChecking yes
+    UserKnownHostsFile ~/.ssh/known_hosts_prod
+
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519_github_deploy
+    IdentitiesOnly yes
+
+Host staging-web-*
+    HostName %h.staging.example-corp.internal
+    User ec2-user
+    IdentityFile ~/.ssh/id_rsa_staging
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
+
+Host *
+    AddKeysToAgent yes
+    UseKeychain yes
+    ServerAliveInterval 120

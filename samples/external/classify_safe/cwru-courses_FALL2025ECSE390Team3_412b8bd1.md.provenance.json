@@ -1,0 +1,17 @@
+{
+  "label": "classify_safe",
+  "source_repo": "cwru-courses/FALL2025ECSE390Team3",
+  "source_path": "Unity_README.md",
+  "source_blob_sha": "18052dd996bb2ffa80c3c86ec84546441e5ecb51",
+  "source_url": "https://github.com/cwru-courses/FALL2025ECSE390Team3/blob/ebd3ff14e8fa15d78e09f7fbf400681912811ab0/Unity_README.md",
+  "fetched_at": "2026-05-19T01:07:05.452139+00:00",
+  "length_chars": 5699,
+  "collector_query_terms": [
+    "##",
+    "Installation"
+  ],
+  "collector_extra_flags": [
+    "--filename=README.md",
+    "--limit=20"
+  ]
+}

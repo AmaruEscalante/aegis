@@ -1,0 +1,17 @@
+{
+  "label": "block_transfer",
+  "source_repo": "FreekBes/improved_intra_server",
+  "source_path": ".secret.env.example",
+  "source_blob_sha": "8bbc37f7590026ae750b1b226049b31ea9b6cddd",
+  "source_url": "https://github.com/FreekBes/improved_intra_server/blob/4b967d63018c86b5ab5e16751179a7d6e651a899/.secret.env.example",
+  "fetched_at": "2026-05-19T01:07:21.002002+00:00",
+  "length_chars": 413,
+  "collector_query_terms": [
+    "SECRET",
+    "TOKEN"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.example",
+    "--limit=20"
+  ]
+}
