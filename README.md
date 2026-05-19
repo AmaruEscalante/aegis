@@ -1,12 +1,12 @@
 # Aegis
 
-A local privacy layer for agentic AI. Aegis intercepts file access from AI agents, classifies sensitivity on-device using a local Ollama model, and routes to the appropriate action: passthrough, sanitize, block, or escalate for human review.
+A local privacy layer for agentic AI. Aegis intercepts file access from AI agents, classifies sensitivity on-device using an in-process embedding model + trained LR head, and routes to the appropriate action: passthrough, sanitize, block, or escalate for human review.
 
 ## Architecture
 
 Three components work together:
 
-- **Aegis Bridge** (`aegis_bridge.py`) — Python HTTP server that proxies file content to a local Ollama model (default: `gemma4:31b`) and returns one of four privacy verdicts as structured JSON.
+- **Aegis Bridge** (`aegis_bridge.py`) — Python HTTP server that classifies file content using an in-process `google/embeddinggemma-300m` embedding model + trained LR head (default: `--backend local`) and returns one of four privacy verdicts as structured JSON. An Ollama backend (`--backend ollama`) remains available for dev / A/B comparison.
 - **Middleware** (`middleware/`) — TypeScript OpenClaw / MCP plugin. Registers `aegis_read`, `aegis_classify`, and other tools. Routes files through the bridge, then applies DataGuard sanitization for PII files.
 - **CLI Test Harness** (`aegis_cli.py`) — Interactive Python script for testing the full pipeline with visible step-by-step output.
 
@@ -25,11 +25,8 @@ middleware/src/plugin/index.ts (OpenClaw / MCP)
   v
 aegis_bridge.py (this repo, port 7523)
   |
-  |  POST {ollama_url}/api/chat with format: <json-schema>
-  v
-Ollama running gemma4:31b (port 11434)
-  |
-  |  returns {tool, arguments, confidence}
+  |  embeddinggemma-300m (in-process) → LR head (aegis-head/lr.joblib)
+  |  returns {tool, arguments, confidence}  [p50 ~78 ms]
   v
 ROUTE on tool:
   classify_safe     → return raw text
@@ -41,7 +38,7 @@ ROUTE on tool:
 
 ### The Four Verdicts
 
-| Verdict | Ollama Tool Call | What Happens | Content Returned? |
+| Verdict | Classifier Label | What Happens | Content Returned? |
 |---|---|---|---|
 | **safe** | `classify_safe` | Passthrough, no sanitization | Yes, raw text |
 | **flag_pii** | `flag_pii` | Full DataGuard pipeline (regex + LLM + cache) | Yes, sanitized with placeholders |
@@ -49,13 +46,13 @@ ROUTE on tool:
 | **escalate** | `request_permission` | Return escalation object, ask human | No (`content: null`) |
 | **bridge down** | *(none)* | Degrade to `flag_pii`, sanitize everything | Yes, sanitized |
 
-**SAFE** (`open_source_readme.md`): Ollama says "no sensitive data" — raw file returned directly to agent. Zero overhead beyond classification. No regex, no LLM, no cache.
+**SAFE** (`open_source_readme.md`): Classifier says "no sensitive data" — raw file returned directly to agent. Zero overhead beyond classification. No regex, no LLM, no cache.
 
-**FLAG_PII** (`patient_records.csv`): Ollama says "contains PII" — full DataGuard pipeline runs. Regex detects SSNs/emails/phones, replaces with `__SSN_1__`, `__EMAIL_1__` placeholders, optionally LLM refines, cached, sanitized text returned to agent with redaction count.
+**FLAG_PII** (`patient_records.csv`): Classifier says "contains PII" — full DataGuard pipeline runs. Regex detects SSNs/emails/phones, replaces with `__SSN_1__`, `__EMAIL_1__` placeholders, optionally LLM refines, cached, sanitized text returned to agent with redaction count.
 
-**BLOCK** (`api_config.env`): Ollama says "contains secrets" — throws an Error. Agent gets an error message, never sees any file content. Two layers: path-based blocking (`.env` glob) AND content-based blocking (Ollama classification).
+**BLOCK** (`api_config.env`): Classifier says "contains secrets" — throws an Error. Agent gets an error message, never sees any file content. Two layers: path-based blocking (`.env` glob) AND content-based blocking (classifier verdict).
 
-**ESCALATE** (`vendor_evaluation.txt`): Ollama says "ambiguous, needs human" — returns `content: null` with a structured escalation message telling the agent to ask the user for permission before proceeding.
+**ESCALATE** (`vendor_evaluation.txt`): Classifier says "ambiguous, needs human" — returns `content: null` with a structured escalation message telling the agent to ask the user for permission before proceeding.
 
 **BRIDGE DOWN**: Graceful degradation -- treats every file as `flag_pii`, sanitize-everything mode (same as before Aegis existed). Never crashes.
 
@@ -65,16 +62,22 @@ ROUTE on tool:
 
 - Python 3.12+ with `uv`
 - Node.js 18+
-- Ollama ≥ 0.5.0 (`brew install ollama` or https://ollama.com/download)
-- The `gemma4:31b` model pulled (`ollama pull gemma4:31b`)
+- A Hugging Face account with a READ token (for the first-run model download)
 
-### 1. Start Ollama and the Bridge
+### 1. Install dependencies and authenticate
 
 ```bash
-# In one terminal — start Ollama (if not already running as a daemon)
-ollama serve
+uv sync
 
-# In another terminal — start the bridge
+# One-time HF auth — needed to download embeddinggemma-300m (~600 MB)
+hf auth login   # or: huggingface-cli login
+```
+
+The first time the bridge starts it downloads `google/embeddinggemma-300m` into `~/.cache/huggingface/`. Subsequent runs load from cache in ~1–2 s.
+
+### 2. Start the Bridge
+
+```bash
 python aegis_bridge.py
 ```
 
@@ -82,10 +85,16 @@ Verify:
 
 ```bash
 curl http://127.0.0.1:7523/health
-# {"status":"ok","backend":"ollama","model":"gemma4:31b","ollama_url":"http://127.0.0.1:11434"}
+# {"status":"ok","backend":"local","model":"google/embeddinggemma-300m","head":"aegis-head/lr.joblib"}
 ```
 
-### 2. Connect an Agent via MCP
+Classifier accuracy: **94.90%** on the 98-sample held-out eval set (Wilson 95% CI [88.6%, 97.8%]).
+See [`docs/eval-results/scorecard.md`](docs/eval-results/scorecard.md) for full results.
+
+> **Optional Ollama backend** — `--backend ollama` still works for dev / A/B comparison.
+> Requires `ollama serve` running with `gemma4:31b` pulled.
+
+### 3. Connect an Agent via MCP
 
 The middleware runs as an MCP server. Any MCP-compatible agent can use Aegis tools.
 
@@ -132,7 +141,7 @@ Once connected, the agent has 4 tools:
 | `aegis_sanitize_path` | Force re-sanitization of a file (bypasses cache) |
 | `aegis_policy_explain` | Show current security policy and session stats |
 
-### 3. Run the CLI Test Harness (no agent needed)
+### 4. Run the CLI Test Harness (no agent needed)
 
 ```bash
 # All sample files
@@ -145,7 +154,7 @@ python aegis_cli.py samples/patient_records.csv
 python aegis_cli.py --classify-only samples/api_config.env
 ```
 
-### 4. Run the Middleware Tests
+### 5. Run the Middleware Tests
 
 ```bash
 cd middleware
@@ -156,11 +165,13 @@ npx vitest run tests/e2e.test.ts      # e2e tests (bridge must be running)
 ## Project Structure
 
 ```
-aegis_bridge.py          Python HTTP bridge (Ollama-backed, gemma4:31b)
+aegis_bridge.py          Python HTTP bridge (local embeddinggemma-300m + LR head)
 aegis_cli.py             CLI test harness
 benchmark.py             30-case benchmark with F1 scoring
-test_bridge_smoke.py     Smoke test for the bridge / Ollama integration
+test_bridge_smoke.py     Smoke test for the bridge
+aegis-head/lr.joblib     Trained LR classification head
 samples/                 12 synthetic test files (all 4 categories)
+docs/eval-results/       Held-out eval scorecards (scorecard.md)
 
 middleware/
   src/
@@ -191,14 +202,14 @@ middleware/
 ## Bridge Options
 
 ```bash
-# Default — gemma4:31b on a local Ollama instance
+# Default — in-process embeddinggemma-300m + LR head (no Ollama required)
 python aegis_bridge.py
 
-# Swap the model
-python aegis_bridge.py --model qwen2.5:3b
+# Ollama backend — for dev / A/B comparison (requires ollama serve + gemma4:31b)
+python aegis_bridge.py --backend ollama
 
-# Custom Ollama URL (e.g., remote dev box)
-python aegis_bridge.py --ollama-url http://192.168.1.10:11434
+# Custom Ollama URL (e.g., remote dev box) — only applies with --backend ollama
+python aegis_bridge.py --backend ollama --ollama-url http://192.168.1.10:11434
 
 # Custom bridge port
 python aegis_bridge.py --port 8080
