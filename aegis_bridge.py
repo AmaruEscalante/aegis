@@ -13,11 +13,17 @@ Usage:
 
 import argparse
 import json
+import pathlib
 import sys
 import time
 import urllib.error
 import urllib.request
 from http.server import BaseHTTPRequestHandler, HTTPServer
+
+import joblib
+import numpy as np
+
+from aegis.embedding import Embedder
 
 # ── Constants ──────────────────────────────────────────────────────────────
 
@@ -135,6 +141,61 @@ class OllamaBackend:
         return {
             "tool": tool,
             "arguments": args,
+            "confidence": confidence,
+            "time_ms": elapsed_ms,
+        }
+
+
+# ── Local backend (Phase 3b) ───────────────────────────────────────────────
+
+class LocalBackend:
+    """In-process classifier: Embedder + LR head loaded eagerly."""
+
+    def __init__(self, head_path: pathlib.Path = pathlib.Path("aegis-head/lr.joblib")):
+        if not head_path.exists():
+            raise RuntimeError(
+                f"No trained head at {head_path}. "
+                f"Run: .venv/bin/python train/train_head.py"
+            )
+        bundle = joblib.load(head_path)
+        self._model = bundle["model"]
+        self._embed_model = bundle.get("embed_model", "")
+        if "embed_task_prompt" not in bundle:
+            raise RuntimeError(
+                "Head was trained before task-prompt support (Phase 2 artifact). "
+                "Retrain via train/train_head.py."
+            )
+        if "embeddinggemma" not in self._embed_model.lower():
+            raise RuntimeError(
+                f"Unexpected embed_model in head: {self._embed_model!r}. "
+                f"Expected something containing 'embeddinggemma'."
+            )
+        self._embed_task_prompt = bundle["embed_task_prompt"]
+        self._head_path = head_path
+        self._embedder = Embedder(
+            model_id=self._embed_model,
+            default_task=self._embed_task_prompt,
+        )
+
+    def classify(self, text: str) -> dict:
+        t0 = time.perf_counter()
+        try:
+            vec = self._embedder.encode(text, task=self._embed_task_prompt)
+            cls = self._model.predict(vec.reshape(1, -1))[0]
+            probs = self._model.predict_proba(vec.reshape(1, -1))[0]
+            confidence = float(probs[list(self._model.classes_).index(cls)])
+            elapsed_ms = (time.perf_counter() - t0) * 1000
+        except Exception as e:
+            print(f"[aegis-bridge] LocalBackend classify error: {e}")
+            return {
+                "tool": "request_permission",
+                "arguments": {"reason": f"classifier error: {type(e).__name__}"},
+                "confidence": 0.0,
+                "time_ms": (time.perf_counter() - t0) * 1000,
+            }
+        return {
+            "tool": cls,
+            "arguments": {"reason": f"on-device LR head ({self._embed_model})"},
             "confidence": confidence,
             "time_ms": elapsed_ms,
         }
