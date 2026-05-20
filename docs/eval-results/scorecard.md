@@ -38,7 +38,7 @@ Only the in-process LR head was re-evaluated on this set. The Phase 1 base model
 
 | Model | Protocol | Accuracy | Wilson 95% CI | Macro F1 | Warm p50 | Notes |
 |---|---|---|---|---|---|---|
-| **`embeddinggemma` + LR head (Phase 3b, no-prompt)** | **head, local** | **93/98 = 94.90%** | **[88.6%, 97.8%]** | **0.949** | **~78 ms** | **In-process via sentence-transformers (no Ollama dependency). Trained on 200 hand-curated examples with raw text (no task prompt). 5 errors on the held-out set, of which one (`owid-grapher.example-full`) is also a known training-distribution gap.** |
+| **`embeddinggemma` + LR head (Phase 3b, no-prompt)** | **head, local** | **93/98 = 94.90%** | **[88.6%, 97.8%]** | **0.949** | **~78 ms** | **In-process via sentence-transformers (no Ollama dependency). Trained on 200 hand-curated examples with raw text (no task prompt). 5 errors on the held-out set — see [Held-out failure modes](#held-out-failure-modes-5-of-98) below for the per-file breakdown.** |
 
 ## Reading the scorecard
 
@@ -120,6 +120,35 @@ Failure was concentrated in `block_transfer` recall on `.env.example`-style file
 T7g rolled back to no-prompt embeddings (`TASK_PROMPT = "none"`) and re-ran the held-out eval (acknowledged post-hoc compromise). Result: **93/98 = 94.90%**, with 4 of 5 `.example` files now correctly classified. Net +5 cases recovered, -2 minor regressions elsewhere.
 
 The lesson: CV macro-F1 was a misleading selection signal because the training distribution didn't cover `.example` files, and the prompt amplified the gap. The `aegis/embedding.py` module retains the prompt machinery for future experiments, but `TASK_PROMPT = "none"` is the production setting until the training distribution is expanded.
+
+#### Held-out failure modes (5 of 98)
+<a name="held-out-failure-modes-5-of-98"></a>
+
+The 5 specific misclassifications on the 98-sample held-out eval under the shipped no-prompt head:
+
+| # | File | True | Predicted | Direction | Safety impact |
+|---|---|---|---|---|---|
+| 1 | `samples/external/flag_pii/delphix_dxtoolkit_f6fdab90.example` | `flag_pii` | `block_transfer` | over-restrict | fail-safe — blocked, not leaked |
+| 2 | `samples/external/flag_pii/AgrawalVi_ponovo_83908028.csv` | `flag_pii` | `block_transfer` | over-restrict | fail-safe — blocked, not leaked |
+| 3 | `samples/external/block_transfer/owid_owid-grapher_b8fa04ba.example-full` | `block_transfer` | `classify_safe` | **under-restrict** | **fail-open — credential-shaped file treated as safe** |
+| 4 | `samples/hr_exit_interview_records.txt` | `flag_pii` | `request_permission` | over-restrict | fail-safe — escalates to human review |
+| 5 | `samples/saas_help_center_article.md` | `classify_safe` | `block_transfer` | over-restrict | UX cost only — innocuous content blocked |
+
+**4 of 5 errors err on the safe side.** They over-block or escalate to human review; none silently allow data that should be guarded. The remaining one — `owid-grapher.example-full` (#3) — is the sole fail-open case: a `.env.example`-style file with placeholder-shaped credential strings that the head reads as safe. This is the same `.example`-distribution gap surfaced by the failed prompt experiment above, and is the primary target for Phase 3b.5 (expand the `.example` training distribution).
+
+For a privacy gate, "wrong in the safe direction 4 times out of 5" is the right bias — over-blocking is recoverable (the user re-classifies the file), but fail-open silently leaks. The single fail-open case is the one that justifies the dedicated 3b.5 follow-up rather than shipping as-is to Phase 4.
+
+Per-class confusion (from the same run):
+
+```
+                     | classify_safe  flag_pii  block_transfer  request_permission
+classify_safe        |        25         0            1                 0
+flag_pii             |         0        21            2                 1
+block_transfer       |         1         0           23                 0
+request_permission   |         0         0            0                24
+```
+
+`request_permission` has perfect recall (24/24); the other three classes each lose 1-3 cases as described above.
 
 ### Suggested next steps (Phase 3c, 3d, 4)
 
