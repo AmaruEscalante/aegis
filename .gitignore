@@ -29,6 +29,9 @@ functiongemma-finetuning/latest/
 # Zip archives
 *.zip
 
+# Codex CLI local state (parallel agent — not shared work)
+.codex/
+
 # UV lock (optional — regenerated from pyproject.toml)
 uv.lock
 
