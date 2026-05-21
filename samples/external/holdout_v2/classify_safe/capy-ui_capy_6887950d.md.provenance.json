@@ -1,0 +1,18 @@
+{
+  "label": "classify_safe",
+  "source_repo": "capy-ui/capy",
+  "source_path": "android/README.md",
+  "source_blob_sha": "00f4235ab2fcea30b2b34a799bb4430ea35a733e",
+  "source_url": "https://github.com/capy-ui/capy/blob/fd77077e296a969ae258c595e75a0723183b3138/android/README.md",
+  "fetched_at": "2026-05-21T14:50:18.393613+00:00",
+  "length_chars": 3788,
+  "collector_query_terms": [
+    "##",
+    "Quick",
+    "Start"
+  ],
+  "collector_extra_flags": [
+    "--filename=README.md",
+    "--limit=20"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "label": "classify_safe",
+  "source_repo": "jahboukie/womens-health-ecosystem",
+  "source_path": "MUTUAL_NDA_TEMPLATE.md",
+  "source_blob_sha": "4eb711ca7bb44d42ccf78e5313f992ddec134c88",
+  "source_url": "https://github.com/jahboukie/womens-health-ecosystem/blob/191c37e4347984f6b59ce5d578a1c6fbb6173a6f/MUTUAL_NDA_TEMPLATE.md",
+  "fetched_at": "2026-05-21T14:57:44.070530+00:00",
+  "length_chars": 6078,
+  "collector_query_terms": [
+    "Mutual",
+    "Non-Disclosure",
+    "Effective Date"
+  ],
+  "collector_extra_flags": [
+    "--extension=md",
+    "--limit=20"
+  ],
+  "relabel_note": "Originally collected with request_permission queries (NDA-template phrasing), but on review the content is a publicly-shared NDA template / demo / explainer (placeholders, 'TEMPLATE'/'DEMONSTRATION' framing, or blog post about NDAs), not a confidential internal document. Re-labeled to classify_safe during Phase 3b.5 T2 audit."
+}

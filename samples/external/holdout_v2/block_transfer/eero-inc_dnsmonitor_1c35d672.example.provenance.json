@@ -1,0 +1,17 @@
+{
+  "label": "block_transfer",
+  "source_repo": "eero-inc/dnsmonitor",
+  "source_path": "creds.env.example",
+  "source_blob_sha": "4b78d7be850e14952b4f843161432d0a44a8ed19",
+  "source_url": "https://github.com/eero-inc/dnsmonitor/blob/f129f1c347c03319b0c809a07040533733102ee8/creds.env.example",
+  "fetched_at": "2026-05-21T14:52:55.777447+00:00",
+  "length_chars": 525,
+  "collector_query_terms": [
+    "SECRET",
+    "TOKEN"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.example",
+    "--limit=20"
+  ]
+}

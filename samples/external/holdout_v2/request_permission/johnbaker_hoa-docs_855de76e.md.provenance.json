@@ -1,0 +1,17 @@
+{
+  "label": "request_permission",
+  "source_repo": "johnbaker/hoa-docs",
+  "source_path": "source/fifth-ammendment.md",
+  "source_blob_sha": "b258ddd2c2d4982d39066d8c080463e5e0aaef96",
+  "source_url": "https://github.com/johnbaker/hoa-docs/blob/52304b27972d5b6dfdd8545d59af56891ba3f9d1/source/fifth-ammendment.md",
+  "fetched_at": "2026-05-21T14:57:06.658992+00:00",
+  "length_chars": 4359,
+  "collector_query_terms": [
+    "WITNESSETH",
+    "WHEREAS"
+  ],
+  "collector_extra_flags": [
+    "--extension=md",
+    "--limit=20"
+  ]
+}

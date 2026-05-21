@@ -1,0 +1,17 @@
+{
+  "label": "classify_safe",
+  "source_repo": "tj/ejs",
+  "source_path": "Readme.md",
+  "source_blob_sha": "006d9f30ccf9659b5a9808030f77b80dd034aa59",
+  "source_url": "https://github.com/tj/ejs/blob/259aa234e43fcd19e4038cd87c8f259c92f2583a/Readme.md",
+  "fetched_at": "2026-05-21T14:50:02.823637+00:00",
+  "length_chars": 5292,
+  "collector_query_terms": [
+    "##",
+    "Installation"
+  ],
+  "collector_extra_flags": [
+    "--filename=README.md",
+    "--limit=20"
+  ]
+}

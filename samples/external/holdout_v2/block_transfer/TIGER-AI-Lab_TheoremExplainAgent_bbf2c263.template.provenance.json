@@ -1,0 +1,17 @@
+{
+  "label": "block_transfer",
+  "source_repo": "TIGER-AI-Lab/TheoremExplainAgent",
+  "source_path": ".env.template",
+  "source_blob_sha": "8053266bc1811cd1fd1573b7b77c7dee7037b140",
+  "source_url": "https://github.com/TIGER-AI-Lab/TheoremExplainAgent/blob/e9ece5db7756b6ded8a812eceeb936cfd02aae21/.env.template",
+  "fetched_at": "2026-05-21T14:53:19.523091+00:00",
+  "length_chars": 593,
+  "collector_query_terms": [
+    "API_KEY",
+    "SECRET_KEY"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.template",
+    "--limit=20"
+  ]
+}

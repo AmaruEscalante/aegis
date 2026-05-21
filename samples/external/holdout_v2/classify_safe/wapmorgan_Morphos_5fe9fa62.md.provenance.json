@@ -1,0 +1,18 @@
+{
+  "label": "classify_safe",
+  "source_repo": "wapmorgan/Morphos",
+  "source_path": "README.md",
+  "source_blob_sha": "002b9700e1bec3da29c2e849700da5c6e8e4ff37",
+  "source_url": "https://github.com/wapmorgan/Morphos/blob/f60cc3d9afddd856b93e5c75f7ab1b652d427999/README.md",
+  "fetched_at": "2026-05-21T14:50:20.439060+00:00",
+  "length_chars": 4571,
+  "collector_query_terms": [
+    "##",
+    "Quick",
+    "Start"
+  ],
+  "collector_extra_flags": [
+    "--filename=README.md",
+    "--limit=20"
+  ]
+}

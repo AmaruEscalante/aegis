@@ -1,0 +1,17 @@
+{
+  "label": "classify_safe",
+  "source_repo": "attr-encrypted/attr_encrypted",
+  "source_path": "CHANGELOG.md",
+  "source_blob_sha": "1ba1d4d7b5085053567d45f8c081e8187bb28c6f",
+  "source_url": "https://github.com/attr-encrypted/attr_encrypted/blob/e8c9e2ff22d93e645f5957d314c44fa28ecf2f9e/CHANGELOG.md",
+  "fetched_at": "2026-05-21T14:50:29.009023+00:00",
+  "length_chars": 5797,
+  "collector_query_terms": [
+    "##",
+    "Unreleased"
+  ],
+  "collector_extra_flags": [
+    "--filename=CHANGELOG.md",
+    "--limit=20"
+  ]
+}

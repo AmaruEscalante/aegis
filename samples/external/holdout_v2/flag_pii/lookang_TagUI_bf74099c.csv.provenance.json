@@ -1,0 +1,17 @@
+{
+  "label": "flag_pii",
+  "source_repo": "lookang/TagUI",
+  "source_path": "ken/week1/MissingCustomers.csv",
+  "source_blob_sha": "1caf44ba1c38973335fab0ec70985c3ee3f540d8",
+  "source_url": "https://github.com/lookang/TagUI/blob/76e784de0236907624ea36d564d58427e8984bba/ken/week1/MissingCustomers.csv",
+  "fetched_at": "2026-05-21T14:50:46.759188+00:00",
+  "length_chars": 896,
+  "collector_query_terms": [
+    "email",
+    "address"
+  ],
+  "collector_extra_flags": [
+    "--filename=customers.csv",
+    "--limit=20"
+  ]
+}

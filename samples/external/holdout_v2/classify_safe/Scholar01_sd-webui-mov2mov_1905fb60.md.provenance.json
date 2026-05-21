@@ -1,0 +1,17 @@
+{
+  "label": "classify_safe",
+  "source_repo": "Scholar01/sd-webui-mov2mov",
+  "source_path": "README.md",
+  "source_blob_sha": "00ba75f87a27d7340d870102df968b08746d9318",
+  "source_url": "https://github.com/Scholar01/sd-webui-mov2mov/blob/4bb1fbb8bc848d47a3f41711e0839a5c6e5845f5/README.md",
+  "fetched_at": "2026-05-21T14:50:08.867438+00:00",
+  "length_chars": 2723,
+  "collector_query_terms": [
+    "##",
+    "Installation"
+  ],
+  "collector_extra_flags": [
+    "--filename=README.md",
+    "--limit=20"
+  ]
+}

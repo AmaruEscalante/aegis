@@ -1,0 +1,4 @@
+id,name,email,phone,address,state,gstin
+CUST-001,Swar Yoga Student 1,student1@example.com,+919876543210,"123 Yoga Street, Mumbai",Maharashtra,27AABCH1234567Z8
+CUST-002,Swar Yoga Student 2,student2@example.com,+919123456789,"456 Wellness Ave, Bangalore",Karnataka,29AABCH1234567Z8
+CUST-003,Workshop Participant,workshop@example.com,+918765432109,"789 Meditation Ln, Delhi",Delhi,07AABCH1234567Z8

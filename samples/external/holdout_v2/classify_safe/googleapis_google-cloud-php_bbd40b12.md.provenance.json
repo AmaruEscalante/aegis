@@ -1,0 +1,17 @@
+{
+  "label": "classify_safe",
+  "source_repo": "googleapis/google-cloud-php",
+  "source_path": "Trace/README.md",
+  "source_blob_sha": "003bfc5eb9008141cc8b746018f9066eb10ba7de",
+  "source_url": "https://github.com/googleapis/google-cloud-php/blob/07c36bd46c817a7f81171b06ba7f17ecd903807b/Trace/README.md",
+  "fetched_at": "2026-05-21T14:50:05.868259+00:00",
+  "length_chars": 3486,
+  "collector_query_terms": [
+    "##",
+    "Installation"
+  ],
+  "collector_extra_flags": [
+    "--filename=README.md",
+    "--limit=20"
+  ]
+}

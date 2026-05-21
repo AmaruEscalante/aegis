@@ -1,0 +1,17 @@
+{
+  "label": "flag_pii",
+  "source_repo": "nclamvn/Viet-ERP",
+  "source_path": "apps/MRP/customer-package/data-templates/06_CUSTOMERS.csv",
+  "source_blob_sha": "45343cfca499d142599281715477290c276c6226",
+  "source_url": "https://github.com/nclamvn/Viet-ERP/blob/40970cc8847439ab08e7212ce70915afb38c6140/apps/MRP/customer-package/data-templates/06_CUSTOMERS.csv",
+  "fetched_at": "2026-05-21T14:50:50.628289+00:00",
+  "length_chars": 1907,
+  "collector_query_terms": [
+    "email",
+    "address"
+  ],
+  "collector_extra_flags": [
+    "--filename=customers.csv",
+    "--limit=20"
+  ]
+}

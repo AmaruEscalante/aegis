@@ -1,0 +1,18 @@
+{
+  "label": "classify_safe",
+  "source_repo": "papertrail/legal-docs",
+  "source_path": "nda-short-individual-or-corporate.md",
+  "source_blob_sha": "abe93a9d12e75e96e66e1c6476a879a140d652c8",
+  "source_url": "https://github.com/papertrail/legal-docs/blob/ee04a2300c4a2c80a6ec17e46bdc745685e249de/nda-short-individual-or-corporate.md",
+  "fetched_at": "2026-05-21T14:57:16.694448+00:00",
+  "length_chars": 5117,
+  "collector_query_terms": [
+    "IN WITNESS WHEREOF",
+    "Disclosing Party"
+  ],
+  "collector_extra_flags": [
+    "--extension=md",
+    "--limit=20"
+  ],
+  "relabel_note": "Originally collected with request_permission queries (NDA-template phrasing), but on review the content is a publicly-shared NDA template / demo / explainer (placeholders, 'TEMPLATE'/'DEMONSTRATION' framing, or blog post about NDAs), not a confidential internal document. Re-labeled to classify_safe during Phase 3b.5 T2 audit."
+}

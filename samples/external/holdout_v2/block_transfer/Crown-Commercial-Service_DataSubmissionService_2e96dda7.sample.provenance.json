@@ -1,0 +1,16 @@
+{
+  "label": "block_transfer",
+  "source_repo": "Crown-Commercial-Service/DataSubmissionService",
+  "source_path": "docker-compose.env.sample",
+  "source_blob_sha": "cc6697a46a2e92a7c73312bdaea2a82ed9fa5ae1",
+  "source_url": "https://github.com/Crown-Commercial-Service/DataSubmissionService/blob/37df1766994bdab25ea78f79d4c9b3146b71c80b/docker-compose.env.sample",
+  "fetched_at": "2026-05-21T14:53:03.982488+00:00",
+  "length_chars": 596,
+  "collector_query_terms": [
+    "DATABASE_URL"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.sample",
+    "--limit=20"
+  ]
+}

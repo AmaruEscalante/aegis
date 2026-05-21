@@ -1,0 +1,17 @@
+{
+  "label": "request_permission",
+  "source_repo": "superdoc-dev/superdoc",
+  "source_path": "examples/editor/collaboration/backends/fastapi/assets/fake-nda.md",
+  "source_blob_sha": "166a92d3c43d3a853d19e948a880a60e22e9bcc5",
+  "source_url": "https://github.com/superdoc-dev/superdoc/blob/1a7944ae8139e7ec1a8ef968ad32dc1e0fdee38e/examples/editor/collaboration/backends/fastapi/assets/fake-nda.md",
+  "fetched_at": "2026-05-21T14:57:22.359289+00:00",
+  "length_chars": 4793,
+  "collector_query_terms": [
+    "IN WITNESS WHEREOF",
+    "Disclosing Party"
+  ],
+  "collector_extra_flags": [
+    "--extension=md",
+    "--limit=20"
+  ]
+}

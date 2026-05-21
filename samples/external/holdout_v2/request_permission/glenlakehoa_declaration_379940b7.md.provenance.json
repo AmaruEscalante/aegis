@@ -1,0 +1,17 @@
+{
+  "label": "request_permission",
+  "source_repo": "glenlakehoa/declaration",
+  "source_path": "00-glenlake-declaration-preamble.md",
+  "source_blob_sha": "0d5916f080b3b023b86942fb61db1a686100d54e",
+  "source_url": "https://github.com/glenlakehoa/declaration/blob/c12060aa1e036108f41060c621d0b34cdf099210/00-glenlake-declaration-preamble.md",
+  "fetched_at": "2026-05-21T14:57:06.148400+00:00",
+  "length_chars": 5523,
+  "collector_query_terms": [
+    "WITNESSETH",
+    "WHEREAS"
+  ],
+  "collector_extra_flags": [
+    "--extension=md",
+    "--limit=20"
+  ]
+}

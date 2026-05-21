@@ -1,0 +1,17 @@
+{
+  "label": "flag_pii",
+  "source_repo": "SAP-samples/btp-lcnc-espm",
+  "source_path": "db/data/sap.ui.espm-Customers.csv",
+  "source_blob_sha": "49d96d5cec4d8d00cf5e47f4a96fd1a4557fe04d",
+  "source_url": "https://github.com/SAP-samples/btp-lcnc-espm/blob/db0f13832562e6b1d5b02226a7fdd19e97ef91bc/db/data/sap.ui.espm-Customers.csv",
+  "fetched_at": "2026-05-21T14:50:51.058796+00:00",
+  "length_chars": 6297,
+  "collector_query_terms": [
+    "email",
+    "address"
+  ],
+  "collector_extra_flags": [
+    "--filename=customers.csv",
+    "--limit=20"
+  ]
+}

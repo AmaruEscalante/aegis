@@ -1,0 +1,18 @@
+{
+  "label": "classify_safe",
+  "source_repo": "alibaba/beidou",
+  "source_path": "README.md",
+  "source_blob_sha": "00c2a4b9b9da37eecf8d68eb96afc017e82322c1",
+  "source_url": "https://github.com/alibaba/beidou/blob/218112eb300d7b82add9bc03b637e0fc5b482c1b/README.md",
+  "fetched_at": "2026-05-21T14:50:15.010463+00:00",
+  "length_chars": 6204,
+  "collector_query_terms": [
+    "##",
+    "Quick",
+    "Start"
+  ],
+  "collector_extra_flags": [
+    "--filename=README.md",
+    "--limit=20"
+  ]
+}

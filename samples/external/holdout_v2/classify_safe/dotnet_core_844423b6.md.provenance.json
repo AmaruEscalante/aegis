@@ -1,0 +1,19 @@
+{
+  "label": "classify_safe",
+  "source_repo": "dotnet/core",
+  "source_path": "Documentation/security-group/dotnet-security-group-agreement.md",
+  "source_blob_sha": "bdc05af094b07a56e21a370052e844eb3b62dd8c",
+  "source_url": "https://github.com/dotnet/core/blob/8f61bf4ebbaafe9ed73536c401ada40a34c112f1/Documentation/security-group/dotnet-security-group-agreement.md",
+  "fetched_at": "2026-05-21T14:51:36.681413+00:00",
+  "length_chars": 7434,
+  "collector_query_terms": [
+    "non-disclosure",
+    "agreement",
+    "parties"
+  ],
+  "collector_extra_flags": [
+    "--extension=md",
+    "--limit=20"
+  ],
+  "relabel_note": "Originally collected with request_permission queries (NDA-template phrasing), but on review the content is a publicly-shared NDA template / demo / explainer (placeholders, 'TEMPLATE'/'DEMONSTRATION' framing, or blog post about NDAs), not a confidential internal document. Re-labeled to classify_safe during Phase 3b.5 T2 audit."
+}

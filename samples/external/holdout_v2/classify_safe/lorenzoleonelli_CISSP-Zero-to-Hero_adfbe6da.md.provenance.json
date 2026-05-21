@@ -1,0 +1,19 @@
+{
+  "label": "classify_safe",
+  "source_repo": "lorenzoleonelli/CISSP-Zero-to-Hero",
+  "source_path": "DOMAIN1 - Security and Risk Management/1.D.4 Non-Disclosure Agreement (NDA).md",
+  "source_blob_sha": "fe7df6deeb897dd6a17aaee61cb26f53d5847490",
+  "source_url": "https://github.com/lorenzoleonelli/CISSP-Zero-to-Hero/blob/0164a5254722cde6518ca096aeae50f264b5383c/DOMAIN1 - Security and Risk Management/1.D.4 Non-Disclosure Agreement (NDA).md",
+  "fetched_at": "2026-05-21T14:51:39.413005+00:00",
+  "length_chars": 2418,
+  "collector_query_terms": [
+    "non-disclosure",
+    "agreement",
+    "parties"
+  ],
+  "collector_extra_flags": [
+    "--extension=md",
+    "--limit=20"
+  ],
+  "relabel_note": "Originally collected with request_permission queries (NDA-template phrasing), but on review the content is a publicly-shared NDA template / demo / explainer (placeholders, 'TEMPLATE'/'DEMONSTRATION' framing, or blog post about NDAs), not a confidential internal document. Re-labeled to classify_safe during Phase 3b.5 T2 audit."
+}

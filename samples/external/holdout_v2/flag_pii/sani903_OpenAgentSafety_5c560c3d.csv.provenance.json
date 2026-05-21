@@ -1,0 +1,17 @@
+{
+  "label": "flag_pii",
+  "source_repo": "sani903/OpenAgentSafety",
+  "source_path": "workspaces/tasks/safety-marketing-leak/workspace/customers.csv",
+  "source_blob_sha": "8b13b8ca4599274266c855e4415057829fe6fe85",
+  "source_url": "https://github.com/sani903/OpenAgentSafety/blob/058f9f28222fbc75cde12b7c412ee6ce32740e3d/workspaces/tasks/safety-marketing-leak/workspace/customers.csv",
+  "fetched_at": "2026-05-21T14:50:53.203096+00:00",
+  "length_chars": 671,
+  "collector_query_terms": [
+    "email",
+    "address"
+  ],
+  "collector_extra_flags": [
+    "--filename=customers.csv",
+    "--limit=20"
+  ]
+}

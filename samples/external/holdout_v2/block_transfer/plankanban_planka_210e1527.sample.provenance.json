@@ -1,0 +1,16 @@
+{
+  "label": "block_transfer",
+  "source_repo": "plankanban/planka",
+  "source_path": "server/.env.sample",
+  "source_blob_sha": "c3263b324fc13573f203cc1b0c4899b3cd0871dc",
+  "source_url": "https://github.com/plankanban/planka/blob/a8dcd7cef3ee8d19ad05b8c734ac43f3103489e8/server/.env.sample",
+  "fetched_at": "2026-05-21T14:51:12.462624+00:00",
+  "length_chars": 2741,
+  "collector_query_terms": [
+    "DATABASE_URL"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.sample",
+    "--limit=20"
+  ]
+}

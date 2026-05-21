@@ -1,0 +1,17 @@
+{
+  "label": "block_transfer",
+  "source_repo": "ShoppinPal/StockUp",
+  "source_path": "worker2.env.example",
+  "source_blob_sha": "e2b191dc032a3aefbf3b02fd2def48ad2217edfd",
+  "source_url": "https://github.com/ShoppinPal/StockUp/blob/fb6012341abf6dc56859b9d70f055c7786c8d5de/worker2.env.example",
+  "fetched_at": "2026-05-21T14:52:56.289579+00:00",
+  "length_chars": 1639,
+  "collector_query_terms": [
+    "SECRET",
+    "TOKEN"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.example",
+    "--limit=20"
+  ]
+}

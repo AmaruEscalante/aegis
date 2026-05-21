@@ -1,0 +1,17 @@
+{
+  "label": "flag_pii",
+  "source_repo": "spree/spree",
+  "source_path": "spree/core/db/sample_data/customers.csv",
+  "source_blob_sha": "42010542e1dfc47a0687deae447b988c175fc5b2",
+  "source_url": "https://github.com/spree/spree/blob/ae5db1db1a46ecfe3f87138b86860bae5325e92c/spree/core/db/sample_data/customers.csv",
+  "fetched_at": "2026-05-21T14:50:47.537555+00:00",
+  "length_chars": 2409,
+  "collector_query_terms": [
+    "email",
+    "address"
+  ],
+  "collector_extra_flags": [
+    "--filename=customers.csv",
+    "--limit=20"
+  ]
+}

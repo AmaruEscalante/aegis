@@ -1,0 +1,18 @@
+{
+  "label": "classify_safe",
+  "source_repo": "Netflix/flamescope",
+  "source_path": "README.md",
+  "source_blob_sha": "006dc397da6b3dc8afd74fbebff8c3899931cea9",
+  "source_url": "https://github.com/Netflix/flamescope/blob/be26595f1395c32eef71c88a06cb9c8c87f270c2/README.md",
+  "fetched_at": "2026-05-21T14:50:13.567314+00:00",
+  "length_chars": 5253,
+  "collector_query_terms": [
+    "##",
+    "Quick",
+    "Start"
+  ],
+  "collector_extra_flags": [
+    "--filename=README.md",
+    "--limit=20"
+  ]
+}

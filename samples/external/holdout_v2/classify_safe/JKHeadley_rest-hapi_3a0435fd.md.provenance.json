@@ -1,0 +1,18 @@
+{
+  "label": "classify_safe",
+  "source_repo": "JKHeadley/rest-hapi",
+  "source_path": "README.md",
+  "source_blob_sha": "003d6c0abb47f7f918746831902614740e4ab9d1",
+  "source_url": "https://github.com/JKHeadley/rest-hapi/blob/708ecbcd4f5d3ec1d11c987a4741d505358e7de9/README.md",
+  "fetched_at": "2026-05-21T14:50:18.903578+00:00",
+  "length_chars": 6474,
+  "collector_query_terms": [
+    "##",
+    "Quick",
+    "Start"
+  ],
+  "collector_extra_flags": [
+    "--filename=README.md",
+    "--limit=20"
+  ]
+}

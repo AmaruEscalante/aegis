@@ -1,0 +1,19 @@
+{
+  "label": "classify_safe",
+  "source_repo": "tolonaramim/TEST00",
+  "source_path": "spec/templates/commercial_contracts/mutual_nda_bn_en.md",
+  "source_blob_sha": "729bfc24a0ce19344ad40b933ae61a9486e96703",
+  "source_url": "https://github.com/tolonaramim/TEST00/blob/f109ef40e67acd607dd75be3d308b08e8199e645/spec/templates/commercial_contracts/mutual_nda_bn_en.md",
+  "fetched_at": "2026-05-21T14:57:46.505497+00:00",
+  "length_chars": 5538,
+  "collector_query_terms": [
+    "Mutual",
+    "Non-Disclosure",
+    "Effective Date"
+  ],
+  "collector_extra_flags": [
+    "--extension=md",
+    "--limit=20"
+  ],
+  "relabel_note": "Originally collected with request_permission queries (NDA-template phrasing), but on review the content is a publicly-shared NDA template / demo / explainer (placeholders, 'TEMPLATE'/'DEMONSTRATION' framing, or blog post about NDAs), not a confidential internal document. Re-labeled to classify_safe during Phase 3b.5 T2 audit."
+}
