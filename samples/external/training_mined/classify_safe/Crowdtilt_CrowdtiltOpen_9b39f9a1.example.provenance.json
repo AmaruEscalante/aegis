@@ -1,0 +1,19 @@
+{
+  "label": "block_transfer",
+  "source_repo": "Crowdtilt/CrowdtiltOpen",
+  "source_path": ".env.example",
+  "source_blob_sha": "08b086de44c40c1fc915ca70c3cc6214ba11dac5",
+  "source_url": "https://github.com/Crowdtilt/CrowdtiltOpen/blob/daa457b38b3f285a87c00316760240954bfd733e/.env.example",
+  "fetched_at": "2026-05-21T15:54:14.877853+00:00",
+  "length_chars": 437,
+  "collector_query_terms": [
+    "SECRET",
+    "TOKEN"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.example",
+    "--limit=20"
+  ],
+  "hand_assigned_label": "classify_safe",
+  "relabel_note": "Every value is a self-describing English-word placeholder (crowdtiltsandboxkey, awssecretaccesskey, secrettoken, smtp_pass). No high-entropy material anywhere."
+}

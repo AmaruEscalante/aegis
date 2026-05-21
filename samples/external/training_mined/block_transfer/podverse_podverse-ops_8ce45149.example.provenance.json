@@ -1,0 +1,19 @@
+{
+  "label": "block_transfer",
+  "source_repo": "podverse/podverse-ops",
+  "source_path": "config/podverse-api-prod.env.example",
+  "source_blob_sha": "e3a3cce2b748933c9f63c33f7c1aa26e3b7987ef",
+  "source_url": "https://github.com/podverse/podverse-ops/blob/4c8e404681ad01b1c0973759c76dbde904e712e5/config/podverse-api-prod.env.example",
+  "fetched_at": "2026-05-21T15:54:18.734821+00:00",
+  "length_chars": 6399,
+  "collector_query_terms": [
+    "SECRET",
+    "TOKEN"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.example",
+    "--limit=20"
+  ],
+  "hand_assigned_label": "block_transfer",
+  "relabel_note": "Empty-slot heavy but ships postgres/postgres as the default DB credential, plus a live PayPal mode flag. Mixed -> block_transfer (safer call)."
+}

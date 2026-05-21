@@ -5192,19 +5192,65 @@ BATCHES = {
 }
 
 
+def load_mined_training_rows() -> list[dict]:
+    """Load Channel-C mined training rows from samples/external/training_mined/.
+
+    Reads any content file under that subtree (excluding .provenance.json),
+    pairs with its provenance sibling to get the hand-assigned label, and
+    emits training rows in the same shape as the hand-curated lists.
+
+    The hand_assigned_label (set during Phase 3b.5 T4 manual curation) takes
+    precedence over the collector's coarse `label` field, because the
+    collector tags everything by the query class — not by what is actually
+    in the file.
+    """
+    import pathlib
+    rows: list[dict] = []
+    base = pathlib.Path(__file__).resolve().parent.parent / "samples" / "external" / "training_mined"
+    if not base.exists():
+        return rows
+    for f in sorted(base.rglob("*")):
+        if not f.is_file():
+            continue
+        if f.name.endswith(".provenance.json"):
+            continue
+        prov_path = f.with_name(f.name + ".provenance.json")
+        if not prov_path.exists():
+            continue
+        prov = json.loads(prov_path.read_text())
+        label = prov.get("hand_assigned_label") or prov.get("label")
+        if not label:
+            continue
+        rows.append({
+            "scenario_id": f"mined:{f.parent.name}:{f.stem}",
+            "label": label,
+            "text": f.read_text(errors="replace"),
+        })
+    return rows
+
+
 def main():
     out_path = Path(__file__).resolve().parent / "dataset.jsonl"
-    counts = {}
+    counts: dict[str, int] = {}
     with out_path.open("w") as f:
         for label, examples in BATCHES.items():
             for n, text in enumerate(examples):
                 row = {"scenario_id": f"{label}:{n}", "label": label, "text": text}
                 f.write(json.dumps(row) + "\n")
             counts[label] = len(examples)
+        # Phase 3b.5 T4 — append Channel-C mined training rows from
+        # samples/external/training_mined/ (kept in a separate subtree so
+        # curated_data.py stays focused on hand-written examples).
+        mined_rows = load_mined_training_rows()
+        for row in mined_rows:
+            f.write(json.dumps(row) + "\n")
+            counts[row["label"]] = counts.get(row["label"], 0) + 1
     total = sum(counts.values())
     print(f"Wrote {total} examples to {out_path}")
-    for k, v in counts.items():
+    for k, v in sorted(counts.items()):
         print(f"  {k}: {v}")
+    if mined_rows:
+        print(f"  (of which {len(mined_rows)} mined from samples/external/training_mined/)")
 
 
 if __name__ == "__main__":

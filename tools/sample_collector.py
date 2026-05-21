@@ -59,6 +59,15 @@ QUERIES: dict[str, list[tuple[list[str], list[str]]]] = {
         # is a third common naming convention alongside .env.example / .env.sample
         # and produces a distinct repo population.
         (["API_KEY", "SECRET_KEY"], ["--filename=.env.template", "--limit=20"]),
+        # Added during the Phase 3b.5 T4 training-mining session — the four
+        # query patterns above were fully consumed by T2's holdout_v2 mining,
+        # so the gh search top-20 cache returns the same repos. Adding
+        # field-name combinations (JWT_SECRET+POSTGRES, REDIS_URL+SECRET,
+        # AWS_ACCESS+S3) surfaces distinct repo populations and avoids
+        # SHA-256/provenance-triple overlap with holdout_v2.
+        (["JWT_SECRET", "POSTGRES"], ["--filename=.env.example", "--limit=20"]),
+        (["REDIS_URL", "SECRET"],    ["--filename=.env.example", "--limit=20"]),
+        (["AWS_ACCESS", "S3"],       ["--filename=.env.example", "--limit=20"]),
     ],
     "request_permission": [
         # Public CONFIDENTIAL-tone documents are rare. The "CONFIDENTIAL" keyword

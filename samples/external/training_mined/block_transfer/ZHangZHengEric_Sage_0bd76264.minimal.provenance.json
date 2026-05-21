@@ -1,0 +1,19 @@
+{
+  "label": "block_transfer",
+  "source_repo": "ZHangZHengEric/Sage",
+  "source_path": ".env.example.minimal",
+  "source_blob_sha": "7078e75c6394c7e396355b5461b69c439c999448",
+  "source_url": "https://github.com/ZHangZHengEric/Sage/blob/99e4aa50596ed404e9e324d4e847e7ec460b331d/.env.example.minimal",
+  "fetched_at": "2026-05-21T15:54:16.894900+00:00",
+  "length_chars": 2057,
+  "collector_query_terms": [
+    "SECRET",
+    "TOKEN"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.example",
+    "--limit=20"
+  ],
+  "hand_assigned_label": "block_transfer",
+  "relabel_note": "Mixed: empty slots for the LLM API key, but committed dev defaults like admin.1234 and dev_jwt_secret_key_change_in_production that LOOK like working credentials. Owid-pattern -> block_transfer (safer call)."
+}
