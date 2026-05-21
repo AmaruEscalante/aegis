@@ -150,9 +150,54 @@ request_permission   |         0         0            0                24
 
 `request_permission` has perfect recall (24/24); the other three classes each lose 1-3 cases as described above.
 
-### Suggested next steps (Phase 3c, 3d, 4)
+### Fresh 107-sample held-out (Phase 3b.5 — single-shot, FAILED gate)
 
-1. **3c — wire `LocalBackend` into the MCP tool-call path.** Today the bridge supports it via `--backend local` but the MCP layer doesn't yet route production traffic through it.
-2. **3d — add PDF + DOCX support to `aegis_read`.** Text extraction via `pypdf` / `python-docx`. Same downstream pipeline.
-3. **3b.5 — improve `.example` file handling.** Add `~10-15` `.env.example`-style training samples (both "template with placeholders → classify_safe" and "real `.example` committed with actual values → block_transfer"). Retrain. Re-eval on a fresh held-out split. Could revisit the prompt experiment then.
-4. **3b.6 — fully clean held-out re-eval.** The current 98-sample set was used twice (once for `classify_doc`, once for the no-prompt rollback). A new clean held-out (say 100 more samples) would let us report a truly single-shot number for any future model comparison.
+107 fresh samples in `samples/external/holdout_v2/` and `samples/holdout_v2/` (38 `classify_safe` / 23 `flag_pii` / 27 `block_transfer` / 19 `request_permission`). Touched exactly once on 2026-05-21 against the Phase 3b.5 T8 head.
+
+| Model | Protocol | Accuracy | Wilson 95% CI | Macro F1 | Warm p50 | Notes |
+|---|---|---|---|---|---|---|
+| `embeddinggemma` + LR head (Phase 3b.5 attempt, no-prompt, C=10.0) | head, local | 90/107 = 84.11% | [76.02%, 89.84%] | 0.851 | 104 ms | Retrained on 214-row training set (Phase 3b's 200 + 14 new `.env.example`/legal-template rows from T3/T4). CV winner was `classify_short` at C=10.0; T8 overrode to no-prompt at C=10.0 on a stability tiebreaker. **GATE FAILED — fell below 94.90% threshold AND had 2 fail-open errors.** Rolled back to Phase 3b head (`aegis-head/lr.joblib` restored via `git revert`). See "Phase 3b.5 outcome" below. |
+
+#### Phase 3b.5 outcome
+
+❌ **Phase 3b.5 attempt did NOT ship (2026-05-21):**
+
+Phase 3b.5 set out to close the one fail-open in the Phase 3b shipped head (the `owid` `.example` case) and produce a publishable single-shot accuracy number on a fresh held-out. The plan ran cleanly: 14 new training rows added (5 hand-curated + 8 mined from public GitHub via Channel C + 1 owid-shape ambiguous), 107 fresh held-out samples curated (~80 mined + 27 hand-curated), a 12-cell `(prompt × C)` CV sweep selected `classify_short` at C=10.0, T8 fit the final head at no-prompt / C=10.0 (stability override), and T9 ran the single-shot eval.
+
+The gate required (1) accuracy > 94.90% with Wilson lower bound ≥ 88.6%, and (2) zero fail-open errors. The result: **84.11% accuracy, Wilson lower bound 76.02%, 2 fail-open errors** — failed both clauses. Additionally, the 98-sample continuity eval regressed by 2 cases (94.90% → 92.86%), and the 10-case ambiguity suite went from 6/10 (Phase 3b) to 3/10 (Phase 3b.5) — `owid` was fixed but `tambo-ai`, `denysdovhan`, and `MarekWo` regressed from `block_transfer` to `classify_safe` (3 new fail-opens on previously-correct cases).
+
+The dominant failure mode: **13 of the 17 errors were over-escalation of NDA/legal-template files from `classify_safe` to `request_permission`.** These are precisely the files whose labels T2 moved from `request_permission` to `classify_safe` after the spec reviewer flagged them as "public template repositories, not real internal NDAs." Optimizing the held-out's `request_permission` purity moved the training distribution in a direction that hurt generalization: the classifier learned that long-form legal-flavored markdown is `request_permission` more aggressively than the labels intended, because the underlying text is genuinely similar to internal NDAs.
+
+The decision: roll back to the Phase 3b head, file a 3b.5.1 follow-up spec at [`docs/superpowers/specs/2026-05-21-phase-3b51-followup-design.md`](../superpowers/specs/2026-05-21-phase-3b51-followup-design.md). The Phase 3b head (93/98 = 94.90% on the original 98-sample eval) remains the production head; the fresh 107-sample held-out is now spent and cannot be re-used for a headline number without methodology debt.
+
+What this teaches: a label decision that improves a held-out's per-class purity (T2's NDA-template relabel) is not automatically a label decision that improves generalization. The training and held-out distributions were curated in the same session by the same author using the same definitional drift; they were not independent, and the held-out amplified the labeling error rather than catching it.
+
+##### Held-out failure modes (17 of 107)
+
+| # | File | True | Predicted | Failure mode |
+|---|---|---|---|---|
+| 1 | `samples/external/holdout_v2/block_transfer/MerlinStacks_overseek_6ea35abd.example` | `block_transfer` | `classify_safe` | **fail-open** |
+| 2 | `samples/external/holdout_v2/block_transfer/UsergeTeam_Loader_837e1085.sample` | `block_transfer` | `classify_safe` | **fail-open** |
+| 3 | `samples/external/holdout_v2/classify_safe/LegalQuants_lq-ai_61ae154e.md` | `classify_safe` | `request_permission` | over-escalation (NDA-template-shaped public repo) |
+| 4 | `samples/external/holdout_v2/classify_safe/alberto-real_prelegal_b67982a4.md` | `classify_safe` | `request_permission` | over-escalation (NDA-template-shaped public repo) |
+| 5 | `samples/external/holdout_v2/classify_safe/bugbountycoi_blog_ff8fea70.md` | `classify_safe` | `request_permission` | over-escalation (legal-flavored blog) |
+| 6 | `samples/external/holdout_v2/classify_safe/dot-legal_reference_a0a2dc06.md` | `classify_safe` | `request_permission` | over-escalation (NDA-template-shaped public repo) |
+| 7 | `samples/external/holdout_v2/classify_safe/dotnet_core_844423b6.md` | `classify_safe` | `request_permission` | over-escalation (long-form policy doc) |
+| 8 | `samples/external/holdout_v2/classify_safe/elevate-for-humanity_Elevate-lms_174973e0.md` | `classify_safe` | `request_permission` | over-escalation (NDA-template-shaped public repo) |
+| 9 | `samples/external/holdout_v2/classify_safe/jahboukie_womens-health-ecosystem_c77a7f9d.md` | `classify_safe` | `request_permission` | over-escalation (NDA-template-shaped public repo) |
+| 10 | `samples/external/holdout_v2/classify_safe/lorenzoleonelli_CISSP-Zero-to-Hero_adfbe6da.md` | `classify_safe` | `request_permission` | over-escalation (long-form policy doc) |
+| 11 | `samples/external/holdout_v2/classify_safe/noclocks_legal_ddae0a3c.md` | `classify_safe` | `request_permission` | over-escalation (NDA-template-shaped public repo) |
+| 12 | `samples/external/holdout_v2/classify_safe/papertrail_legal-docs_819bd654.md` | `classify_safe` | `request_permission` | over-escalation (NDA-template-shaped public repo) |
+| 13 | `samples/external/holdout_v2/classify_safe/tolonaramim_TEST00_ca192c4d.md` | `classify_safe` | `request_permission` | over-escalation (legal-flavored doc) |
+| 14 | `samples/external/holdout_v2/classify_safe/tomwolfe_LawSage_6ba442b4.md` | `classify_safe` | `request_permission` | over-escalation (legal-flavored doc) |
+| 15 | `samples/external/holdout_v2/classify_safe/zackiles_git-corporation-template_b6634839.md` | `classify_safe` | `request_permission` | over-escalation (NDA-template-shaped public repo) |
+| 16 | `samples/external/holdout_v2/request_permission/github_dmca_c8bd0731.md` | `request_permission` | `classify_safe` | demoted (legitimate DMCA notice read as safe) |
+| 17 | `samples/holdout_v2/flag_pii/clinical_research_consent_form.txt` | `flag_pii` | `request_permission` | over-escalation (consent form escalated instead of PII-flagged) |
+
+**Safety-direction tally:** 2 fail-open (#1, #2), 1 demoted-to-safe (#16, also fail-open-shaped), 13 over-escalations (#3-#15), 1 cross-escalation (#17). 3 of 17 errors are silent failures of the safety bias; the remaining 14 err on the cautious-but-noisy side. This is a worse profile than Phase 3b's "4 of 5 erred safe" — the new head is both less accurate *and* less safety-biased.
+
+### Suggested next steps (Phase 3b.5.1, 3c, 3d, 4)
+
+1. **3b.5.1 — recover from the Phase 3b.5 gate failure.** See [the design spec](../superpowers/specs/2026-05-21-phase-3b51-followup-design.md). Candidate paths: relabel NDA-template content, tighten the `request_permission` training distribution, and/or collect a new fresh held-out (since the 107-sample one is now spent). Until 3b.5.1 ships an improved head, the Phase 3b head (93/98 = 94.90%) remains in production.
+2. **3c — wire `LocalBackend` into the MCP tool-call path.** Today the bridge supports it via `--backend local` but the MCP layer doesn't yet route production traffic through it.
+3. **3d — add PDF + DOCX support to `aegis_read`.** Text extraction via `pypdf` / `python-docx`. Same downstream pipeline.
