@@ -1609,6 +1609,65 @@ The CSV has a fixed set of fields. Save this as `schema.json`:
 
 That's the whole pipeline. Productionize by writing a small script to crawl the NOAA listing pages and load each station-year on a schedule.
 """,
+    # 50. .env.example with "your-*" placeholder values throughout
+    """# Example environment configuration
+# Copy to .env and replace placeholders with real values.
+
+DATABASE_URL=postgresql://your-db-user:your-db-password@your-db-host:5432/your-db-name
+REDIS_URL=redis://your-redis-host:6379/0
+SECRET_KEY=your-secret-key-min-32-characters
+JWT_SECRET=your-jwt-secret-min-32-characters
+
+# Third-party API keys (sign up at the provider to obtain these)
+STRIPE_SECRET_KEY=sk_test_your-stripe-test-key-here
+SENDGRID_API_KEY=your-sendgrid-api-key
+OPENAI_API_KEY=your-openai-api-key
+
+# Feature flags (true/false)
+ENABLE_BETA_FEATURES=false
+""",
+    # 51. .env.dist with explicit CHANGEME markers
+    """# .env.dist — checked-in template. Copy to .env before running.
+
+# Database
+PG_HOST=localhost
+PG_USER=app
+PG_PASSWORD=CHANGEME
+PG_DB=app_dev
+
+# Auth
+SESSION_SECRET=CHANGEME-AT-LEAST-32-CHARS
+ADMIN_BOOTSTRAP_TOKEN=CHANGEME
+
+# External services
+SMTP_HOST=smtp.example.com
+SMTP_USER=CHANGEME
+SMTP_PASS=CHANGEME
+""",
+    # 52. .env.template with empty KEY= placeholders and inline documentation
+    """# Production environment template
+# Populate every key below before deploying.
+# DO NOT commit a filled-in copy.
+
+# Required: Postgres connection
+DATABASE_HOST=
+DATABASE_PORT=5432
+DATABASE_USER=
+DATABASE_PASSWORD=
+DATABASE_NAME=
+
+# Required: Redis (for sessions + job queue)
+REDIS_HOST=
+REDIS_PORT=6379
+
+# Required: AWS S3 (for asset uploads)
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_S3_BUCKET=
+
+# Optional: Sentry error tracking
+SENTRY_DSN=
+""",
 ]
 
 
@@ -3329,6 +3388,64 @@ EOT
 }
 """
 ,
+    # 50. .env.local with real-shaped credential values across multiple providers
+    """# .env.local — generated 2025-12-03, DO NOT COMMIT
+DATABASE_URL=postgresql://app_prod:9f4d8e7c2b1a0e6f3d8c5b9a4e7d2c1b@db-primary.internal.acme.io:5432/app_prod
+REDIS_URL=rediss://default:R3d1s_Pr0d_T0k3n_8K2nM4pL9vQ@redis-cluster-0.internal.acme.io:6380/0
+SECRET_KEY=zX9mP3kQ7nL2vR8tY5jH1fG4dB6cA0eW
+JWT_SIGNING_KEY=eyJzdWIiOiJzZWNyZXQiLCJpYXQiOjE3MzM0MjA4MDB9.RealLookingJwtSignatureValueGoesHere
+STRIPE_SECRET_KEY=sk_live_FAKE_TRAINING_KEY_DO_NOT_USE
+SENDGRID_API_KEY=SG.7nQ3pM4kR2vL9wY8jH5fG1dB0cA6eX.tK8mN5pQ3rS7vL2wY9jH4fG6dB1cA0e
+""",
+    # 51. .env.production with realistic AWS / GitHub / Twilio values
+    """# .env.production — DO NOT COMMIT — DO NOT SHARE
+AWS_ACCESS_KEY_ID=AKIAQ7XK4PL5N8M2RJ9V
+AWS_SECRET_ACCESS_KEY=hT3kP9mN8qL2rS5vW7jY4fG6dB1cA0eX9zM4pK2nL5wQ
+AWS_DEFAULT_REGION=us-west-2
+S3_BUCKET=acme-prod-assets
+
+GH_PAT=ghp_K8mN5pQ3rS7vL2wY9jH4fG6dB1cA0eX9zM4pK
+GH_ORG=acme-corp
+
+TWILIO_ACCOUNT_SID=AC8a9b7c6d5e4f3g2h1i0j9k8l7m6n5o4p3
+TWILIO_AUTH_TOKEN=z9y8x7w6v5u4t3s2r1q0p9o8n7m6l5k4
+TWILIO_FROM_NUMBER=+14155551234
+""",
+    # 52. plain .env shipped with real-shaped Postgres/Redis/JWT secrets
+    """DATABASE_URL=postgresql://acme_app:P0stgr3sPr0dP@ssw0rd2024@db-cluster-east-1.internal:5432/acme_app_prod
+REDIS_URL=redis://:R3d1sCach3T0k3n_2024_n0tT0Sh@r3@redis-cache.internal:6379
+SESSION_SECRET=h7K9mN3pQ5rS8vL2wY6jH4fG1dB0cA9eX5zM7pK4nL8wQ
+INTERNAL_API_TOKEN=int_t0k3n_p9o8n7m6l5k4j3h2g1f0e9d8c7b6a5z4y3x2
+ENCRYPTION_KEY=aGVsbG93b3JsZGZyb21wcm9kZW5jcnlwdGlvbjEyMzQ1Ng==
+WEBHOOK_SIGNING_SECRET=whsec_K8mN5pQ3rS7vL2wY9jH4fG6dB1cA0eX
+""",
+    # 53. owid-shape ambiguous: empty placeholders mixed with dev-style defaults
+    """TZ=utc
+ENV=development
+
+GRAPHER_DB_NAME=grapher
+GRAPHER_DB_USER=grapher
+GRAPHER_DB_PASS=grapher
+GRAPHER_DB_HOST=127.0.0.1
+GRAPHER_DB_PORT=3307
+
+GRAPHER_TEST_DB_PASS=graphertest
+GRAPHER_TEST_DB_HOST=127.0.0.1
+
+GDOCS_PRIVATE_KEY=
+GDOCS_CLIENT_EMAIL=
+GDOCS_CLIENT_ID=
+
+OPENAI_API_KEY=
+FIGMA_API_KEY=
+
+R2_ACCESS_KEY_ID=
+R2_SECRET_ACCESS_KEY=
+
+# Local dev credentials — do NOT commit. Rotate before any deploy.
+# These are real working passwords for the local docker-compose stack;
+# the empty keys above belong to services not used in local dev.
+""",
 ]
 REQUEST_PERMISSION: list[str] = [
     # 0. NDA template
