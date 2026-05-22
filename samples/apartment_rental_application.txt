@@ -1,0 +1,56 @@
+APARTMENT RENTAL APPLICATION
+Property: 2204 Elm Street, Unit 3B, Portland, OR 97201
+Monthly Rent: $1,850 | Landlord: Greenfield Property Management
+
+─────────────────────────────────────────────────────────
+APPLICANT INFORMATION
+─────────────────────────────────────────────────────────
+Full Name:        Priya Venkataraman
+Date of Birth:    08/14/1991
+SSN (last 4):     **7723
+Driver's License: OR-D4891022
+Phone:            (503) 774-2918
+Email:            p.venkataraman@gmail.com
+Current Address:  1107 Burnside Ave, Apt 4F, Portland, OR 97209
+Monthly Rent at Current Address: $1,550
+Landlord Name:    Oak Street Properties
+Landlord Phone:   (503) 222-8801
+
+─────────────────────────────────────────────────────────
+CO-APPLICANT INFORMATION
+─────────────────────────────────────────────────────────
+Full Name:        Marcus DeWitt
+Date of Birth:    03/22/1989
+SSN (last 4):     **4416
+Phone:            (503) 801-4452
+Email:            mde.witt88@outlook.com
+Current Address:  (same as applicant)
+
+─────────────────────────────────────────────────────────
+EMPLOYMENT / INCOME
+─────────────────────────────────────────────────────────
+Applicant Employer:      Cascade Tech Solutions, Inc.
+Position:                Senior Data Analyst
+Monthly Gross Income:    $6,800
+Employer Phone:          (503) 555-0192
+Supervisor:              Linda Ortega
+
+Co-Applicant Employer:   Pacific Northwest Roasting Co.
+Position:                Shift Supervisor
+Monthly Gross Income:    $3,400
+Employer Phone:          (503) 555-0744
+
+─────────────────────────────────────────────────────────
+REFERENCES
+─────────────────────────────────────────────────────────
+Reference 1: Alejandro Cruz, (971) 203-5577, a.cruz.pdx@gmail.com
+Reference 2: Soo-Jin Park,   (503) 445-0920, soojin.park@hotmail.com
+
+─────────────────────────────────────────────────────────
+AUTHORIZATION
+─────────────────────────────────────────────────────────
+I authorize Greenfield Property Management to verify the information provided,
+including credit check, criminal background, and employment verification.
+
+Applicant Signature: ________________________  Date: ___________
+Co-Applicant Signature: _____________________  Date: ___________

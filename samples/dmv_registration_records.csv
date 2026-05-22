@@ -1,0 +1,6 @@
+reg_id,owner_name,owner_dob,ssn_last4,address,phone,email,vin,plate,make,model,year,color,reg_expires,insurance_carrier,policy_num
+DMV-2025-00441,Cornelius Abara,1974-08-30,7812,"2201 Commerce St, Dallas TX 75201",(214) 880-3310,c.abara74@gmail.com,1HGBH41JXMN109186,TX-GKT-8821,Honda,Accord,2019,Silver,2026-08-31,State Farm,SF-TX-44219031
+DMV-2025-00442,Fatou Diallo-Mbaye,1991-04-05,3391,"5530 Chimney Rock Rd Apt 14, Houston TX 77081",(281) 554-7723,fatou.dm@yahoo.fr,2T1BURHE0JC026783,TX-LMP-4409,Toyota,Corolla,2018,White,2026-04-30,GEICO,GEI-TX-88021922
+DMV-2025-00443,William Kowalczyk Jr,1965-12-19,5504,"14 Ridgeview Blvd, San Antonio TX 78209",(210) 443-9910,wkowalczyk@outlook.com,1N4AL3APXFN320741,TX-BVW-3317,Nissan,Altima,2015,Gray,2026-01-15,Allstate,ALL-TX-20051123
+DMV-2025-00444,Rosamunde Okafor-Eze,2000-07-22,1167,"7718 Airport Blvd #203, Austin TX 78752",(512) 208-4455,r.okafor22@student.ut.edu,3VW1K7AJ8FM218349,TX-RXQ-9904,Volkswagen,Jetta,2015,Red,2026-07-31,Progressive,PRG-TX-61140882
+DMV-2025-00445,Sanjay Krishnan,1982-02-14,8847,"900 E Stacy Rd Suite 1, Allen TX 75002",(972) 340-5591,sanjay.k.allen@gmail.com,5NPE34AF8FH064220,TX-HNK-2288,Hyundai,Sonata,2015,Blue,2026-02-28,USAA,USA-TX-99018847

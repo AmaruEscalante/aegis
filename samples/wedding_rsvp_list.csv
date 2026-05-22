@@ -1,0 +1,9 @@
+guest_id,guest_name,email,phone,address,rsvp_status,attending_count,dietary_restrictions,table_assignment,notes
+W001,Margaret & Douglas Finch,m.finch@aol.com,(617) 228-4419,"12 Longfellow Rd, Cambridge MA 02139",Attending,2,Douglas: nut allergy,Table 3,Childhood friends of bride
+W002,Antoine Beauchamp,a.beauchamp@gmail.com,(514) 773-8821,"1044 Rue St-Denis, Montréal QC H2X 3J2",Attending,1,Vegan,Table 7,Flew in from Montreal
+W003,Priya & Rohan Mehta,priya.r.mehta@gmail.com,(408) 551-0073,"2281 Cabrillo Ave, Santa Clara CA 95051",Attending,2,None,Table 5,College roommates of groom
+W004,Isabelle Fontaine-Dupont,i.fontaine@hotmail.fr,+33 6 12 34 56 78,"24 Rue de Rivoli, Paris 75001",Declined,,,,Could not travel from Paris
+W005,Chen Wei & Lily Zhang,cw.lily@outlook.com,(212) 889-0044,"580 Park Ave Apt 14B, New York NY 10065",Attending,2,Lily: gluten-free,Table 2,Cousin of bride
+W006,Seamus O'Connell,seamus.o@eircom.net,+353 87 234 5678,"45 Grafton St, Dublin 2 D02 Y980",Attending,1,Vegetarian,Table 8,Groom's college friend
+W007,Amara & Kweku Asante,amara.asante@gmail.com,(404) 672-3309,"3311 Cascade Rd SW, Atlanta GA 30311",Attending,2,None,Table 4,Work colleagues of groom
+W008,Theodora Papadakis,t.papadakis@yahoo.gr,+30 69 4411 2288,"8 Ermou St, Athens 105 63",Attending,1,None,Table 7,Family friend — traveled from Greece

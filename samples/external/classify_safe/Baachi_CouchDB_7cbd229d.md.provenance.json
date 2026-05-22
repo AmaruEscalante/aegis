@@ -1,0 +1,17 @@
+{
+  "label": "classify_safe",
+  "source_repo": "Baachi/CouchDB",
+  "source_path": "Readme.md",
+  "source_blob_sha": "00045d54483b81fcf38ae4e6e5e9a44f819a907c",
+  "source_url": "https://github.com/Baachi/CouchDB/blob/6be364c2f3d9c7b1288b1c11115469c91819ff5c/Readme.md",
+  "fetched_at": "2026-05-19T01:07:03.643233+00:00",
+  "length_chars": 2999,
+  "collector_query_terms": [
+    "##",
+    "Installation"
+  ],
+  "collector_extra_flags": [
+    "--filename=README.md",
+    "--limit=20"
+  ]
+}

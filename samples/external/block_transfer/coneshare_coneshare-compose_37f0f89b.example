@@ -1,0 +1,85 @@
+# Coneshare Environment Variables Template
+#
+# Copy this file to .env and fill in the values for your own custom setup.
+
+# ------------------------------------------------------------------------------
+# Core Django Settings (backend/backend/settings.py)
+# ------------------------------------------------------------------------------
+
+# SECURITY WARNING: a secure, randomly generated key is required for production.
+SECRET_KEY=django-insecure-development-key-for-coneshare
+
+# Set to "True" for development, "False" for production.
+DEBUG=False
+
+# The public-facing domain of the frontend. Used for generating absolute URLs.
+# This value is also used to automatically configure ALLOWED_HOSTS and CSRF_TRUSTED_ORIGINS.
+SITE_DOMAIN=http://localhost:5173
+
+# ALLOWED_HOSTS and CSRF_TRUSTED_ORIGINS are derived from SITE_DOMAIN in settings.py.
+# You can uncomment and set them manually here to override this behavior.
+#ALLOWED_HOSTS=127.0.0.1,localhost,backend
+#CSRF_TRUSTED_ORIGINS=http://localhost:5173
+
+# ------------------------------------------------------------------------------
+# Security Settings
+# ------------------------------------------------------------------------------
+# The minimum number of characters required for authentication password.
+PASSWORD_MIN_LENGTH=8
+# A comma-separated list of password validators to enable.
+# Available options: similarity, min_length, common, numeric
+ENABLED_PASSWORD_VALIDATORS=similarity,min_length,common,numeric
+
+# ------------------------------------------------------------------------------
+# Database Settings
+# ------------------------------------------------------------------------------
+# URL format: driver://user:password@host:port/dbname
+# Example for PostgreSQL: DATABASE_URL=postgres://coneshare:password@db:5432/coneshare
+DATABASE_URL=postgres://postgres@postgres:5432/postgres
+
+# ------------------------------------------------------------------------------
+# Redis Settings (Cache & Celery)
+# ------------------------------------------------------------------------------
+# URL format: redis://:password@host:port
+# This base URL is used to construct the connections for both the cache and Celery.
+# The application will append /0 for Celery and /1 for the cache.
+# If unset, it defaults to redis://redis:6379.
+REDIS_URL=redis://redis:6379
+
+# ------------------------------------------------------------------------------
+# Email Settings (for password resets, notifications, etc.)
+# ------------------------------------------------------------------------------
+# For a real SMTP server (e.g., Gmail, SendGrid), configure the following:
+EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+EMAIL_HOST=
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER=
+EMAIL_HOST_PASSWORD=
+DEFAULT_FROM_EMAIL=noreply@example.com
+# From-address for Django's AdminEmailHandler crash emails
+SERVER_EMAIL=errors@example.com
+# Recipients for Django AdminEmailHandler error emails when DEBUG=False
+# Format: "Name:email,Name2:email2" or "email1,email2"
+ADMINS=Ops-Admin:ops@example.com
+
+# ------------------------------------------------------------------------------
+# Logging Settings
+# ------------------------------------------------------------------------------
+# Log level for the application. Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+#LOG_LEVEL=INFO
+
+# ------------------------------------------------------------------------------
+# Service Communication (docker-compose.yml)
+# ------------------------------------------------------------------------------
+# Internal token for secure communication between backend and core services.
+INTERNAL_API_TOKEN=supersecrettoken
+
+# URL for the Go file server, as seen from the backend/celery containers.
+CORE_API_URL=http://web:8080
+
+# Port for the Go file server.
+PORT=8080
+
+# Path inside the core container where files are stored.
+STORAGE_PATH=/data

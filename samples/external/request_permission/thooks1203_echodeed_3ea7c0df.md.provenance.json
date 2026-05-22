@@ -1,0 +1,18 @@
+{
+  "label": "request_permission",
+  "source_repo": "thooks1203/echodeed",
+  "source_path": "EchoDeed_NDA_Agreement.md",
+  "source_blob_sha": "1a6625b03a5131621283e120e7ddf2bb884f6612",
+  "source_url": "https://github.com/thooks1203/echodeed/blob/4bc3348dc2a453175a99d4df1318160820f91ad2/EchoDeed_NDA_Agreement.md",
+  "fetched_at": "2026-05-19T01:07:34.251347+00:00",
+  "length_chars": 3738,
+  "collector_query_terms": [
+    "non-disclosure",
+    "agreement",
+    "parties"
+  ],
+  "collector_extra_flags": [
+    "--extension=md",
+    "--limit=20"
+  ]
+}

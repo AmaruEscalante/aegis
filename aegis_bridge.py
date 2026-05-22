@@ -13,11 +13,17 @@ Usage:
 
 import argparse
 import json
+import pathlib
 import sys
 import time
 import urllib.error
 import urllib.request
 from http.server import BaseHTTPRequestHandler, HTTPServer
+
+import joblib
+import numpy as np
+
+from aegis.embedding import Embedder
 
 # ── Constants ──────────────────────────────────────────────────────────────
 
@@ -140,11 +146,73 @@ class OllamaBackend:
         }
 
 
+# ── Local backend (Phase 3b) ───────────────────────────────────────────────
+
+class LocalBackend:
+    """In-process classifier: Embedder + LR head loaded eagerly."""
+
+    def __init__(self, head_path: pathlib.Path = pathlib.Path("aegis-head/lr.joblib")):
+        if not head_path.exists():
+            raise RuntimeError(
+                f"No trained head at {head_path}. "
+                f"Run: .venv/bin/python train/train_head.py"
+            )
+        bundle = joblib.load(head_path)
+        self._model = bundle["model"]
+        self._embed_model = bundle.get("embed_model", "")
+        if "embed_task_prompt" not in bundle:
+            raise RuntimeError(
+                "Head was trained before task-prompt support (Phase 2 artifact). "
+                "Retrain via train/train_head.py."
+            )
+        if "embeddinggemma" not in self._embed_model.lower():
+            raise RuntimeError(
+                f"Unexpected embed_model in head: {self._embed_model!r}. "
+                f"Expected something containing 'embeddinggemma'."
+            )
+        self._embed_task_prompt = bundle["embed_task_prompt"]
+        self._head_C = bundle.get("C")
+        # CV macro-F1 at the chosen C — defensive lookup in case cv_results structure varies.
+        self._head_cv_macro_f1 = None
+        cv = bundle.get("cv_results", {})
+        if self._head_C is not None and self._head_C in cv:
+            self._head_cv_macro_f1 = cv[self._head_C].get("macro_f1_mean")
+        self._head_path = head_path
+        self._embedder = Embedder(
+            model_id=self._embed_model,
+            default_task=self._embed_task_prompt,
+        )
+
+    def classify(self, text: str) -> dict:
+        t0 = time.perf_counter()
+        try:
+            vec = self._embedder.encode(text, task=self._embed_task_prompt)
+            cls = self._model.predict(vec.reshape(1, -1))[0]
+            probs = self._model.predict_proba(vec.reshape(1, -1))[0]
+            confidence = float(probs[list(self._model.classes_).index(cls)])
+            elapsed_ms = (time.perf_counter() - t0) * 1000
+        except Exception as e:
+            print(f"[aegis-bridge] LocalBackend classify error: {e}")
+            return {
+                "tool": "request_permission",
+                "arguments": {"reason": f"classifier error: {type(e).__name__}"},
+                "confidence": 0.0,
+                "time_ms": (time.perf_counter() - t0) * 1000,
+            }
+        return {
+            "tool": cls,
+            "arguments": {"reason": f"on-device LR head ({self._embed_model})"},
+            "confidence": confidence,
+            "time_ms": elapsed_ms,
+        }
+
+
 # ── HTTP server ────────────────────────────────────────────────────────────
 
 _backend = None
-_model_name = "unknown"
-_ollama_url = "unknown"
+_backend_name = "unknown"  # "local" or "ollama"
+_model_name = "unknown"     # ollama-specific, kept for backwards-compat /health
+_ollama_url = "unknown"     # ollama-specific
 
 
 class BridgeHandler(BaseHTTPRequestHandler):
@@ -164,12 +232,27 @@ class BridgeHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == "/health":
-            self._send_json({
-                "status": "ok",
-                "backend": "ollama",
-                "model": _model_name,
-                "ollama_url": _ollama_url,
-            })
+            if _backend_name == "local":
+                _head_C_raw = getattr(_backend, "_head_C", None)
+                _head_f1_raw = getattr(_backend, "_head_cv_macro_f1", None)
+                self._send_json({
+                    "status": "ok",
+                    "backend": "local",
+                    "embed_model": getattr(_backend, "_embed_model", "unknown"),
+                    "embed_task_prompt": getattr(_backend, "_embed_task_prompt", "unknown"),
+                    "head_path": str(getattr(_backend, "_head_path", "unknown")),
+                    "head_classes": list(getattr(_backend._model, "classes_", [])),
+                    "head_trained_at_C": float(_head_C_raw) if isinstance(_head_C_raw, (int, float)) else None,
+                    "head_cv_macro_f1": float(_head_f1_raw) if isinstance(_head_f1_raw, (int, float)) else None,
+                    "device": str(getattr(getattr(_backend, "_embedder", None), "device", "unknown")),
+                })
+            else:
+                self._send_json({
+                    "status": "ok",
+                    "backend": "ollama",
+                    "model": _model_name,
+                    "ollama_url": _ollama_url,
+                })
         else:
             self._send_json({"error": "not found"}, 404)
 
@@ -218,15 +301,17 @@ def _probe_ollama(ollama_url, model):
 # ── Main ───────────────────────────────────────────────────────────────────
 
 def main():
-    global _backend, _model_name, _ollama_url
+    global _backend, _backend_name, _model_name, _ollama_url
 
     parser = argparse.ArgumentParser(
-        description="Aegis Bridge — HTTP server for Ollama-backed privacy classification",
+        description="Aegis Bridge — HTTP server for on-device privacy classification",
     )
+    parser.add_argument("--backend", choices=["local", "ollama"], default="local",
+                        help="Which inference backend to run (default: local)")
     parser.add_argument("--model", default=DEFAULT_MODEL,
-                        help=f"Ollama model tag (default: {DEFAULT_MODEL})")
+                        help=f"Ollama model tag, if --backend ollama (default: {DEFAULT_MODEL})")
     parser.add_argument("--ollama-url", default=DEFAULT_OLLAMA_URL,
-                        help=f"Ollama base URL (default: {DEFAULT_OLLAMA_URL})")
+                        help=f"Ollama base URL, if --backend ollama (default: {DEFAULT_OLLAMA_URL})")
     parser.add_argument("--host", default=DEFAULT_HOST,
                         help=f"Host to bind to (default: {DEFAULT_HOST})")
     parser.add_argument("--port", type=int, default=DEFAULT_PORT,
@@ -234,16 +319,25 @@ def main():
 
     args = parser.parse_args()
 
-    _model_name = args.model
-    _ollama_url = args.ollama_url
+    _backend_name = args.backend
 
-    print(f"[aegis-bridge] Backend: Ollama")
-    print(f"[aegis-bridge] Model:   {_model_name}")
-    print(f"[aegis-bridge] Ollama:  {_ollama_url}")
-
-    _probe_ollama(_ollama_url, _model_name)
-
-    _backend = OllamaBackend(_ollama_url, _model_name)
+    if args.backend == "local":
+        print(f"[aegis-bridge] Backend: local (in-process embeddinggemma + LR head)")
+        try:
+            _backend = LocalBackend()
+        except Exception as e:
+            print(f"[aegis-bridge] ERROR: failed to start LocalBackend: {e}", file=sys.stderr)
+            sys.exit(1)
+        print(f"[aegis-bridge] Embed model: {_backend._embed_model}")
+        print(f"[aegis-bridge] Task prompt: {_backend._embed_task_prompt}")
+    else:
+        _model_name = args.model
+        _ollama_url = args.ollama_url
+        print(f"[aegis-bridge] Backend: Ollama")
+        print(f"[aegis-bridge] Model:   {_model_name}")
+        print(f"[aegis-bridge] Ollama:  {_ollama_url}")
+        _probe_ollama(_ollama_url, _model_name)
+        _backend = OllamaBackend(_ollama_url, _model_name)
 
     server = HTTPServer((args.host, args.port), BridgeHandler)
     print(f"[aegis-bridge] Listening on http://{args.host}:{args.port}")

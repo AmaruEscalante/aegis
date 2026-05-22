@@ -1,0 +1,17 @@
+{
+  "label": "flag_pii",
+  "source_repo": "jeeutai/ChessJaeguk",
+  "source_path": "data/users.csv.bak",
+  "source_blob_sha": "daeb861de2f4091d0bf794495db6e7805a178b81",
+  "source_url": "https://github.com/jeeutai/ChessJaeguk/blob/cfba3edbe0ef7a8ec434a55900cea227c7c5ac79/data/users.csv.bak",
+  "fetched_at": "2026-05-19T01:07:13.871243+00:00",
+  "length_chars": 285,
+  "collector_query_terms": [
+    "email",
+    "phone"
+  ],
+  "collector_extra_flags": [
+    "--filename=users.csv",
+    "--limit=20"
+  ]
+}

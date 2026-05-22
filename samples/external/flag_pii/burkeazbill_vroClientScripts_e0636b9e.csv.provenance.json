@@ -1,0 +1,17 @@
+{
+  "label": "flag_pii",
+  "source_repo": "burkeazbill/vroClientScripts",
+  "source_path": "vcd-users.csv",
+  "source_blob_sha": "cd3cf5d54c4dbd27b0e5a03e9698a8da733d6edf",
+  "source_url": "https://github.com/burkeazbill/vroClientScripts/blob/e29c279ec24fc8b3d40e4543399bca0c065cb552/vcd-users.csv",
+  "fetched_at": "2026-05-19T01:07:12.523877+00:00",
+  "length_chars": 2498,
+  "collector_query_terms": [
+    "email",
+    "phone"
+  ],
+  "collector_extra_flags": [
+    "--filename=users.csv",
+    "--limit=20"
+  ]
+}

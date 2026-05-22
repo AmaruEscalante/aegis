@@ -1,9 +1,9 @@
 """
-Phase 2 — train an LR classifier head on top of frozen EmbeddingGemma.
+Phase 3b — train an LR classifier head on top of frozen EmbeddingGemma.
 
 Pipeline:
     1. Read train/dataset.jsonl  (200 hand-curated examples)
-    2. Embed each row via the local Ollama embeddinggemma endpoint   -> X (200, 768)
+    2. Embed each row via the in-process Embedder (task-prompted)    -> X (200, 768)
     3. Fit sklearn LogisticRegression                                  -> trained head
     4. Save the head to aegis-head/lr.joblib
     5. Evaluate on the 12 real samples/ files                          -> scorecard row
@@ -12,7 +12,7 @@ Usage:
     .venv/bin/python train/train_head.py
 
 Requires:
-    - Ollama running locally with embeddinggemma:latest pulled.
+    - HF Hub access (google/embeddinggemma-300m cached or downloadable).
 """
 from __future__ import annotations
 
@@ -20,7 +20,6 @@ import json
 import pathlib
 import sys
 import time
-import urllib.request
 
 import joblib
 import numpy as np
@@ -28,32 +27,33 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.model_selection import StratifiedKFold, cross_val_score
 
+# Add repo root to import path so `aegis.embedding` resolves when running from train/
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
+from aegis.embedding import Embedder  # noqa: E402
+
 # ── Config ──────────────────────────────────────────────────────────
-OLLAMA_URL = "http://localhost:11434/api/embed"
-EMBED_MODEL = "embeddinggemma:latest"
 DATASET_PATH = pathlib.Path("train/dataset.jsonl")
 HEAD_PATH = pathlib.Path("aegis-head/lr.joblib")
 EMBED_DIM = 768
-EMBED_TIMEOUT_SECONDS = 30
 RANDOM_SEED = 42
 C_GRID = [0.1, 1.0, 10.0]
 
 
 # ── Step A: embedding one piece of text ─────────────────────────────
+_EMBEDDER: Embedder | None = None
+TASK_PROMPT = "none"  # Phase 3b T7g rollback test — classify_doc failed held-out at 88/98
+
+
+def _get_embedder() -> Embedder:
+    global _EMBEDDER
+    if _EMBEDDER is None:
+        _EMBEDDER = Embedder(default_task=TASK_PROMPT)
+    return _EMBEDDER
+
+
 def embed_text(text: str) -> np.ndarray:
-    """Send `text` to Ollama embed endpoint; return a (EMBED_DIM,) float array."""
-    payload = json.dumps({"model": EMBED_MODEL, "input": text}).encode()
-    req = urllib.request.Request(
-        OLLAMA_URL,
-        data=payload,
-        headers={"Content-Type": "application/json"},
-    )
-    with urllib.request.urlopen(req, timeout=EMBED_TIMEOUT_SECONDS) as r:
-        resp = json.loads(r.read())
-    vec = np.asarray(resp["embeddings"][0], dtype=np.float32)
-    if vec.shape != (EMBED_DIM,):
-        raise RuntimeError(f"Expected ({EMBED_DIM},) embedding, got {vec.shape}")
-    return vec
+    """Embed via the shared in-process Embedder. Returns (768,) float32."""
+    return _get_embedder().encode(text, task=TASK_PROMPT)
 
 
 # ── Step B: embedding the whole training set ────────────────────────
@@ -171,9 +171,15 @@ if __name__ == "__main__":
     model = fit_final(X, y, best_C)
 
     # --- Save
+    bundle = {
+        "model": model,
+        "embed_model": Embedder.DEFAULT_MODEL_ID,
+        "embed_task_prompt": TASK_PROMPT,
+        "cv_results": cv_results,
+        "C": best_C,
+    }
     HEAD_PATH.parent.mkdir(parents=True, exist_ok=True)
-    joblib.dump(
-        {"model": model, "embed_model": EMBED_MODEL, "embed_dim": EMBED_DIM, "cv_results": cv_results, "C": best_C},
-        HEAD_PATH,
-    )
+    joblib.dump(bundle, HEAD_PATH)
     print(f"\nSaved trained head to {HEAD_PATH}  ({HEAD_PATH.stat().st_size/1024:.1f} KB)")
+    print(f"  embed_model:       {bundle['embed_model']}")
+    print(f"  embed_task_prompt: {bundle['embed_task_prompt']}")

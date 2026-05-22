@@ -1,0 +1,18 @@
+{
+  "label": "request_permission",
+  "source_repo": "cheshireterminal/Telegram-Trading-Bot",
+  "source_path": "Agreement.md",
+  "source_blob_sha": "704affdbda0ef7bf6595c2e24a88a6421f49e3cc",
+  "source_url": "https://github.com/cheshireterminal/Telegram-Trading-Bot/blob/5a2f060849ad0896b4db378aca03eb96befb09de/Agreement.md",
+  "fetched_at": "2026-05-19T01:07:34.973348+00:00",
+  "length_chars": 6319,
+  "collector_query_terms": [
+    "non-disclosure",
+    "agreement",
+    "parties"
+  ],
+  "collector_extra_flags": [
+    "--extension=md",
+    "--limit=20"
+  ]
+}

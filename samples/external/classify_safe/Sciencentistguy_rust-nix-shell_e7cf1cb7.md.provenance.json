@@ -1,0 +1,17 @@
+{
+  "label": "classify_safe",
+  "source_repo": "Sciencentistguy/rust-nix-shell",
+  "source_path": "readme.md",
+  "source_blob_sha": "00084b93a0538adf370ecfee386a826da72b122d",
+  "source_url": "https://github.com/Sciencentistguy/rust-nix-shell/blob/3295efb98f002e4bd6a6a0ee106b895676079fa2/readme.md",
+  "fetched_at": "2026-05-19T01:07:06.490230+00:00",
+  "length_chars": 2220,
+  "collector_query_terms": [
+    "##",
+    "Installation"
+  ],
+  "collector_extra_flags": [
+    "--filename=README.md",
+    "--limit=20"
+  ]
+}

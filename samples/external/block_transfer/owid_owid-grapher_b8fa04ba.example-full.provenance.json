@@ -1,0 +1,17 @@
+{
+  "label": "block_transfer",
+  "source_repo": "owid/owid-grapher",
+  "source_path": ".env.example-full",
+  "source_blob_sha": "10967f172263dad41f4b8372d1b1d5420ba5ed90",
+  "source_url": "https://github.com/owid/owid-grapher/blob/c1a55bb54fc633a7640a0110848ba433bcc8781d/.env.example-full",
+  "fetched_at": "2026-05-19T01:07:22.357568+00:00",
+  "length_chars": 3484,
+  "collector_query_terms": [
+    "SECRET",
+    "TOKEN"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.example",
+    "--limit=20"
+  ]
+}

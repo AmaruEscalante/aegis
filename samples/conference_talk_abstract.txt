@@ -1,0 +1,27 @@
+Title: Beyond RAG: Building Production-Grade Retrieval Systems That Actually Work
+
+Track: Machine Learning Infrastructure
+Duration: 40 minutes + 10 min Q&A
+Submitted to: PyCon 2025
+
+Abstract:
+
+Retrieval-Augmented Generation (RAG) has become the default architecture for LLM-backed applications, yet most production RAG systems underperform naive baselines because of subtle failure modes that are rarely discussed in tutorials. In this talk, we dissect the five most common reasons RAG systems fail in production and present concrete, battle-tested solutions drawn from operating a high-traffic document search product serving over 2 million queries per day.
+
+We'll cover:
+
+1. **Chunking strategies** — Why fixed-size chunking is almost always wrong, and how semantic chunking and hierarchical retrieval improve recall for long-form content.
+
+2. **Embedding drift** — How your embedding model's training distribution affects retrieval quality for domain-specific corpora, and when to fine-tune vs. switch models.
+
+3. **Reranking at scale** — The latency vs. accuracy tradeoff of cross-encoder rerankers, and how to deploy them cost-effectively with caching and approximate shortlists.
+
+4. **Evaluation without ground truth** — Building automated relevance judges using LLM-as-evaluator patterns, and how to catch regressions before they reach users.
+
+5. **Latency budgets** — How to architect a retrieval pipeline that stays under 200ms p95 even when full-text and vector search are composed with reranking.
+
+This talk assumes familiarity with basic LLM concepts and Python. No prior RAG experience required.
+
+Speaker Bio:
+
+Jordan Kwan is a Staff Engineer at DataStack Inc., where they lead the search infrastructure team. Before DataStack, Jordan spent four years at a major e-commerce platform optimizing product search. Jordan has contributed to the LangChain and ChromaDB open-source projects and writes occasionally at blog.jordankwan.dev.

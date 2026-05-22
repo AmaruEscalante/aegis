@@ -1,0 +1,17 @@
+{
+  "label": "classify_safe",
+  "source_repo": "JudyYe/ghop",
+  "source_path": "README.md",
+  "source_blob_sha": "98f228f6128ddbd1ec09f993a8c069967c063a8a",
+  "source_url": "https://github.com/JudyYe/ghop/blob/b18b56ceba1182023e42fc27c0aedbb3b77a73aa/README.md",
+  "fetched_at": "2026-05-19T01:07:05.067577+00:00",
+  "length_chars": 5005,
+  "collector_query_terms": [
+    "##",
+    "Installation"
+  ],
+  "collector_extra_flags": [
+    "--filename=README.md",
+    "--limit=20"
+  ]
+}

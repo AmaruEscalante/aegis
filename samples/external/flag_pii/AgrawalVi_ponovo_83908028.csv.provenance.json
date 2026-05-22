@@ -1,0 +1,17 @@
+{
+  "label": "flag_pii",
+  "source_repo": "AgrawalVi/ponovo",
+  "source_path": "exported_users.csv",
+  "source_blob_sha": "1f9a8879a21847095e5134c04130dc7f76a3ce7e",
+  "source_url": "https://github.com/AgrawalVi/ponovo/blob/8d7bdc623231e9f73ee47da1f48e6143bd1efcf9/exported_users.csv",
+  "fetched_at": "2026-05-19T01:07:17.330955+00:00",
+  "length_chars": 477,
+  "collector_query_terms": [
+    "email",
+    "phone"
+  ],
+  "collector_extra_flags": [
+    "--filename=users.csv",
+    "--limit=20"
+  ]
+}

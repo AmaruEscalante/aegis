@@ -1,0 +1,23 @@
+# PostgreSQL .pgpass file
+# Format: hostname:port:database:username:password
+# Permissions must be 0600 (chmod 0600 ~/.pgpass)
+# WARNING: Contains database credentials — never commit to version control
+
+# Production primary (read-write)
+db-primary.prod.example-corp.internal:5432:appdb:app_rw_user:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+# Production replica (read-only)
+db-replica-1.prod.example-corp.internal:5432:appdb:app_ro_user:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+db-replica-2.prod.example-corp.internal:5432:appdb:app_ro_user:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+# Analytics database
+analytics-db.prod.example-corp.internal:5432:analyticsdb:analyst_user:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+# Staging
+db.staging.example-corp.internal:5432:appdb_staging:app_rw_user:XXXXXXXXXXXXXXXXXXXXXXXX
+
+# Local development (docker)
+localhost:5432:appdb_dev:dev_user:devpassword
+
+# Backup agent (used by pg_dump cron jobs)
+db-primary.prod.example-corp.internal:5432:*:backup_agent:XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

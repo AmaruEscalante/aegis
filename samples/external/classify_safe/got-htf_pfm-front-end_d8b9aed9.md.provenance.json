@@ -1,0 +1,17 @@
+{
+  "label": "classify_safe",
+  "source_repo": "got-htf/pfm-front-end",
+  "source_path": "Readme.md",
+  "source_blob_sha": "000d01a2c36e4105585505f168dc53467ede95b1",
+  "source_url": "https://github.com/got-htf/pfm-front-end/blob/3c82e1f7457729af7c9c6fec668d0b152cd913b7/Readme.md",
+  "fetched_at": "2026-05-19T01:07:06.127862+00:00",
+  "length_chars": 617,
+  "collector_query_terms": [
+    "##",
+    "Installation"
+  ],
+  "collector_extra_flags": [
+    "--filename=README.md",
+    "--limit=20"
+  ]
+}

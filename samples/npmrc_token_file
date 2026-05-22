@@ -1,0 +1,24 @@
+# .npmrc — npm configuration with registry auth tokens
+# DO NOT COMMIT THIS FILE — contains authentication secrets
+
+# Default registry
+registry=https://registry.npmjs.org/
+
+# Auth token for publishing to npm
+//registry.npmjs.org/:_authToken=npm_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+# Private GitHub Packages registry for @myorg scope
+@myorg:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=ghp_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+# Private Verdaccio instance (internal packages)
+@internal:registry=https://npm.internal.example.com/
+//npm.internal.example.com/:_authToken=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+//npm.internal.example.com/:always-auth=true
+
+# Proxy settings (if behind corporate proxy)
+# proxy=http://proxy.corp.example.com:8080
+# https-proxy=http://proxy.corp.example.com:8080
+
+# Disable strict SSL for internal registry (self-signed cert)
+# strict-ssl=false

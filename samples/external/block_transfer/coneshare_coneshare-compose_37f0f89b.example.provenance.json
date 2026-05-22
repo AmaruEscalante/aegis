@@ -1,0 +1,17 @@
+{
+  "label": "block_transfer",
+  "source_repo": "coneshare/coneshare-compose",
+  "source_path": "app.env.example",
+  "source_blob_sha": "6dfa46138c8757faf1f7c07421b2ab0dd016fa52",
+  "source_url": "https://github.com/coneshare/coneshare-compose/blob/36867346a913de6ad332b90dd427b2a8bbaf9004/app.env.example",
+  "fetched_at": "2026-05-19T01:07:24.079120+00:00",
+  "length_chars": 3860,
+  "collector_query_terms": [
+    "SECRET",
+    "TOKEN"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.example",
+    "--limit=20"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "label": "flag_pii",
+  "source_repo": "Macrometacorp/docs",
+  "source_path": "static/datasets/pii-users.csv",
+  "source_blob_sha": "7f959f134c6052bec5533b8985ffcbbece64ac1e",
+  "source_url": "https://github.com/Macrometacorp/docs/blob/afc7116823cb6232876fa565e4aaeb69053e8b3e/static/datasets/pii-users.csv",
+  "fetched_at": "2026-05-19T01:07:13.534563+00:00",
+  "length_chars": 1536,
+  "collector_query_terms": [
+    "email",
+    "phone"
+  ],
+  "collector_extra_flags": [
+    "--filename=users.csv",
+    "--limit=20"
+  ]
+}

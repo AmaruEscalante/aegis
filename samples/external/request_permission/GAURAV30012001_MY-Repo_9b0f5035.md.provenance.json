@@ -1,0 +1,18 @@
+{
+  "label": "request_permission",
+  "source_repo": "GAURAV30012001/MY-Repo",
+  "source_path": "nda_agreement.md",
+  "source_blob_sha": "1cf8565791a3887fa9ba473be8418cc30401477e",
+  "source_url": "https://github.com/GAURAV30012001/MY-Repo/blob/c59f010789f6c8ccd8540a154b361378642c4d8f/nda_agreement.md",
+  "fetched_at": "2026-05-19T01:07:33.104984+00:00",
+  "length_chars": 4341,
+  "collector_query_terms": [
+    "non-disclosure",
+    "agreement",
+    "parties"
+  ],
+  "collector_extra_flags": [
+    "--extension=md",
+    "--limit=20"
+  ]
+}

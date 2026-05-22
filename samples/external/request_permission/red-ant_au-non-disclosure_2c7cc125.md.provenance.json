@@ -1,0 +1,18 @@
+{
+  "label": "request_permission",
+  "source_repo": "red-ant/au-non-disclosure",
+  "source_path": "au-non-disclosure-agreement.md",
+  "source_blob_sha": "82db9f6fb7e37e3cdf0d5ba1cf478c32953c58ef",
+  "source_url": "https://github.com/red-ant/au-non-disclosure/blob/62cb6d05928dce53eb45c70613b032b9719b4b04/au-non-disclosure-agreement.md",
+  "fetched_at": "2026-05-19T01:07:29.747536+00:00",
+  "length_chars": 3955,
+  "collector_query_terms": [
+    "non-disclosure",
+    "agreement",
+    "parties"
+  ],
+  "collector_extra_flags": [
+    "--extension=md",
+    "--limit=20"
+  ]
+}

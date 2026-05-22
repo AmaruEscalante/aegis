@@ -1,0 +1,9 @@
+voter_id,last_name,first_name,middle_name,dob,address,city,state,zip,party,registration_date,precinct
+VR-2024-10001,Washington,Darnell,Lamont,1979-04-11,"1832 MLK Jr Blvd Apt 5C",Atlanta,GA,30310,Democrat,2018-09-15,ATL-07
+VR-2024-10002,Kovachevsky,Natasha,Irina,1956-07-30,"441 Briarcliff Rd NE",Atlanta,GA,30306,Republican,2004-03-01,ATL-12
+VR-2024-10003,Nguyen,Thanh-Binh,,1988-12-02,"2255 Peachtree Rd NW #814",Atlanta,GA,30309,Democrat,2020-08-20,ATL-04
+VR-2024-10004,O'Brien-Sullivan,Colleen,Mary,1944-02-18,"76 Wesley Ave SW",Atlanta,GA,30310,Unaffiliated,2012-11-05,ATL-07
+VR-2024-10005,Abdelrahman,Omar,Khaled,1995-09-25,"3100 Briarcliff Rd Apt 303",Atlanta,GA,30329,Democrat,2022-04-11,ATL-15
+VR-2024-10006,Fitzgerald,Sean,,1961-06-14,"5522 Roswell Rd NE",Atlanta,GA,30342,Republican,1996-01-22,ATL-18
+VR-2024-10007,Morales-Espinoza,Diana,Lucia,2000-11-03,"490 Memorial Dr SE",Atlanta,GA,30312,Democrat,2022-09-30,ATL-09
+VR-2024-10008,Swaminathan,Preethi,,1983-03-08,"1477 N Highland Ave NE",Atlanta,GA,30306,Unaffiliated,2019-06-14,ATL-12
