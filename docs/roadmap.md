@@ -1,6 +1,6 @@
 # Aegis Roadmap
 
-**Last updated:** 2026-05-18
+**Last updated:** 2026-05-21
 
 This is the project-level roadmap — where Aegis has been, where it's going, and the explicit decisions we've parked for later phases. Specs and execution plans for each phase live in `docs/superpowers/`.
 
@@ -13,6 +13,7 @@ This is the project-level roadmap — where Aegis has been, where it's going, an
 | **Phase 2** | done | Trained a Logistic Regression head on 200 hand-curated examples × 768-dim EmbeddingGemma embeddings. 12/12 accuracy on the original 12-sample real eval at warm p50 = 98 ms. Head fits in 25 KB (`aegis-head/lr.joblib`). 5-fold CV macro-F1 on training set = 0.980. |
 | **Phase 3a** | done | Expanded eval set 12 → 30 samples (11 hand-curated + 7 mined from public GitHub via `tools/sample_collector.py`). LR head: **29/30 (96.67%) / macro F1 0.967 / warm p50 104 ms.** gemma4:31b: **26/30 (86.67%) / macro F1 0.868 / warm p50 35 s.** **10-percentage-point gap (4× error-rate ratio) at ~335× lower latency** — Phase 1/2 statistical-tie caveat resolved. Merged to `main` in PR #2. |
 | **Phase 3b** | done | Dropped the Ollama dependency from the bridge's default path. New `aegis/embedding.py` module wraps `sentence-transformers` and is shared by the bridge (via `LocalBackend`), training, and eval scripts. Eval set expanded 30 → 98 real samples. Trained head retrained with no-prompt embeddings (CV-selected `classify_doc` prompt failed held-out gate; rolled back). **93/98 = 94.90% on the held-out eval (Wilson CI [88.6%, 97.8%]).** Ollama backend remains reachable via `--backend ollama`. See `docs/superpowers/specs/2026-05-18-phase-3b-drop-ollama-design.md`. |
+| **Phase 3b.5** | partial (FAILED gate, rolled back) | Attempted to close the `.example` distribution gap + produce a publishable single-shot held-out number. Added 14 training rows (5 hand-curated + 8 mined + 1 owid-shape) and 107 fresh held-out samples. Retrained head at no-prompt / C=10.0. **Failed both clauses of decision gate: 84.11% accuracy (Wilson [76.02%, 89.84%]) and 2 fail-open errors.** Dominant failure mode (13 of 17 errors): NDA-template files in `classify_safe` over-escalated to `request_permission`. Rolled back to Phase 3b head via `git revert`; filed [Phase 3b.5.1 follow-up spec](superpowers/specs/2026-05-21-phase-3b51-followup-design.md). See [scorecard](eval-results/scorecard.md) for the full failure analysis. |
 
 ## Phase 3 — make the trained head shippable
 

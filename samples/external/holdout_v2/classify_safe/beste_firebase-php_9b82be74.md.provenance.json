@@ -1,0 +1,17 @@
+{
+  "label": "classify_safe",
+  "source_repo": "beste/firebase-php",
+  "source_path": "CHANGELOG.md",
+  "source_blob_sha": "0934e6b2582b92e7549034bf86e75866d4fcb147",
+  "source_url": "https://github.com/beste/firebase-php/blob/98616863d917fc792b345479b7e6fd1629279208/CHANGELOG.md",
+  "fetched_at": "2026-05-21T14:50:29.377848+00:00",
+  "length_chars": 3463,
+  "collector_query_terms": [
+    "##",
+    "Unreleased"
+  ],
+  "collector_extra_flags": [
+    "--filename=CHANGELOG.md",
+    "--limit=20"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "label": "classify_safe",
+  "source_repo": "OpenNebula/one",
+  "source_path": "README.md",
+  "source_blob_sha": "018e7d7ccee22298eca3842af4cca3328e054415",
+  "source_url": "https://github.com/OpenNebula/one/blob/26018a3a2e9f0988ad363d703d05f8c4a97f71a6/README.md",
+  "fetched_at": "2026-05-21T14:50:19.692308+00:00",
+  "length_chars": 5409,
+  "collector_query_terms": [
+    "##",
+    "Quick",
+    "Start"
+  ],
+  "collector_extra_flags": [
+    "--filename=README.md",
+    "--limit=20"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "label": "classify_safe",
+  "source_repo": "noclocks/legal",
+  "source_path": "templates/NDA/Mutual Non-Disclosure Agreement.md",
+  "source_blob_sha": "9ddd0c0437659c33a224dc75e7fe42a7ebae4c2a",
+  "source_url": "https://github.com/noclocks/legal/blob/6eadf63ee5c080f08ba0c3fd2e1182770dc3cfbf/templates/NDA/Mutual%20Non-Disclosure%20Agreement.md",
+  "fetched_at": "2026-05-21T14:57:40.196575+00:00",
+  "length_chars": 4000,
+  "collector_query_terms": [
+    "Mutual",
+    "Non-Disclosure",
+    "Effective Date"
+  ],
+  "collector_extra_flags": [
+    "--extension=md",
+    "--limit=20"
+  ],
+  "relabel_note": "Originally collected with request_permission queries (NDA-template phrasing), but on review the content is a publicly-shared NDA template / demo / explainer (placeholders, 'TEMPLATE'/'DEMONSTRATION' framing, or blog post about NDAs), not a confidential internal document. Re-labeled to classify_safe during Phase 3b.5 T2 audit."
+}

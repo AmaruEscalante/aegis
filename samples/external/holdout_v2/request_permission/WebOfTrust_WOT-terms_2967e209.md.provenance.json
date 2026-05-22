@@ -1,0 +1,18 @@
+{
+  "label": "request_permission",
+  "source_repo": "WebOfTrust/WOT-terms",
+  "source_path": "docs/_gleif/2022-12-06_appendix-1-non-disclosure-agreement_v1.0_final.md",
+  "source_blob_sha": "a2bda322600776401e9396c59a9d5550b5f926b4",
+  "source_url": "https://github.com/WebOfTrust/WOT-terms/blob/d3fe78eddfc9a324ee23cc5f5d83a97e9f6dbbd1/docs/_gleif/2022-12-06_appendix-1-non-disclosure-agreement_v1.0_final.md",
+  "fetched_at": "2026-05-21T14:51:37.853902+00:00",
+  "length_chars": 7751,
+  "collector_query_terms": [
+    "non-disclosure",
+    "agreement",
+    "parties"
+  ],
+  "collector_extra_flags": [
+    "--extension=md",
+    "--limit=20"
+  ]
+}

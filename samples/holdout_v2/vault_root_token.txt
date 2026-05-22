@@ -1,0 +1,25 @@
+Vault initialized with 5 key shares and a key threshold of 3.
+Store these keys somewhere safe.
+
+Unseal Key 1: tH5kQ9mN3pL7vR2wY8jF4dG6cB1aE0zX5mN8pK4nL2wQ9vR7tY5jHfGdBcA0eW
+Unseal Key 2: aB3cD9eF7gH1iJ5kL2mN4oP6qR8sT0uV2wX4yZ6A8B0C2D4E6F8G0H2I4J6K8L0
+Unseal Key 3: zX7yW5vU3tS1rQ9pO7nM5lK3jI1hG9fE7dC5bA3Z1Y9X7W5V3U1T9S7R5Q3P1O9
+Unseal Key 4: M2nO4pQ6rS8tU0vW2xY4zA6bC8dE0fG2hI4jK6lM8nO0pQ2rS4tU6vW8xY0zA2bC
+Unseal Key 5: Q8rT2vY6jH0fG4dB8cA2eW6zM0pK4nL8wQ2vR6tY0jHfGdBcA4eW8zM2pK6nL0w
+
+Initial Root Token: hvs.7nM5pQ3rS8vL2wY6jH9fG4dB1cA0eX5zM7pK4nL2wQ8vR3tY1jHfGdBcA9eW
+
+Vault does not store the generated root key. Without at least 3 keys,
+Vault will remain permanently sealed!
+
+It is possible to generate new unseal keys, provided you have a quorum of
+existing unseal keys shares. See "vault operator rekey" for more information.
+
+To unseal the Vault, run "vault operator unseal" and provide the keys above.
+After unsealing, use "vault login hvs.7nM5pQ3rS8vL2wY6jH9fG4dB1cA0eX5zM7pK4nL2wQ8vR3tY1jHfGdBcA9eW"
+to authenticate as root.
+
+WARNING: The root token is highly privileged. Revoke it after configuring
+authentication backends and granting appropriate permissions to operators.
+Store the unseal keys in geographically separated, access-controlled
+locations. Never store them in the same place.

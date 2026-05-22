@@ -1,0 +1,16 @@
+{
+  "label": "block_transfer",
+  "source_repo": "rust-lang/crates.io",
+  "source_path": ".env.sample",
+  "source_blob_sha": "614122cf485da7706ec1eeba54f2f8f44ab637a6",
+  "source_url": "https://github.com/rust-lang/crates.io/blob/ac24806e21ef55f7f1e2c5571e8d390ea9239e81/.env.sample",
+  "fetched_at": "2026-05-21T14:51:13.277246+00:00",
+  "length_chars": 4626,
+  "collector_query_terms": [
+    "DATABASE_URL"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.sample",
+    "--limit=20"
+  ]
+}

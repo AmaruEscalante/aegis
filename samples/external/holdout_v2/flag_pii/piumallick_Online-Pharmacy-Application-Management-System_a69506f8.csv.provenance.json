@@ -1,0 +1,17 @@
+{
+  "label": "flag_pii",
+  "source_repo": "piumallick/Online-Pharmacy-Application-Management-System",
+  "source_path": "data/2customers.csv",
+  "source_blob_sha": "eede7240765641a7b24a173ee65712b627aafdf0",
+  "source_url": "https://github.com/piumallick/Online-Pharmacy-Application-Management-System/blob/43bd8e5d148414e932fe6ea6f4c4566a91d3fd1f/data/2customers.csv",
+  "fetched_at": "2026-05-21T14:50:52.791642+00:00",
+  "length_chars": 1237,
+  "collector_query_terms": [
+    "email",
+    "address"
+  ],
+  "collector_extra_flags": [
+    "--filename=customers.csv",
+    "--limit=20"
+  ]
+}

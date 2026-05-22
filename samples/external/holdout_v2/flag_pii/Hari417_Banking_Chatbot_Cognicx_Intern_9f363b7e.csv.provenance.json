@@ -1,0 +1,17 @@
+{
+  "label": "flag_pii",
+  "source_repo": "Hari417/Banking_Chatbot_Cognicx_Intern",
+  "source_path": "bank_users.csv",
+  "source_blob_sha": "75b19cac77d588baa5487c66b0a71e224a1030d2",
+  "source_url": "https://github.com/Hari417/Banking_Chatbot_Cognicx_Intern/blob/01d378535c273b32dd5e1c63b02e24a682a99502/bank_users.csv",
+  "fetched_at": "2026-05-21T14:50:43.943539+00:00",
+  "length_chars": 731,
+  "collector_query_terms": [
+    "email",
+    "phone"
+  ],
+  "collector_extra_flags": [
+    "--filename=users.csv",
+    "--limit=20"
+  ]
+}

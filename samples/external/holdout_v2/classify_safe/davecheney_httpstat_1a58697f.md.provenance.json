@@ -1,0 +1,17 @@
+{
+  "label": "classify_safe",
+  "source_repo": "davecheney/httpstat",
+  "source_path": "README.md",
+  "source_blob_sha": "00c5edda9076cb73c1b0cbf1f568bd1d949c80a6",
+  "source_url": "https://github.com/davecheney/httpstat/blob/c64e6dee9402449a92375ec361f6c9ebaddc9a9e/README.md",
+  "fetched_at": "2026-05-21T14:50:02.010039+00:00",
+  "length_chars": 1767,
+  "collector_query_terms": [
+    "##",
+    "Installation"
+  ],
+  "collector_extra_flags": [
+    "--filename=README.md",
+    "--limit=20"
+  ]
+}

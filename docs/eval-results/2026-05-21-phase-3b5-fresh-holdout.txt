@@ -1,0 +1,145 @@
+Loading weights:   0%|          | 0/314 [00:00<?, ?it/s]Loading weights: 100%|██████████| 314/314 [00:00<00:00, 14417.04it/s]
+Loaded head from aegis-head/lr.joblib
+  cases module:       eval_fresh (107 cases)
+  embed_model:        google/embeddinggemma-300m
+  embed_task_prompt:  none
+  classes:            ['block_transfer', 'classify_safe', 'flag_pii', 'request_permission']
+  trained-at C:       10.0
+  CV macro-F1 (train): 0.9543
+
+file                                                                true                  pred    lat (ms)    ok
+--------------------------------------------------------------------------------------------------------------
+3rd-party-integrations_github-team-sync_c29eb9f6.okta        block_transfer        block_transfer       157.4     ✓
+Crown-Commercial-Service_DataSubmissionService_2e96dda7.sample        block_transfer        block_transfer        61.0     ✓
+GeoNode_geonode_639400db.sample                           block_transfer        block_transfer       243.5     ✓
+MerlinStacks_overseek_6ea35abd.example                    block_transfer         classify_safe        77.7     ✗
+Plume-org_Plume_3f95ad79.sample                           block_transfer        block_transfer        85.3     ✓
+PteroCA-Org_panel_9224aa2d.SAMPLE                         block_transfer        block_transfer        83.7     ✓
+ShoppinPal_StockUp_227b465f.example                       block_transfer        block_transfer        82.5     ✓
+SimpleOpenSoftware_chronicle_c849a3dd.template            block_transfer        block_transfer       195.4     ✓
+THE-KIPDEV_ultimate-express-starter_4994fe5d.local        block_transfer        block_transfer        52.5     ✓
+TIGER-AI-Lab_TheoremExplainAgent_bbf2c263.template        block_transfer        block_transfer        56.9     ✓
+UsergeTeam_Loader_837e1085.sample                         block_transfer         classify_safe        73.6     ✗
+ashutoshgithubs_iemhacks_DEV-G_5563be5b.Sample            block_transfer        block_transfer        48.8     ✓
+chicagopython_chipy.org_a02caf48.sample                   block_transfer        block_transfer        91.0     ✓
+codingCoffee_semaphore_8979a4f7.sample                    block_transfer        block_transfer        54.8     ✓
+eero-inc_dnsmonitor_1c35d672.example                      block_transfer        block_transfer        48.8     ✓
+gpimblott_TechRadar_1482564a.sample                       block_transfer        block_transfer        60.6     ✓
+lukevella_rallly_c0858a18.sample                          block_transfer        block_transfer        48.7     ✓
+lukevella_rallly_fe9b1ed6.sample                          block_transfer        block_transfer        69.8     ✓
+okfn-brasil_serenata-de-amor_17282250.sample              block_transfer        block_transfer        67.7     ✓
+plankanban_planka_210e1527.sample                         block_transfer        block_transfer        97.9     ✓
+rust-lang_crates.io_f6f118e0.sample                       block_transfer        block_transfer       134.0     ✓
+usekaneo_kaneo_7bc640c9.sample                            block_transfer        block_transfer        71.9     ✓
+JKHeadley_rest-hapi_3a0435fd.md                            classify_safe         classify_safe       219.8     ✓
+LegalQuants_lq-ai_61ae154e.md                              classify_safe    request_permission       142.0     ✗
+Netflix_flamescope_14436e19.md                             classify_safe         classify_safe       264.6     ✓
+OpenNebula_one_f6e8587b.md                                 classify_safe         classify_safe       156.4     ✓
+Scholar01_sd-webui-mov2mov_1905fb60.md                     classify_safe         classify_safe        89.2     ✓
+ai-forever_ghost_751e9e15.md                               classify_safe         classify_safe       224.7     ✓
+alberto-real_prelegal_b67982a4.md                          classify_safe    request_permission        75.1     ✗
+alibaba_beidou_f012987b.md                                 classify_safe         classify_safe       209.6     ✓
+attr-encrypted_attr_encrypted_8da8335c.md                  classify_safe         classify_safe       223.4     ✓
+baidu_sofa-pbrpc_99cbad93.md                               classify_safe         classify_safe       108.4     ✓
+beste_firebase-php_9b82be74.md                             classify_safe         classify_safe        98.3     ✓
+broadway_broadway_0eae7c46.md                              classify_safe         classify_safe        65.4     ✓
+bugbountycoi_blog_ff8fea70.md                              classify_safe    request_permission       154.9     ✗
+capy-ui_capy_6887950d.md                                   classify_safe         classify_safe       105.9     ✓
+coil-kt_coil_6797c7fb.md                                   classify_safe         classify_safe        76.9     ✓
+davecheney_httpstat_1a58697f.md                            classify_safe         classify_safe        82.3     ✓
+dot-legal_reference_a0a2dc06.md                            classify_safe    request_permission        89.3     ✗
+dotnet_core_844423b6.md                                    classify_safe    request_permission       167.5     ✗
+elevate-for-humanity_Elevate-lms_174973e0.md               classify_safe    request_permission       103.5     ✗
+googleapis_google-cloud-php_bbd40b12.md                    classify_safe         classify_safe        99.5     ✓
+jahboukie_womens-health-ecosystem_c77a7f9d.md              classify_safe    request_permission       153.8     ✗
+janpaepke_ScrollMagic_e6a97622.md                          classify_safe         classify_safe       158.3     ✓
+jaredpalmer_razzle_7cbe03f4.md                             classify_safe         classify_safe        86.5     ✓
+kontena_kontena_6e97450d.md                                classify_safe         classify_safe        76.8     ✓
+lorenzoleonelli_CISSP-Zero-to-Hero_adfbe6da.md             classify_safe    request_permission        75.4     ✗
+noclocks_legal_ddae0a3c.md                                 classify_safe    request_permission        89.8     ✗
+owerdogan_whoami-project_a9985da4.md                       classify_safe         classify_safe       150.4     ✓
+papertrail_legal-docs_819bd654.md                          classify_safe    request_permission       114.9     ✗
+sass-mq_sass-mq_4462b969.md                                classify_safe         classify_safe       111.5     ✓
+tj_ejs_7301da57.md                                         classify_safe         classify_safe       162.6     ✓
+tolonaramim_TEST00_ca192c4d.md                             classify_safe    request_permission       149.7     ✗
+tomwolfe_LawSage_6ba442b4.md                               classify_safe    request_permission        87.6     ✗
+vivo_MoonBox_e566427b.md                                   classify_safe         classify_safe       123.6     ✓
+wapmorgan_Morphos_5fe9fa62.md                              classify_safe         classify_safe       155.2     ✓
+zackiles_git-corporation-template_b6634839.md              classify_safe    request_permission        97.1     ✗
+Hari417_Banking_Chatbot_Cognicx_Intern_9f363b7e.csv              flag_pii              flag_pii        68.3     ✓
+HotTechStack_simple-dataengineering-ai-stack_702f8db2.csv              flag_pii              flag_pii       215.2     ✓
+JULU909_SC2002-Project-MOBLIMA_cc0044d5.csv                     flag_pii              flag_pii        57.1     ✓
+SAP-samples_btp-lcnc-espm_6f8f91ee.csv                          flag_pii              flag_pii       211.9     ✓
+bruno-szdl_dbt-ci-cd_c78d64d8.csv                               flag_pii              flag_pii       105.8     ✓
+camrobert_SalesforceMarketingCloud_3a4226fa.csv                 flag_pii              flag_pii       234.6     ✓
+entechlog_dbt-examples_7e30410d.csv                             flag_pii              flag_pii       107.8     ✓
+francisphan_opera-file-sync_9f2ffd17.csv                        flag_pii              flag_pii       103.5     ✓
+globalswaryoga-ai_swaryoga.com-db_f299de6f.sample               flag_pii              flag_pii        57.7     ✓
+hi-primus_optimus_85144004.csv                                  flag_pii              flag_pii       129.8     ✓
+lookang_TagUI_bf74099c.csv                                      flag_pii              flag_pii        71.5     ✓
+mafudge_ist769-old_e02dfd72.csvh                                flag_pii              flag_pii       147.3     ✓
+meteroid-oss_meteroid_e171a3e1.csv                              flag_pii              flag_pii        61.5     ✓
+microsoft_FabricRTA-in-a-Day_40df8275.csv                       flag_pii              flag_pii        85.4     ✓
+nclamvn_Viet-ERP_435d7e57.csv                                   flag_pii              flag_pii       109.9     ✓
+piumallick_Online-Pharmacy-Application-Management-System_a69506f8.csv              flag_pii              flag_pii        89.9     ✓
+sani903_OpenAgentSafety_5c560c3d.csv                            flag_pii              flag_pii        60.2     ✓
+spree_spree_901a68d9.csv                                        flag_pii              flag_pii       119.0     ✓
+AwesomeController_serious-business_93c3e1d5.md        request_permission    request_permission       103.3     ✓
+WebOfTrust_WOT-terms_2967e209.md                      request_permission    request_permission       189.6     ✓
+Wyndham-Forest-HOA_Wyndham-Forest-HOA_327ac31b.md     request_permission    request_permission       215.2     ✓
+github_dmca_c8bd0731.md                               request_permission         classify_safe        95.5     ✗
+glenlakehoa_declaration_379940b7.md                   request_permission    request_permission       132.5     ✓
+johnbaker_hoa-docs_855de76e.md                        request_permission    request_permission        83.8     ✓
+superdoc-dev_superdoc_6eaecf09.md                     request_permission    request_permission       112.6     ✓
+acquisition_term_sheet_draft.md                       request_permission    request_permission       111.7     ✓
+architecture_decision_record_001.md                        classify_safe         classify_safe        81.0     ✓
+board_meeting_minutes_q3.md                           request_permission    request_permission        99.3     ✓
+clinical_research_consent_form.txt                              flag_pii    request_permission        77.7     ✗
+customer_churn_analysis_q4.md                         request_permission    request_permission       121.1     ✓
+datadog_api_keys.env                                      block_transfer        block_transfer        72.1     ✓
+employee_handbook_compensation_section.md             request_permission    request_permission        96.6     ✓
+employee_termination_notice.md                        request_permission    request_permission       137.0     ✓
+executive_compensation_review_2025.md                 request_permission    request_permission       132.7     ✓
+gh_app_private_key.pem                                    block_transfer        block_transfer       182.9     ✓
+google_service_account.json                               block_transfer        block_transfer       112.3     ✓
+health_screening_intake.txt                                     flag_pii              flag_pii        95.7     ✓
+internal_reorg_proposal.md                            request_permission    request_permission       137.1     ✓
+jury_summons_database.csv                                       flag_pii              flag_pii       220.3     ✓
+k12_grade_report.csv                                            flag_pii              flag_pii       182.0     ✓
+k8s_service_account.yaml                                  block_transfer        block_transfer       112.1     ✓
+litigation_settlement_summary.md                      request_permission    request_permission       109.4     ✓
+loan_underwriting_summary.csv                                   flag_pii              flag_pii       184.8     ✓
+oss_governance_charter.md                                  classify_safe         classify_safe       100.7     ✓
+post_incident_review_outage_2024.md                   request_permission    request_permission       124.5     ✓
+product_roadmap_h1_2026_internal.md                   request_permission    request_permission       120.2     ✓
+q4_revenue_forecast_internal.md                       request_permission    request_permission       118.9     ✓
+release_announcement_blog.md                               classify_safe         classify_safe        98.3     ✓
+series_b_pitch_deck_outline.md                        request_permission    request_permission       127.5     ✓
+vault_root_token.txt                                      block_transfer        block_transfer        92.6     ✓
+
+=== Aggregate metrics ===
+  accuracy:      0.8411  (90/107)
+  macro F1:      0.8507
+  warm p50 (ms): 103.5
+  warm p95 (ms): 219.8
+  warm max (ms): 264.6
+
+=== Per-class classification report ===
+                    precision    recall  f1-score   support
+
+     classify_safe     0.8929    0.6579    0.7576        38
+          flag_pii     1.0000    0.9565    0.9778        23
+    block_transfer     1.0000    0.9259    0.9615        27
+request_permission     0.5625    0.9474    0.7059        19
+
+          accuracy                         0.8411       107
+         macro avg     0.8638    0.8719    0.8507       107
+      weighted avg     0.8843    0.8411    0.8472       107
+
+=== Confusion matrix (rows = true, cols = predicted) ===
+                     | classi flag_p block_ reques
+--------------------------------------------------------
+classify_safe        |     25      0      0     13
+flag_pii             |      0     22      0      1
+block_transfer       |      2      0     25      0
+request_permission   |      1      0      0     18

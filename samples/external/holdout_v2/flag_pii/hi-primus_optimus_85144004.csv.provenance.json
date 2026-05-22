@@ -1,0 +1,17 @@
+{
+  "label": "flag_pii",
+  "source_repo": "hi-primus/optimus",
+  "source_path": "examples/data/dataset-customers.csv",
+  "source_blob_sha": "9f7442198dc123979b93e00e06b9c5619eb7ef72",
+  "source_url": "https://github.com/hi-primus/optimus/blob/cb73842d5662f9781bacb50afd24b94cfb586b95/examples/data/dataset-customers.csv",
+  "fetched_at": "2026-05-21T14:50:47.162977+00:00",
+  "length_chars": 1703,
+  "collector_query_terms": [
+    "email",
+    "address"
+  ],
+  "collector_extra_flags": [
+    "--filename=customers.csv",
+    "--limit=20"
+  ]
+}

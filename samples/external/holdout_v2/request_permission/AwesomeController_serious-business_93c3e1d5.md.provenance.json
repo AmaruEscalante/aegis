@@ -1,0 +1,17 @@
+{
+  "label": "request_permission",
+  "source_repo": "AwesomeController/serious-business",
+  "source_path": "operating_agreement.md",
+  "source_blob_sha": "04b4decd753b490f4ebfe42e5c123c64f3308226",
+  "source_url": "https://github.com/AwesomeController/serious-business/blob/37911f66ed518ef9f0a4617ba35ad834349f50cd/operating_agreement.md",
+  "fetched_at": "2026-05-21T14:57:11.805984+00:00",
+  "length_chars": 4052,
+  "collector_query_terms": [
+    "WITNESSETH",
+    "WHEREAS"
+  ],
+  "collector_extra_flags": [
+    "--extension=md",
+    "--limit=20"
+  ]
+}

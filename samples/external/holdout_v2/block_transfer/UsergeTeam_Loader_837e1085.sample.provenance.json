@@ -1,0 +1,16 @@
+{
+  "label": "block_transfer",
+  "source_repo": "UsergeTeam/Loader",
+  "source_path": "config.env.sample",
+  "source_blob_sha": "ce76e395fd08d11911d45e7cf5a681f2598ada73",
+  "source_url": "https://github.com/UsergeTeam/Loader/blob/2e659b77ca694d5039b9d1912663c17e67c68ab3/config.env.sample",
+  "fetched_at": "2026-05-21T14:53:00.644721+00:00",
+  "length_chars": 1788,
+  "collector_query_terms": [
+    "DATABASE_URL"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.sample",
+    "--limit=20"
+  ]
+}

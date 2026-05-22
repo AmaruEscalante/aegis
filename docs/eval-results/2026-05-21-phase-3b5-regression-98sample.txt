@@ -1,0 +1,136 @@
+Loading weights:   0%|          | 0/314 [00:00<?, ?it/s]Loading weights: 100%|██████████| 314/314 [00:00<00:00, 22909.73it/s]
+Loaded head from aegis-head/lr.joblib
+  cases module:       eval (98 cases)
+  embed_model:        google/embeddinggemma-300m
+  embed_task_prompt:  none
+  classes:            ['block_transfer', 'classify_safe', 'flag_pii', 'request_permission']
+  trained-at C:       10.0
+  CV macro-F1 (train): 0.9543
+
+file                                                                true                  pred    lat (ms)    ok
+--------------------------------------------------------------------------------------------------------------
+open_source_readme.md                                      classify_safe         classify_safe       124.5     ✓
+marketing_copy.txt                                         classify_safe         classify_safe        71.1     ✓
+blog_post_draft.txt                                        classify_safe         classify_safe        70.9     ✓
+patient_records.csv                                             flag_pii              flag_pii        90.9     ✓
+employee_directory.json                                         flag_pii              flag_pii        66.8     ✓
+user_database.json                                              flag_pii              flag_pii        82.7     ✓
+api_config.env                                            block_transfer        block_transfer        74.2     ✓
+kubernetes_secrets.yaml                                   block_transfer        block_transfer        74.4     ✓
+docker_compose_prod.yml                                   block_transfer        block_transfer        45.5     ✓
+vendor_evaluation.txt                                 request_permission    request_permission        64.7     ✓
+partnership_agreement.txt                             request_permission    request_permission        69.4     ✓
+board_meeting_minutes.txt                             request_permission    request_permission        65.5     ✓
+git_commit_message.txt                                     classify_safe         classify_safe        57.7     ✓
+ci_build_log.txt                                           classify_safe         classify_safe        71.0     ✓
+changelog_release_notes.md                                 classify_safe         classify_safe        83.5     ✓
+sales_leads_export.csv                                          flag_pii              flag_pii        90.9     ✓
+conference_attendees.json                                       flag_pii              flag_pii       133.6     ✓
+donor_pledge_tracker.csv                                        flag_pii              flag_pii        89.8     ✓
+openssh_private_key.pem                                   block_transfer        block_transfer        76.2     ✓
+gcp_service_account_key.json                              block_transfer        block_transfer        74.3     ✓
+draft_press_release.txt                               request_permission    request_permission        74.1     ✓
+internal_pricing_strategy.md                          request_permission    request_permission        76.1     ✓
+layoff_communication_draft.md                         request_permission    request_permission        78.3     ✓
+ChainSafe_Delorean-Protocol_7aa4c1d5.md                    classify_safe         classify_safe       162.0     ✓
+tindy2013_stairspeedtest-reborn_145bd434.md                classify_safe         classify_safe       126.6     ✓
+narismadz_O365PowerShell_ffc717d2.csv                           flag_pii              flag_pii        50.6     ✓
+delphix_dxtoolkit_f6fdab90.example                              flag_pii        block_transfer        64.0     ✗
+tambo-ai_tambo_4bac536a.example                           block_transfer         classify_safe       125.0     ✗
+fonoster_fonoster_fba18535.dev                            block_transfer        block_transfer       240.8     ✓
+OperationCode_nda-agreement_truncated.md              request_permission    request_permission       141.3     ✓
+acsandmann_menuanywhere_38bb87f6.md                        classify_safe         classify_safe        51.4     ✓
+Baachi_CouchDB_7cbd229d.md                                 classify_safe         classify_safe        99.5     ✓
+JudyYe_ghop_3d3051df.md                                    classify_safe         classify_safe       172.1     ✓
+cwru-courses_FALL2025ECSE390Team3_412b8bd1.md              classify_safe         classify_safe       156.7     ✓
+rumblefrog_Source-Map-Thumbnails_94c09b7e.md               classify_safe         classify_safe        93.6     ✓
+got-htf_pfm-front-end_d8b9aed9.md                          classify_safe         classify_safe        63.1     ✓
+Sciencentistguy_rust-nix-shell_e7cf1cb7.md                 classify_safe         classify_safe        81.2     ✓
+WeijieMax_EyeReal_6b0dcfe2.md                              classify_safe         classify_safe       211.6     ✓
+dittofeed_dittofeed_54edc973.csv                                flag_pii              flag_pii        44.1     ✓
+burkeazbill_vroClientScripts_e0636b9e.csv                       flag_pii              flag_pii       116.5     ✓
+Macrometacorp_docs_1dfd86e4.csv                                 flag_pii              flag_pii        87.4     ✓
+jeeutai_ChessJaeguk_3b795b51.bak                                flag_pii              flag_pii        51.7     ✓
+phanbaominh_PTUDW-17TN-Nhom13_e5f2c412.csv                      flag_pii              flag_pii        54.3     ✓
+AgrawalVi_ponovo_83908028.csv                                   flag_pii        block_transfer        58.2     ✗
+FreekBes_improved_intra_server_15c05680.example           block_transfer        block_transfer        51.5     ✓
+melkor217_ayanami_23ae012e.example                        block_transfer        block_transfer        42.4     ✓
+pulsarbot_Pulsar_bc903dec.example                         block_transfer        block_transfer        56.0     ✓
+premieroctet_photoshot_8da808a3.example                   block_transfer        block_transfer        53.7     ✓
+owid_owid-grapher_b8fa04ba.example-full                   block_transfer        block_transfer       124.4     ✓
+MarekWo_UPS_monitor_a26577d7.example                      block_transfer         classify_safe        58.1     ✗
+denysdovhan_smart-home_4c389a32.example                   block_transfer         classify_safe        58.3     ✗
+coneshare_coneshare-compose_37f0f89b.example              block_transfer        block_transfer        96.9     ✓
+red-ant_au-non-disclosure_2c7cc125.md                 request_permission    request_permission        91.3     ✓
+fahyc_OpenOwnershipAgreementDraft_c74e0d21.md         request_permission    request_permission       184.3     ✓
+GAURAV30012001_MY-Repo_9b0f5035.md                    request_permission    request_permission       103.6     ✓
+sanddeveloper1-dev_heatseakerbackend_fe39b02d.md      request_permission    request_permission       102.9     ✓
+thooks1203_echodeed_3ea7c0df.md                       request_permission    request_permission        98.9     ✓
+cheshireterminal_Telegram-Trading-Bot_9def10b4.md     request_permission    request_permission       149.0     ✓
+mit_license.txt                                            classify_safe         classify_safe        60.1     ✓
+apache_license.txt                                         classify_safe         classify_safe       102.4     ✓
+rest_api_docs_snippet.md                                   classify_safe         classify_safe        93.5     ✓
+python_tutorial_howto.md                                   classify_safe         classify_safe        81.5     ✓
+stackoverflow_qa.txt                                       classify_safe         classify_safe        74.9     ✓
+saas_help_center_article.md                                classify_safe        block_transfer        82.1     ✗
+conference_talk_abstract.txt                               classify_safe         classify_safe        69.5     ✓
+public_roadmap.md                                          classify_safe         classify_safe        71.0     ✓
+oss_contributor_onboarding.md                              classify_safe         classify_safe        80.9     ✓
+github_issue_bug_report.txt                                classify_safe         classify_safe        76.5     ✓
+apartment_rental_application.txt                                flag_pii              flag_pii        83.4     ✓
+medical_lab_results.txt                                         flag_pii              flag_pii        88.4     ✓
+loan_application_records.csv                                    flag_pii              flag_pii        93.9     ✓
+hr_exit_interview_records.txt                                   flag_pii    request_permission        80.3     ✗
+customer_support_tickets_pii.csv                                flag_pii              flag_pii        88.4     ✓
+voter_registration_list.csv                                     flag_pii              flag_pii        77.7     ✓
+insurance_claim_form.txt                                        flag_pii              flag_pii        75.6     ✓
+hospital_discharge_summary.txt                                  flag_pii              flag_pii        88.1     ✓
+dmv_registration_records.csv                                    flag_pii              flag_pii        94.1     ✓
+wedding_rsvp_list.csv                                           flag_pii              flag_pii        82.8     ✓
+aws_credentials_dev.ini                                   block_transfer        block_transfer        57.2     ✓
+npmrc_token_file                                          block_transfer        block_transfer        72.7     ✓
+pypirc_credentials.ini                                    block_transfer        block_transfer        54.3     ✓
+tls_private_key.pem                                       block_transfer        block_transfer        56.0     ✓
+ssh_config_with_keys                                      block_transfer        block_transfer        63.7     ✓
+discord_webhook_config.env                                block_transfer        block_transfer        57.8     ✓
+postgres_pgpass_file                                      block_transfer        block_transfer        43.0     ✓
+twilio_credentials.env                                    block_transfer        block_transfer        43.6     ✓
+github_actions_secrets_export.env                         block_transfer        block_transfer        66.7     ✓
+ma_term_sheet.md                                      request_permission    request_permission        64.1     ✓
+internal_product_roadmap.md                           request_permission    request_permission        97.7     ✓
+performance_review_document.txt                       request_permission    request_permission        82.3     ✓
+salary_band_table.md                                  request_permission    request_permission       142.2     ✓
+trade_secret_formulation.txt                          request_permission    request_permission        70.3     ✓
+strategic_competitor_analysis.md                      request_permission    request_permission        82.9     ✓
+internal_audit_findings.md                            request_permission    request_permission        73.0     ✓
+executive_offsite_agenda.md                           request_permission    request_permission        88.2     ✓
+litigation_hold_notice.txt                            request_permission    request_permission        64.9     ✓
+crisis_communications_playbook.md                     request_permission    request_permission        98.4     ✓
+investor_relations_talking_points.md                  request_permission    request_permission        93.7     ✓
+
+=== Aggregate metrics ===
+  accuracy:      0.9286  (91/98)
+  macro F1:      0.9285
+  warm p50 (ms): 78.0
+  warm p95 (ms): 156.7
+  warm max (ms): 240.8
+
+=== Per-class classification report ===
+                    precision    recall  f1-score   support
+
+     classify_safe     0.8929    0.9615    0.9259        26
+          flag_pii     1.0000    0.8750    0.9333        24
+    block_transfer     0.8750    0.8750    0.8750        24
+request_permission     0.9600    1.0000    0.9796        24
+
+          accuracy                         0.9286        98
+         macro avg     0.9320    0.9279    0.9285        98
+      weighted avg     0.9312    0.9286    0.9284        98
+
+=== Confusion matrix (rows = true, cols = predicted) ===
+                     | classi flag_p block_ reques
+--------------------------------------------------------
+classify_safe        |     25      0      1      0
+flag_pii             |      0     21      2      1
+block_transfer       |      3      0     21      0
+request_permission   |      0      0      0     24

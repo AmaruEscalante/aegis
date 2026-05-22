@@ -1,0 +1,18 @@
+{
+  "label": "classify_safe",
+  "source_repo": "LegalQuants/lq-ai",
+  "source_path": "docs/quickstart/sample-nda.md",
+  "source_blob_sha": "3c29509ba323d218c719f57feb4b45e89e2af74f",
+  "source_url": "https://github.com/LegalQuants/lq-ai/blob/930142c05242034bd8880bb385cf943a397758e5/docs/quickstart/sample-nda.md",
+  "fetched_at": "2026-05-21T14:57:19.228662+00:00",
+  "length_chars": 6032,
+  "collector_query_terms": [
+    "IN WITNESS WHEREOF",
+    "Disclosing Party"
+  ],
+  "collector_extra_flags": [
+    "--extension=md",
+    "--limit=20"
+  ],
+  "relabel_note": "Originally collected with request_permission queries (NDA-template phrasing), but on review the content is a publicly-shared NDA template / demo / explainer (placeholders, 'TEMPLATE'/'DEMONSTRATION' framing, or blog post about NDAs), not a confidential internal document. Re-labeled to classify_safe during Phase 3b.5 T2 audit."
+}

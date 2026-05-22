@@ -1,0 +1,18 @@
+customer_code,company_name,contact_person,phone,email,address,city,country,payment_terms,credit_limit,status
+# Mã KH (unique),Tên công ty,Người liên hệ,Điện thoại,Email,Địa chỉ,Thành phố,Quốc gia,Điều khoản TT (ngày),Hạn mức tín dụng (VND),Trạng thái
+#
+# === KHÁCH HÀNG TRONG NƯỚC ===
+CUS-001,Công ty TNHH ABC Manufacturing,Nguyễn Văn A,0901234567,a.nguyen@abcmfg.com,123 Đường Lê Lợi,TP.HCM,Vietnam,30,500000000,Active
+CUS-002,Công ty CP XYZ Industries,Trần Thị B,0912345678,b.tran@xyzind.com,456 Nguyễn Huệ,TP.HCM,Vietnam,45,800000000,Active
+CUS-003,Công ty TNHH Sản xuất Minh Phát,Lê Văn C,0923456789,c.le@minhphatsx.com,789 Quốc lộ 1A,Bình Dương,Vietnam,30,300000000,Active
+CUS-004,Tập đoàn Đông Á Group,Phạm Thị D,0934567890,d.pham@dongagroup.vn,321 Điện Biên Phủ,Hà Nội,Vietnam,60,1500000000,Active
+CUS-005,Công ty TNHH Thiết bị Công nghiệp,Hoàng Văn E,0945678901,e.hoang@thietbicn.com,654 Trần Hưng Đạo,Đà Nẵng,Vietnam,30,400000000,Active
+CUS-006,Công ty CP Cơ khí Chính xác,Ngô Thị F,0956789012,f.ngo@cokhicx.com,987 Lý Thường Kiệt,TP.HCM,Vietnam,45,600000000,Active
+CUS-007,Xí nghiệp Sản xuất Thành Công,Đỗ Văn G,0967890123,g.do@thanhcongxn.com,147 Nguyễn Văn Linh,Hải Phòng,Vietnam,30,250000000,Active
+CUS-008,Công ty TNHH Tự động hóa Smart,Vũ Thị H,0978901234,h.vu@smartauto.vn,258 Cách Mạng Tháng 8,TP.HCM,Vietnam,30,450000000,Active
+#
+# === KHÁCH HÀNG QUỐC TẾ ===
+CUS-INT-001,Singapore Tech Pte Ltd,John Tan,+6591234567,john.tan@sgtech.sg,123 Industrial Ave,Singapore,Singapore,30,1000000000,Active
+CUS-INT-002,Thailand Manufacturing Co,Somchai K,+66891234567,somchai@thaimfg.co.th,456 Sukhumvit Rd,Bangkok,Thailand,45,700000000,Active
+CUS-INT-003,Japan Precision Inc,Yamamoto T,+81312345678,yamamoto@japanpre.jp,789 Tech Park,Tokyo,Japan,60,2000000000,Active
+CUS-INT-004,Korea Industrial Corp,Kim Min Joon,+82212345678,minjoon@koreaind.kr,321 Gangnam District,Seoul,Korea,45,1200000000,Active

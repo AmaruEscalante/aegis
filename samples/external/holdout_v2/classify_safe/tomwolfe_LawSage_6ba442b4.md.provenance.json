@@ -1,0 +1,18 @@
+{
+  "label": "classify_safe",
+  "source_repo": "tomwolfe/LawSage",
+  "source_path": "public/templates/nda-template.md",
+  "source_blob_sha": "ba4d9bd1436e79c06ac10c5fcbc74adae95df018",
+  "source_url": "https://github.com/tomwolfe/LawSage/blob/049ce3d0255dfc70cf7e3d89a2350b3019768ff0/public/templates/nda-template.md",
+  "fetched_at": "2026-05-21T14:57:20.389805+00:00",
+  "length_chars": 3121,
+  "collector_query_terms": [
+    "IN WITNESS WHEREOF",
+    "Disclosing Party"
+  ],
+  "collector_extra_flags": [
+    "--extension=md",
+    "--limit=20"
+  ],
+  "relabel_note": "Originally collected with request_permission queries (NDA-template phrasing), but on review the content is a publicly-shared NDA template / demo / explainer (placeholders, 'TEMPLATE'/'DEMONSTRATION' framing, or blog post about NDAs), not a confidential internal document. Re-labeled to classify_safe during Phase 3b.5 T2 audit."
+}

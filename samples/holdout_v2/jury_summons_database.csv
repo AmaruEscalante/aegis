@@ -1,0 +1,21 @@
+juror_id,full_name,street_address,city,state,zip,phone,summons_date,report_date,case_number,jurisdiction,status
+J-2024-08471,Maria Lopez,2418 Folsom Street,San Francisco,CA,94110,(415) 555-0142,2024-09-04,2024-10-08,SF-CR-24-1182,San Francisco Superior Court,confirmed
+J-2024-08472,Devon Park,755 Filbert Avenue Apt 3,San Francisco,CA,94133,(415) 555-0193,2024-09-04,2024-10-08,SF-CR-24-1182,San Francisco Superior Court,confirmed
+J-2024-08473,Aisha Bello,1207 Divisadero Street,San Francisco,CA,94115,(415) 555-0218,2024-09-04,2024-10-08,SF-CR-24-1185,San Francisco Superior Court,deferred
+J-2024-08474,Jonas Reinhart,89 Sanchez Street Apt B,San Francisco,CA,94114,(415) 555-0264,2024-09-04,2024-10-08,SF-CR-24-1185,San Francisco Superior Court,confirmed
+J-2024-08475,Priya Subramanian,3415 23rd Street,San Francisco,CA,94110,(415) 555-0309,2024-09-04,2024-10-08,SF-CV-24-0871,San Francisco Superior Court,confirmed
+J-2024-08476,Carlos Mendoza,1622 Geary Boulevard,San Francisco,CA,94115,(415) 555-0354,2024-09-04,2024-10-08,SF-CV-24-0871,San Francisco Superior Court,excused
+J-2024-08477,Hannah Wexler,2855 Lake Street,San Francisco,CA,94121,(415) 555-0399,2024-09-04,2024-10-08,SF-CR-24-1182,San Francisco Superior Court,confirmed
+J-2024-08478,Tomasz Wojcik,1108 Vermont Street,San Francisco,CA,94110,(415) 555-0431,2024-09-04,2024-10-08,SF-CR-24-1187,San Francisco Superior Court,confirmed
+J-2024-08479,Linnea Hagstrom,468 Hayes Street Apt 4,San Francisco,CA,94102,(415) 555-0478,2024-09-04,2024-10-08,SF-CV-24-0871,San Francisco Superior Court,confirmed
+J-2024-08480,Reggie Daniels,2017 Webster Street,San Francisco,CA,94115,(415) 555-0512,2024-09-04,2024-10-08,SF-CR-24-1187,San Francisco Superior Court,confirmed
+J-2024-08481,Mireya Solano,725 Mission Street Apt 412,San Francisco,CA,94103,(415) 555-0557,2024-09-04,2024-10-08,SF-CR-24-1185,San Francisco Superior Court,deferred
+J-2024-08482,Bashir Khalid,3902 California Street,San Francisco,CA,94118,(415) 555-0598,2024-09-04,2024-10-08,SF-CV-24-0873,San Francisco Superior Court,confirmed
+J-2024-08483,Yelena Marchetti,221 Clement Street Apt 7,San Francisco,CA,94118,(415) 555-0631,2024-09-04,2024-10-08,SF-CV-24-0873,San Francisco Superior Court,confirmed
+J-2024-08484,Owen Pritchard,1456 Page Street,San Francisco,CA,94117,(415) 555-0674,2024-09-04,2024-10-08,SF-CR-24-1182,San Francisco Superior Court,confirmed
+J-2024-08485,Naledi Mokoena,2034 Bryant Street,San Francisco,CA,94110,(415) 555-0719,2024-09-04,2024-10-08,SF-CR-24-1187,San Francisco Superior Court,excused
+J-2024-08486,Felipe Arroyo,1729 Polk Street,San Francisco,CA,94109,(415) 555-0754,2024-09-04,2024-10-08,SF-CV-24-0871,San Francisco Superior Court,confirmed
+J-2024-08487,Suvi Lehtonen,318 Frederick Street,San Francisco,CA,94117,(415) 555-0797,2024-09-04,2024-10-08,SF-CR-24-1185,San Francisco Superior Court,confirmed
+J-2024-08488,Demetrius Ngata,2545 Bush Street Apt 9,San Francisco,CA,94115,(415) 555-0832,2024-09-04,2024-10-08,SF-CV-24-0873,San Francisco Superior Court,confirmed
+J-2024-08489,Kira Volkov,1822 Stockton Street,San Francisco,CA,94133,(415) 555-0876,2024-09-04,2024-10-08,SF-CR-24-1187,San Francisco Superior Court,confirmed
+J-2024-08490,Anders Sigurdsson,640 Cole Street Apt 2,San Francisco,CA,94117,(415) 555-0918,2024-09-04,2024-10-08,SF-CV-24-0871,San Francisco Superior Court,deferred

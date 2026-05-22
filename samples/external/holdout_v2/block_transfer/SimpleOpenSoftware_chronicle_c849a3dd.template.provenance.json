@@ -1,0 +1,17 @@
+{
+  "label": "block_transfer",
+  "source_repo": "SimpleOpenSoftware/chronicle",
+  "source_path": "config.env.template",
+  "source_blob_sha": "145a9823eac4c126c05568d196916f2ef529f6a9",
+  "source_url": "https://github.com/SimpleOpenSoftware/chronicle/blob/71490c53de1696de2ddfb0cc55bba5e2d607944a/config.env.template",
+  "fetched_at": "2026-05-21T14:53:20.356845+00:00",
+  "length_chars": 6110,
+  "collector_query_terms": [
+    "API_KEY",
+    "SECRET_KEY"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.template",
+    "--limit=20"
+  ]
+}

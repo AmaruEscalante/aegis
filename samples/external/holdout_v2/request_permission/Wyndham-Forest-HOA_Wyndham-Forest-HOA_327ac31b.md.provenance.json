@@ -1,0 +1,17 @@
+{
+  "label": "request_permission",
+  "source_repo": "Wyndham-Forest-HOA/Wyndham-Forest-HOA",
+  "source_path": "documents/Declaration of Covenants Conditions and Restrictions/Amendments/2013-1/Text.md",
+  "source_blob_sha": "99803d8a3768a263f25553fa5bcf4b7f40c9f688",
+  "source_url": "https://github.com/Wyndham-Forest-HOA/Wyndham-Forest-HOA/blob/e4754574884f11367120eb48e8fa39d2fe761095/documents/Declaration%20of%20Covenants%20Conditions%20and%20Restrictions/Amendments/2013-1/Text.md",
+  "fetched_at": "2026-05-21T14:57:08.913056+00:00",
+  "length_chars": 7465,
+  "collector_query_terms": [
+    "WITNESSETH",
+    "WHEREAS"
+  ],
+  "collector_extra_flags": [
+    "--extension=md",
+    "--limit=20"
+  ]
+}

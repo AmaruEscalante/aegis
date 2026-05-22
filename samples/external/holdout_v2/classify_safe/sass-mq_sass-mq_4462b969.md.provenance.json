@@ -1,0 +1,17 @@
+{
+  "label": "classify_safe",
+  "source_repo": "sass-mq/sass-mq",
+  "source_path": "CHANGELOG.md",
+  "source_blob_sha": "026c525fce5f4c28498db263dff42b24f3ae6582",
+  "source_url": "https://github.com/sass-mq/sass-mq/blob/38f0a152cd787fa2a1367b3c5442c2bedb764768/CHANGELOG.md",
+  "fetched_at": "2026-05-21T14:50:27.743923+00:00",
+  "length_chars": 3446,
+  "collector_query_terms": [
+    "##",
+    "Unreleased"
+  ],
+  "collector_extra_flags": [
+    "--filename=CHANGELOG.md",
+    "--limit=20"
+  ]
+}

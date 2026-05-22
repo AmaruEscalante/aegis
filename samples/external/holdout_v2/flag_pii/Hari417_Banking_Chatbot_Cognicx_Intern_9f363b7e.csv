@@ -1,0 +1,8 @@
+account_number,name,credit_score,balance,account_type,branch,ifsc,phone,email,monthly_salary
+1234567890,Arun Kumar,780,52000.5,Savings,Chennai Main,BHAR00012,9876543210.0,arun@example.com,100000.0
+2345678901,Priya Sharma,685,10000.0,Current,Bangalore Central,BHAR0002,9876512345.0,priya@example.com,
+3456789012,Vikram Iyer,825,300000.0,Savings,Mumbai North,BHAR0003,9876509876.0,vikram@example.com,
+4567890123,Meena Das,590,2000.0,Savings,Kolkata City,BHAR0004,9876598765.0,meena@example.com,
+5678901234,Karthik Rao,720,25000.0,Salary,Hyderabad Tech,BHAR0005,9876587654.0,karthik@example.com,
+8939738179,hariharan,700,,,,,,,45000.0
+3123221060,Hariharan Sp,700,5050500,savings,juhcgebc,guc584821,8939738179,Data not available,90000

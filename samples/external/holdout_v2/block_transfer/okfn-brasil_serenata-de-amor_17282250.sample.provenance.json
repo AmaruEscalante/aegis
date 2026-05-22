@@ -1,0 +1,16 @@
+{
+  "label": "block_transfer",
+  "source_repo": "okfn-brasil/serenata-de-amor",
+  "source_path": "contrib/.env.sample",
+  "source_blob_sha": "56732f8896d42f15ebf19266b8537ef76ed10b97",
+  "source_url": "https://github.com/okfn-brasil/serenata-de-amor/blob/e7aeba78100b1ec96c2a79a85d6f5dfd1a8adaf7/contrib/.env.sample",
+  "fetched_at": "2026-05-21T14:51:10.769397+00:00",
+  "length_chars": 1266,
+  "collector_query_terms": [
+    "DATABASE_URL"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.sample",
+    "--limit=20"
+  ]
+}

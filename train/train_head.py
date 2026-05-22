@@ -34,14 +34,92 @@ from aegis.embedding import Embedder  # noqa: E402
 # ── Config ──────────────────────────────────────────────────────────
 DATASET_PATH = pathlib.Path("train/dataset.jsonl")
 HEAD_PATH = pathlib.Path("aegis-head/lr.joblib")
+WINNER_PATH = pathlib.Path("train/sweep_winner.json")
 EMBED_DIM = 768
 RANDOM_SEED = 42
-C_GRID = [0.1, 1.0, 10.0]
+DEFAULT_C_GRID = [0.1, 1.0, 10.0]
+VALID_PROMPTS = ("none", "classification", "classify_short", "classify_doc")
 
 
-# ── Step A: embedding one piece of text ─────────────────────────────
+def _parse_args() -> tuple[str, float, bool]:
+    """Resolve (prompt, C, dry_run) from CLI flags or sweep_winner.json.
+
+    Resolution order:
+      1. Explicit --prompt / --C flags
+      2. train/sweep_winner.json (if present)
+      3. Error
+    """
+    import argparse
+    parser = argparse.ArgumentParser(description="Train the Aegis LR head.")
+    parser.add_argument("--prompt", choices=VALID_PROMPTS, default=None,
+                        help="Task-prompt variant (overrides sweep_winner.json).")
+    parser.add_argument("--C", type=float, default=None,
+                        help="Regularization strength (overrides sweep_winner.json).")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Print resolved (prompt, C) and exit without training.")
+    args = parser.parse_args()
+
+    prompt: str | None = args.prompt
+    C: float | None = args.C
+
+    if prompt is None or C is None:
+        if WINNER_PATH.exists():
+            try:
+                winner = json.loads(WINNER_PATH.read_text())
+            except (json.JSONDecodeError, OSError) as e:
+                print(f"ERROR: failed to read {WINNER_PATH}: {e}", file=sys.stderr)
+                sys.exit(2)
+            if prompt is None:
+                prompt = winner.get("prompt")
+            if C is None:
+                C = winner.get("C")
+
+    if prompt is None or C is None:
+        print(
+            "ERROR: must supply --prompt and --C, or run train/prompt_sweep.py first to\n"
+            f"produce {WINNER_PATH} (consumed automatically when flags are omitted).",
+            file=sys.stderr,
+        )
+        sys.exit(2)
+
+    if prompt not in VALID_PROMPTS:
+        print(f"ERROR: invalid prompt {prompt!r}; valid: {VALID_PROMPTS}", file=sys.stderr)
+        sys.exit(2)
+
+    return prompt, float(C), args.dry_run
+
+
+def _build_cv_results(winner_data: dict | None, selected_prompt: str, selected_C: float) -> dict:
+    """Build the legacy {C: {macro_f1_mean: ..., ...}} dict from sweep_winner.json data.
+
+    Filters all_results to entries matching the selected prompt. If winner_data is None
+    or has no entries for the prompt, returns a single stub entry keyed by selected_C
+    so downstream lookups like `bundle['cv_results'][bundle['C']]['macro_f1_mean']`
+    continue to work in a degraded state (the stub returns None for the metric).
+    """
+    out: dict[float, dict] = {}
+    if winner_data:
+        for entry in winner_data.get("all_results", []):
+            if entry["prompt"] == selected_prompt:
+                out[float(entry["C"])] = {
+                    "macro_f1_mean": entry["mean_f1"],
+                    "macro_f1_std": entry["std_f1"],
+                    "accuracy_mean": entry["mean_acc"],
+                    "accuracy_std": entry["std_acc"],
+                }
+    if not out:
+        out[selected_C] = {
+            "macro_f1_mean": None,
+            "note": "no sweep_winner.json available; metrics not recorded",
+        }
+    return out
+
+
+# Resolved at module load via _parse_args() in __main__
+TASK_PROMPT: str = "none"  # placeholder; real value set at runtime
+SELECTED_C: float = 1.0     # placeholder; real value set at runtime
+
 _EMBEDDER: Embedder | None = None
-TASK_PROMPT = "none"  # Phase 3b T7g rollback test — classify_doc failed held-out at 88/98
 
 
 def _get_embedder() -> Embedder:
@@ -150,6 +228,13 @@ def print_confusion_matrix(y_true, y_pred, classes):
 
 # ── Entry point ─────────────────────────────────────────────────────
 if __name__ == "__main__":
+    TASK_PROMPT, SELECTED_C, DRY_RUN = _parse_args()
+
+    if DRY_RUN:
+        # Print resolved config and exit — used by tests + sanity checks.
+        print(json.dumps({"prompt": TASK_PROMPT, "C": SELECTED_C}, indent=2))
+        sys.exit(0)
+
     if not DATASET_PATH.exists():
         print(f"ERROR: {DATASET_PATH} not found. Run `python3 train/curated_data.py` first.", file=sys.stderr)
         sys.exit(1)
@@ -164,22 +249,32 @@ if __name__ == "__main__":
     norms = np.linalg.norm(X, axis=1)
     print(f"L2 norms: min={norms.min():.4f}  mean={norms.mean():.4f}  max={norms.max():.4f}")
 
-    # --- Train with CV-driven C selection
-    best_C, cv_results = sweep_C_with_cv(X, y, C_GRID)
-
-    # --- Fit final model
-    model = fit_final(X, y, best_C)
+    # --- Skip the CV sweep — the prompt_sweep step already selected (prompt*, C*).
+    print(f"\n=== Fitting head at prompt={TASK_PROMPT!r}, C={SELECTED_C} (chosen upstream) ===")
+    model = fit_final(X, y, SELECTED_C)
 
     # --- Save
+    winner_data: dict | None = None
+    if WINNER_PATH.exists():
+        try:
+            winner_data = json.loads(WINNER_PATH.read_text())
+        except (json.JSONDecodeError, OSError):
+            winner_data = None
+    cv_results = _build_cv_results(winner_data, TASK_PROMPT, SELECTED_C)
+
     bundle = {
         "model": model,
         "embed_model": Embedder.DEFAULT_MODEL_ID,
         "embed_task_prompt": TASK_PROMPT,
+        "C": SELECTED_C,
         "cv_results": cv_results,
-        "C": best_C,
+        "training_set_phase": "3b.5",
+        "training_set_size": int(X.shape[0]),
+        "trained_at": time.strftime("%Y-%m-%d"),
+        "selection_source": "prompt_sweep.py CV winner" if WINNER_PATH.exists() else "manual flags",
     }
     HEAD_PATH.parent.mkdir(parents=True, exist_ok=True)
     joblib.dump(bundle, HEAD_PATH)
     print(f"\nSaved trained head to {HEAD_PATH}  ({HEAD_PATH.stat().st_size/1024:.1f} KB)")
-    print(f"  embed_model:       {bundle['embed_model']}")
-    print(f"  embed_task_prompt: {bundle['embed_task_prompt']}")
+    for k in ("embed_model", "embed_task_prompt", "C", "training_set_phase", "training_set_size", "trained_at"):
+        print(f"  {k}: {bundle[k]}")

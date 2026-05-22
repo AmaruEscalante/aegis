@@ -1,0 +1,17 @@
+{
+  "label": "flag_pii",
+  "source_repo": "entechlog/dbt-examples",
+  "source_path": "dbt-erd/seeds/seed_customers.csv",
+  "source_blob_sha": "7d591a45f2d09fa5497e74546d7055b8d25de2d0",
+  "source_url": "https://github.com/entechlog/dbt-examples/blob/1f4a8cc2eb5f26b8044332402d6a43eaaaec783c/dbt-erd/seeds/seed_customers.csv",
+  "fetched_at": "2026-05-21T14:50:53.601863+00:00",
+  "length_chars": 1709,
+  "collector_query_terms": [
+    "email",
+    "address"
+  ],
+  "collector_extra_flags": [
+    "--filename=customers.csv",
+    "--limit=20"
+  ]
+}

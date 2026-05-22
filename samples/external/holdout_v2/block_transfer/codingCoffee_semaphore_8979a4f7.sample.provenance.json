@@ -1,0 +1,16 @@
+{
+  "label": "block_transfer",
+  "source_repo": "codingCoffee/semaphore",
+  "source_path": "frontend/.nextjs.env.sample",
+  "source_blob_sha": "4ee31ea2be102c45f1434c0bd9d56d4c1f4a5e5d",
+  "source_url": "https://github.com/codingCoffee/semaphore/blob/f895559047646a9f96356202d6e4fb491d76ea34/frontend/.nextjs.env.sample",
+  "fetched_at": "2026-05-21T14:53:03.612612+00:00",
+  "length_chars": 572,
+  "collector_query_terms": [
+    "DATABASE_URL"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.sample",
+    "--limit=20"
+  ]
+}

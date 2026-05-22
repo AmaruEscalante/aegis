@@ -52,9 +52,22 @@ QUERIES: dict[str, list[tuple[list[str], list[str]]]] = {
         (["email", "phone"],   ["--filename=contacts.csv", "--limit=20"]),
     ],
     "block_transfer": [
-        (["SECRET", "TOKEN"],   ["--filename=.env.example", "--limit=20"]),
-        (["DATABASE_URL"],      ["--filename=.env.sample",  "--limit=20"]),
-        (["private_key_id"],    ["--extension=json", "--limit=20"]),
+        (["SECRET", "TOKEN"],     ["--filename=.env.example",  "--limit=20"]),
+        (["DATABASE_URL"],        ["--filename=.env.sample",   "--limit=20"]),
+        (["private_key_id"],      ["--extension=json",         "--limit=20"]),
+        # Added during the Phase 3b.5 T2 holdout_v2 mining session — `.env.template`
+        # is a third common naming convention alongside .env.example / .env.sample
+        # and produces a distinct repo population.
+        (["API_KEY", "SECRET_KEY"], ["--filename=.env.template", "--limit=20"]),
+        # Added during the Phase 3b.5 T4 training-mining session — the four
+        # query patterns above were fully consumed by T2's holdout_v2 mining,
+        # so the gh search top-20 cache returns the same repos. Adding
+        # field-name combinations (JWT_SECRET+POSTGRES, REDIS_URL+SECRET,
+        # AWS_ACCESS+S3) surfaces distinct repo populations and avoids
+        # SHA-256/provenance-triple overlap with holdout_v2.
+        (["JWT_SECRET", "POSTGRES"], ["--filename=.env.example", "--limit=20"]),
+        (["REDIS_URL", "SECRET"],    ["--filename=.env.example", "--limit=20"]),
+        (["AWS_ACCESS", "S3"],       ["--filename=.env.example", "--limit=20"]),
     ],
     "request_permission": [
         # Public CONFIDENTIAL-tone documents are rare. The "CONFIDENTIAL" keyword
@@ -63,6 +76,14 @@ QUERIES: dict[str, list[tuple[list[str], list[str]]]] = {
         # structural NDA-template phrasing instead.
         (["non-disclosure", "agreement", "parties"], ["--extension=md", "--limit=20"]),
         (["WITNESSETH", "WHEREAS"], ["--extension=md", "--limit=20"]),
+        # Added during the Phase 3b.5 T2 holdout_v2 mining session — these
+        # alternate NDA-structural phrasings surface a different repo
+        # population than the two queries above and were necessary to reach
+        # the target sample count. (Note: many hits are still publicly-shared
+        # templates rather than confidential documents; downstream auditing
+        # re-labels those to classify_safe.)
+        (["IN WITNESS WHEREOF", "Disclosing Party"], ["--extension=md", "--limit=20"]),
+        (["Mutual", "Non-Disclosure", "Effective Date"], ["--extension=md", "--limit=20"]),
     ],
 }
 
@@ -143,8 +164,9 @@ def gh_fetch_blob(owner_repo: str, blob_sha: str) -> str | None:
 
 
 # ── Main collection loop ─────────────────────────────────────────────
-def collect(label: str, max_count: int) -> list[pathlib.Path]:
-    out_dir = pathlib.Path("samples/external") / label
+def collect(label: str, max_count: int,
+            output_prefix: pathlib.Path = pathlib.Path("samples/external")) -> list[pathlib.Path]:
+    out_dir = output_prefix / label
     out_dir.mkdir(parents=True, exist_ok=True)
     collected: list[pathlib.Path] = []
 
@@ -207,10 +229,18 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("label", choices=list(QUERIES.keys()))
     ap.add_argument("--max", type=int, default=2)
+    ap.add_argument(
+        "--output-prefix",
+        type=pathlib.Path,
+        default=pathlib.Path("samples/external"),
+        help="Directory under which the per-class subdirectory is created "
+             "(default: samples/external).",
+    )
     args = ap.parse_args()
 
-    print(f"Collecting up to {args.max} samples for label={args.label}")
-    collected = collect(args.label, args.max)
+    print(f"Collecting up to {args.max} samples for label={args.label} "
+          f"into {args.output_prefix}/{args.label}")
+    collected = collect(args.label, args.max, args.output_prefix)
     print(f"\nCollected {len(collected)} files for {args.label}:")
     for p in collected:
         print(f"  {p}")

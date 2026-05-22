@@ -1,0 +1,19 @@
+{
+  "label": "block_transfer",
+  "source_repo": "cisagov/Malcolm",
+  "source_path": "config/netbox-secret.env.example",
+  "source_blob_sha": "852971995acdc532d25c870f6b80f622ba1148fb",
+  "source_url": "https://github.com/cisagov/Malcolm/blob/eca9b74d2582792b5c7d4afad6abf0296a29f6e8/config/netbox-secret.env.example",
+  "fetched_at": "2026-05-21T15:54:14.227096+00:00",
+  "length_chars": 353,
+  "collector_query_terms": [
+    "SECRET",
+    "TOKEN"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.example",
+    "--limit=20"
+  ],
+  "hand_assigned_label": "classify_safe",
+  "relabel_note": "All credential slots are empty or use literal 'xxxxxxxxx...' placeholder strings (no real-shape randomness); admin/admin is a textbook demo value. Pure placeholder template."
+}

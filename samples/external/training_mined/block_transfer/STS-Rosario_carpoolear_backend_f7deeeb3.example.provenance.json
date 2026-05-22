@@ -1,0 +1,19 @@
+{
+  "label": "block_transfer",
+  "source_repo": "STS-Rosario/carpoolear_backend",
+  "source_path": ".env.example",
+  "source_blob_sha": "03c38314da16c78102709cfe5771a21e34139618",
+  "source_url": "https://github.com/STS-Rosario/carpoolear_backend/blob/1e9e5d58a170f9216290c597b1be714eac8badb0/.env.example",
+  "fetched_at": "2026-05-21T15:54:17.608036+00:00",
+  "length_chars": 7283,
+  "collector_query_terms": [
+    "SECRET",
+    "TOKEN"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.example",
+    "--limit=20"
+  ],
+  "hand_assigned_label": "block_transfer",
+  "relabel_note": "Contains a real-shape Laravel APP_KEY (base64:s8fIxr3u2BvHDMo21mcHluh8y0znrykZ+w+0lZZNqnY=, 32-byte high-entropy) committed to the repo. Real-shape credential -> block_transfer."
+}

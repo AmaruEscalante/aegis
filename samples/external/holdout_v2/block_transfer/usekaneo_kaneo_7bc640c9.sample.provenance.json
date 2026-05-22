@@ -1,0 +1,16 @@
+{
+  "label": "block_transfer",
+  "source_repo": "usekaneo/kaneo",
+  "source_path": ".env.sample",
+  "source_blob_sha": "229ae4c1560a2fe575a8709aec52134579b99b57",
+  "source_url": "https://github.com/usekaneo/kaneo/blob/0f39464f5873d0525dd29f533898ecc323431ed4/.env.sample",
+  "fetched_at": "2026-05-21T14:51:16.346764+00:00",
+  "length_chars": 1618,
+  "collector_query_terms": [
+    "DATABASE_URL"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.sample",
+    "--limit=20"
+  ]
+}

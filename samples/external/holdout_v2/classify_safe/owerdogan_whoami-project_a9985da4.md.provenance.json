@@ -1,0 +1,17 @@
+{
+  "label": "classify_safe",
+  "source_repo": "owerdogan/whoami-project",
+  "source_path": "README.md",
+  "source_blob_sha": "006dde7b4f1ae6aa59bf9589db6e1513cf350dac",
+  "source_url": "https://github.com/owerdogan/whoami-project/blob/e461ea906a91272a7aafa76c2968c84c2a7a5f22/README.md",
+  "fetched_at": "2026-05-21T14:50:03.199345+00:00",
+  "length_chars": 5057,
+  "collector_query_terms": [
+    "##",
+    "Installation"
+  ],
+  "collector_extra_flags": [
+    "--filename=README.md",
+    "--limit=20"
+  ]
+}

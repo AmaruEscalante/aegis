@@ -1,0 +1,17 @@
+{
+  "label": "flag_pii",
+  "source_repo": "globalswaryoga-ai/swaryoga.com-db",
+  "source_path": "data/tally/customers.csv.sample",
+  "source_blob_sha": "8fdf9d685e4745bb02d12d0d464108aa6b3e135f",
+  "source_url": "https://github.com/globalswaryoga-ai/swaryoga.com-db/blob/67bbd9f67f0007ac2420880744180ede4504ef07/data/tally/customers.csv.sample",
+  "fetched_at": "2026-05-21T14:50:51.457156+00:00",
+  "length_chars": 395,
+  "collector_query_terms": [
+    "email",
+    "address"
+  ],
+  "collector_extra_flags": [
+    "--filename=customers.csv",
+    "--limit=20"
+  ]
+}

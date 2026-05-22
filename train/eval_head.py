@@ -5,9 +5,13 @@ Same eval set used across Phase 1-3, so results are directly comparable.
 
 Usage:
     .venv/bin/python train/eval_head.py
+    .venv/bin/python train/eval_head.py --cases-module eval_fresh
+    .venv/bin/python train/eval_head.py --cases-module eval_regression
 """
 from __future__ import annotations
 
+import argparse
+import importlib
 import pathlib
 import statistics
 import sys
@@ -25,12 +29,34 @@ from sklearn.metrics import (
 # Add repo root to import path
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 from aegis.embedding import Embedder  # noqa: E402
-from eval import CASES, LABELS  # noqa: E402
 
 HEAD_PATH = pathlib.Path("aegis-head/lr.joblib")
 
+_VALID_CASES_MODULES = ("eval", "eval_fresh", "eval_regression")
+
+
+def _resolve_cases_module(name: str):
+    """Import the chosen CASES module by name."""
+    if name not in _VALID_CASES_MODULES:
+        raise ValueError(
+            f"unknown cases module {name!r}; valid: {', '.join(_VALID_CASES_MODULES)}"
+        )
+    return importlib.import_module(name)
+
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description="Eval the Aegis LR head.")
+    parser.add_argument(
+        "--cases-module",
+        default="eval",
+        choices=list(_VALID_CASES_MODULES),
+        help="Which CASES list to score against (default: eval)",
+    )
+    args = parser.parse_args()
+    cases_module = _resolve_cases_module(args.cases_module)
+    CASES = cases_module.CASES
+    LABELS = list(cases_module.LABELS)
+
     if not HEAD_PATH.exists():
         print(f"ERROR: {HEAD_PATH} not found. Run train/train_head.py first.", file=sys.stderr)
         return 1
@@ -52,11 +78,20 @@ def main() -> int:
 
     embedder = Embedder(model_id=embed_model, default_task=task_prompt)
     print(f"Loaded head from {HEAD_PATH}")
+    print(f"  cases module:       {args.cases_module} ({len(CASES)} cases)")
     print(f"  embed_model:        {embed_model}")
     print(f"  embed_task_prompt:  {task_prompt}")
     print(f"  classes:            {list(model.classes_)}")
     print(f"  trained-at C:       {bundle.get('C')}")
-    print(f"  CV macro-F1 (train): {bundle['cv_results'][bundle['C']]['macro_f1_mean']:.4f}")
+    cv_f1 = (
+        bundle.get("cv_results", {})
+        .get(bundle.get("C"), {})
+        .get("macro_f1_mean")
+    )
+    if cv_f1 is None:
+        print(f"  CV macro-F1 (train): n/a (no sweep data in bundle)")
+    else:
+        print(f"  CV macro-F1 (train): {cv_f1:.4f}")
 
     # --- Score each of the 30 cases
     y_true, y_pred, latencies = [], [], []

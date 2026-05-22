@@ -1,0 +1,17 @@
+{
+  "label": "block_transfer",
+  "source_repo": "3rd-party-integrations/github-team-sync",
+  "source_path": ".env.example.okta",
+  "source_blob_sha": "e341c3dba1d348c2b489db5c7111337ef3f98cf2",
+  "source_url": "https://github.com/3rd-party-integrations/github-team-sync/blob/985ac912ff568cd475e11f578840c818e665d1b0/.env.example.okta",
+  "fetched_at": "2026-05-21T14:52:54.600306+00:00",
+  "length_chars": 2706,
+  "collector_query_terms": [
+    "SECRET",
+    "TOKEN"
+  ],
+  "collector_extra_flags": [
+    "--filename=.env.example",
+    "--limit=20"
+  ]
+}

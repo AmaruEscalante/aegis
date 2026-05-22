@@ -1,0 +1,18 @@
+{
+  "label": "classify_safe",
+  "source_repo": "kontena/kontena",
+  "source_path": "README.md",
+  "source_blob_sha": "029892cc7108fbbbd44c75cecb98b681272483b0",
+  "source_url": "https://github.com/kontena/kontena/blob/5cb5b4457895985231ac88e78c8cbc5a8ffb5ec7/README.md",
+  "fetched_at": "2026-05-21T14:50:17.524606+00:00",
+  "length_chars": 2979,
+  "collector_query_terms": [
+    "##",
+    "Quick",
+    "Start"
+  ],
+  "collector_extra_flags": [
+    "--filename=README.md",
+    "--limit=20"
+  ]
+}

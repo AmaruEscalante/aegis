@@ -12,6 +12,7 @@ import json
 import pathlib
 import sys
 import time
+from datetime import datetime, timezone
 
 import numpy as np
 from sklearn.linear_model import LogisticRegression
@@ -21,6 +22,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 from aegis.embedding import Embedder  # noqa: E402
 
 DATASET_PATH = pathlib.Path("train/dataset.jsonl")
+WINNER_PATH = pathlib.Path("train/sweep_winner.json")
 EMBED_DIM = 768
 RANDOM_SEED = 42
 C_GRID = [0.1, 1.0, 10.0]
@@ -44,12 +46,22 @@ def embed_with_prompt(texts: list[str], task: str) -> np.ndarray:
     return X
 
 
-def cv_score(X: np.ndarray, y: np.ndarray, C: float) -> tuple[float, float]:
-    """5-fold stratified CV macro-F1 for the given C."""
+def cv_score(X: np.ndarray, y: np.ndarray, C: float) -> dict:
+    """5-fold stratified CV for the given C.
+
+    Returns a dict with mean+std for both macro-F1 and accuracy:
+        {"mean_f1", "std_f1", "mean_acc", "std_acc"}
+    """
     kf = StratifiedKFold(n_splits=5, shuffle=True, random_state=RANDOM_SEED)
     model = LogisticRegression(C=C, max_iter=2000, solver="lbfgs", random_state=RANDOM_SEED)
-    scores = cross_val_score(model, X, y, cv=kf, scoring="f1_macro")
-    return float(scores.mean()), float(scores.std())
+    f1s = cross_val_score(model, X, y, cv=kf, scoring="f1_macro")
+    accs = cross_val_score(model, X, y, cv=kf, scoring="accuracy")
+    return {
+        "mean_f1": float(f1s.mean()),
+        "std_f1": float(f1s.std()),
+        "mean_acc": float(accs.mean()),
+        "std_acc": float(accs.std()),
+    }
 
 
 def main() -> int:
@@ -61,33 +73,69 @@ def main() -> int:
     texts, y = load_dataset()
     print(f"  {len(texts)} rows, classes: {sorted(set(y.tolist()))}\n")
 
-    results: dict[tuple[str, float], tuple[float, float]] = {}
+    results: dict[tuple[str, float], dict] = {}
     for prompt in PROMPT_GRID:
         print(f"=== Prompt: {prompt!r} ({Embedder.DEFAULT_PROMPTS[prompt]!r}) ===")
         X = embed_with_prompt(texts, prompt)
         for C in C_GRID:
-            mean_f1, std_f1 = cv_score(X, y, C)
-            results[(prompt, C)] = (mean_f1, std_f1)
-            print(f"  C={C:>6.2f}  CV macro-F1 = {mean_f1:.4f} ± {std_f1:.4f}")
+            scores = cv_score(X, y, C)
+            results[(prompt, C)] = scores
+            print(
+                f"  C={C:>6.2f}  CV macro-F1 = {scores['mean_f1']:.4f} ± {scores['std_f1']:.4f}"
+                f"  acc = {scores['mean_acc']:.4f} ± {scores['std_acc']:.4f}"
+            )
         print()
 
     print("\n=== Sweep summary (sorted by CV macro-F1 desc) ===")
-    print(f"{'rank':>4} | {'prompt':>16} | {'C':>6} | {'mean F1':>9} | {'std':>6}")
-    print("-" * 60)
-    sorted_results = sorted(results.items(), key=lambda kv: kv[1][0], reverse=True)
-    for rank, ((prompt, C), (m, s)) in enumerate(sorted_results, start=1):
-        print(f"{rank:>4} | {prompt:>16} | {C:>6.2f} | {m:>9.4f} | {s:>6.4f}")
+    print(f"{'rank':>4} | {'prompt':>16} | {'C':>6} | {'mean F1':>9} | {'std F1':>6} | {'mean acc':>9} | {'std acc':>7}")
+    print("-" * 80)
+    sorted_results = sorted(results.items(), key=lambda kv: kv[1]["mean_f1"], reverse=True)
+    for rank, ((prompt, C), scores) in enumerate(sorted_results, start=1):
+        print(
+            f"{rank:>4} | {prompt:>16} | {C:>6.2f} | "
+            f"{scores['mean_f1']:>9.4f} | {scores['std_f1']:>6.4f} | "
+            f"{scores['mean_acc']:>9.4f} | {scores['std_acc']:>7.4f}"
+        )
 
     best_prompt, best_C = sorted_results[0][0]
-    best_mean, best_std = sorted_results[0][1]
+    best_scores = sorted_results[0][1]
+    best_mean, best_std = best_scores["mean_f1"], best_scores["std_f1"]
     print(f"\nWinner: prompt={best_prompt!r}, C={best_C}, CV macro-F1 = {best_mean:.4f} ± {best_std:.4f}")
 
     # Sanity check: report tie-breaking if anything is within 0.005 of the winner.
-    near_ties = [r for r in sorted_results if r[1][0] >= best_mean - 0.005 and r != sorted_results[0]]
+    near_ties = [
+        r for r in sorted_results
+        if r[1]["mean_f1"] >= best_mean - 0.005 and r != sorted_results[0]
+    ]
     if near_ties:
         print(f"\nNear-ties (within 0.005 of winner — consider preferring simpler prompt):")
-        for (prompt, C), (m, s) in near_ties:
-            print(f"  prompt={prompt!r}, C={C}, F1 = {m:.4f} ± {s:.4f}")
+        for (prompt, C), scores in near_ties:
+            print(f"  prompt={prompt!r}, C={C}, F1 = {scores['mean_f1']:.4f} ± {scores['std_f1']:.4f}")
+
+    # Build all_results list matching the schema train_head.py expects.
+    all_results = []
+    for (prompt, C), scores in results.items():
+        all_results.append({
+            "prompt": prompt,
+            "C": C,
+            "mean_f1": scores["mean_f1"],
+            "std_f1": scores["std_f1"],
+            "mean_acc": scores["mean_acc"],
+            "std_acc": scores["std_acc"],
+        })
+
+    winner_blob = {
+        "prompt": best_prompt,
+        "C": best_C,
+        "selection_metric": "cv_macro_f1_mean",
+        "all_results": all_results,
+        "training_set_size": len(texts),
+        "swept_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
+    }
+
+    WINNER_PATH.parent.mkdir(parents=True, exist_ok=True)
+    WINNER_PATH.write_text(json.dumps(winner_blob, indent=2))
+    print(f"\nWrote winner to {WINNER_PATH}")
 
     return 0
 

@@ -1,0 +1,19 @@
+{
+  "label": "classify_safe",
+  "source_repo": "alberto-real/prelegal",
+  "source_path": "templates/Mutual-NDA-coverpage.md",
+  "source_blob_sha": "f0014b0e6610f9103e2622ab9614f5267dda1371",
+  "source_url": "https://github.com/alberto-real/prelegal/blob/e66c0fbb2d362f2a75b76ad1a13093d6ba47e722/templates/Mutual-NDA-coverpage.md",
+  "fetched_at": "2026-05-21T14:57:45.335204+00:00",
+  "length_chars": 1831,
+  "collector_query_terms": [
+    "Mutual",
+    "Non-Disclosure",
+    "Effective Date"
+  ],
+  "collector_extra_flags": [
+    "--extension=md",
+    "--limit=20"
+  ],
+  "relabel_note": "Originally collected with request_permission queries (NDA-template phrasing), but on review the content is a publicly-shared NDA template / demo / explainer (placeholders, 'TEMPLATE'/'DEMONSTRATION' framing, or blog post about NDAs), not a confidential internal document. Re-labeled to classify_safe during Phase 3b.5 T2 audit."
+}

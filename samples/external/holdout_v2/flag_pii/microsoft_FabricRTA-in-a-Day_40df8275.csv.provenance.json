@@ -1,0 +1,17 @@
+{
+  "label": "flag_pii",
+  "source_repo": "microsoft/FabricRTA-in-a-Day",
+  "source_path": "assets/trialtenant/Import_Users.csv",
+  "source_blob_sha": "37d7e07dc39d3642db8fd3accc894b9123c83771",
+  "source_url": "https://github.com/microsoft/FabricRTA-in-a-Day/blob/6a7adf16c38f027f91774d1837eb3c2fdc81969c/assets/trialtenant/Import_Users.csv",
+  "fetched_at": "2026-05-21T14:50:36.590020+00:00",
+  "length_chars": 1882,
+  "collector_query_terms": [
+    "email",
+    "phone"
+  ],
+  "collector_extra_flags": [
+    "--filename=users.csv",
+    "--limit=20"
+  ]
+}
