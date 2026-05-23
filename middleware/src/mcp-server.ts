@@ -80,8 +80,17 @@ function loadConfig(): DataGuardConfig {
 
 // ---- Main -----------------------------------------------------------------
 
-async function main() {
+export interface StartMcpServerOptions {
+  bridgePort?: number;
+}
+
+export async function startMcpServer(opts: StartMcpServerOptions = {}): Promise<void> {
   const config = loadConfig();
+
+  // Override bridge URL with ephemeral port if supplied
+  if (typeof opts.bridgePort === "number") {
+    config.aegisBridgeUrl = `http://127.0.0.1:${opts.bridgePort}`;
+  }
 
   // Initialize subsystems
   initAudit(config.auditLogPath);
@@ -251,7 +260,12 @@ async function main() {
   console.error("[aegis-mcp] Server running on stdio");
 }
 
-main().catch((err) => {
-  console.error("[aegis-mcp] Fatal error:", err);
-  process.exit(1);
-});
+// Preserve direct-invocation path for `npm run mcp` / `npm run mcp:dev`
+if (require.main === module) {
+  const envPort = process.env.AEGIS_BRIDGE_PORT;
+  const bridgePort = envPort ? Number(envPort) : 7523;
+  startMcpServer({ bridgePort }).catch((err) => {
+    console.error("[aegis-mcp] Fatal error:", err);
+    process.exit(1);
+  });
+}
