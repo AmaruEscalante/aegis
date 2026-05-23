@@ -4,10 +4,9 @@ Guidance for AI coding agents operating in this repository.
 
 ## Project Overview
 
-Hackathon project ("Aegis") — a local privacy layer for agentic AI. Three sub-projects:
-- **Root (Python 3.12)**: Benchmarking, ML fine-tuning, and leaderboard submission utilities.
-- **`aegis_bridge.py` (Python)**: HTTP bridge server that proxies classification to a local Ollama model (`gemma4:31b`).
-- **`middleware/` (TypeScript)**: "Aegis" OpenClaw / MCP plugin — Ollama-backed router + DataGuard sanitization engine.
+Aegis — a local privacy layer for agentic AI. Two sub-projects:
+- **Root (Python 3.12)**: Training pipeline (`train/`), held-out evals (`eval.py`, `eval_fresh.py`, `eval_regression.py`), and the `aegis_bridge.py` HTTP server that runs `embeddinggemma-300m` + a trained LR head in-process.
+- **`middleware/` (TypeScript)**: MCP plugin that exposes `aegis_read`, `aegis_classify`, `aegis_policy_explain`, `aegis_sanitize_path`. Routes files through the bridge and applies sanitization for PII files.
 
 ## Build / Run / Test Commands
 
@@ -17,32 +16,25 @@ Hackathon project ("Aegis") — a local privacy layer for agentic AI. Three sub-
 # Install dependencies
 uv sync
 
-# Run benchmarks (custom harness, no pytest)
-GEMINI_API_KEY=<key> python benchmark.py
-
-# Submit to leaderboard
-python submit.py
+# Run the test suite
+.venv/bin/python -m pytest tests/ -v --ignore=tests/test_integration_slow.py
 ```
-
-There is no formal Python test framework (no pytest/unittest). Testing is done through
-`benchmark.py` (30 cases with F1 scoring) and `training_files/evaluate.py`.
 
 ### Aegis Bridge (`aegis_bridge.py`)
 
 ```bash
-# Default — gemma4:31b on local Ollama
+# Default — in-process embeddinggemma + LR head (no Ollama needed)
 python aegis_bridge.py
 
-# Custom model
-python aegis_bridge.py --model qwen2.5:3b
+# Ollama backend (dev / A/B comparison)
+python aegis_bridge.py --backend ollama
 
 # Custom port
 python aegis_bridge.py --port 7523
 ```
 
 The bridge provides `POST /classify` and `GET /health` endpoints on
-`http://127.0.0.1:7523`. Requires Ollama ≥ 0.5.0 running locally.
-The TypeScript middleware and the Python CLI both call it over localhost.
+`http://127.0.0.1:7523`. The TypeScript middleware calls it over localhost.
 
 ### TypeScript (`middleware/`) — managed by `npm`
 

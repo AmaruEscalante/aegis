@@ -8,7 +8,6 @@ Three components work together:
 
 - **Aegis Bridge** (`aegis_bridge.py`) — Python HTTP server that classifies file content using an in-process `google/embeddinggemma-300m` embedding model + trained LR head (default: `--backend local`) and returns one of four privacy verdicts as structured JSON. An Ollama backend (`--backend ollama`) remains available for dev / A/B comparison.
 - **Middleware** (`middleware/`) — TypeScript OpenClaw / MCP plugin. Registers `aegis_read`, `aegis_classify`, and other tools. Routes files through the bridge, then applies DataGuard sanitization for PII files.
-- **CLI Test Harness** (`aegis_cli.py`) — Interactive Python script for testing the full pipeline with visible step-by-step output.
 
 ## Execution Flow
 
@@ -141,20 +140,7 @@ Once connected, the agent has 4 tools:
 | `aegis_sanitize_path` | Force re-sanitization of a file (bypasses cache) |
 | `aegis_policy_explain` | Show current security policy and session stats |
 
-### 4. Run the CLI Test Harness (no agent needed)
-
-```bash
-# All sample files
-python aegis_cli.py --all
-
-# Single file
-python aegis_cli.py samples/patient_records.csv
-
-# Classification only (no action execution)
-python aegis_cli.py --classify-only samples/api_config.env
-```
-
-### 5. Run the Middleware Tests
+### 4. Run the Middleware Tests
 
 ```bash
 cd middleware
@@ -166,11 +152,13 @@ npx vitest run tests/e2e.test.ts      # e2e tests (bridge must be running)
 
 ```
 aegis_bridge.py          Python HTTP bridge (local embeddinggemma-300m + LR head)
-aegis_cli.py             CLI test harness
-benchmark.py             30-case benchmark with F1 scoring
-test_bridge_smoke.py     Smoke test for the bridge
 aegis-head/lr.joblib     Trained LR classification head
-samples/                 12 synthetic test files (all 4 categories)
+eval.py                  98-sample held-out eval (Phase 3b)
+eval_fresh.py            107-sample fresh held-out (Phase 3b.5)
+eval_regression.py       10-case ambiguity regression suite
+samples/                 Held-out eval corpus (4 verdict classes)
+train/                   curated_data, prompt_sweep, train_head, eval_head
+tools/                   sample_collector.py (Channel C GitHub mining)
 docs/eval-results/       Held-out eval scorecards (scorecard.md)
 
 middleware/
