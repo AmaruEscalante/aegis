@@ -1,13 +1,20 @@
 {
-  "name": "dataguard",
+  "name": "aegis-mcp",
   "version": "1.0.0",
-  "description": "OpenClaw plugin for local-only PII sanitization and file-access guardrails",
-  "main": "dist/plugin/index.js",
-  "openclaw": {
-    "extensions": [
-      "dist/plugin/index.js"
-    ]
+  "description": "On-device privacy classifier for AI agents — MCP plugin",
+  "main": "dist/mcp-server.js",
+  "bin": {
+    "aegis-mcp": "dist/cli.js"
   },
+  "files": [
+    "dist/",
+    "../aegis/",
+    "../skills/",
+    "../scripts/",
+    "../LICENSE",
+    "../README.md",
+    "../docs/PRIVACY.md"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
@@ -34,13 +41,15 @@
     "vitest": "^1.6.0"
   },
   "keywords": [
-    "openclaw",
-    "plugin",
-    "security",
-    "pii",
-    "sanitization",
-    "data-protection"
+    "mcp",
+    "privacy",
+    "ai-safety",
+    "claude-code",
+    "on-device"
   ],
-  "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AmaruEscalante/aegis.git"
+  }
 }

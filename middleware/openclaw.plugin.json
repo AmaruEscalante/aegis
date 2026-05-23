@@ -1,8 +1,8 @@
 {
   "id": "aegis",
   "name": "Aegis",
-  "version": "2.0.0",
-  "description": "Local privacy router for agentic AI. Classifies files via FunctionGemma (on-device), then routes to sanitization, passthrough, block, or escalation.",
+  "version": "1.0.0",
+  "description": "On-device privacy classifier for AI agents. Classifies files via in-process embeddinggemma + LR head; routes to passthrough, sanitization, block, or escalation.",
   "main": "dist/plugin/index.js",
   "hooks": ["before_tool_call"],
   "configSchema": {
@@ -12,7 +12,7 @@
       "aegisEnabled": {
         "type": "boolean",
         "default": true,
-        "description": "Enable Aegis FunctionGemma classification. When false, falls back to sanitize-everything."
+        "description": "Enable Aegis on-device classification. When false, falls back to sanitize-everything."
       },
       "aegisBridgeUrl": {
         "type": "string",
