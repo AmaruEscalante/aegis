@@ -11,14 +11,13 @@
 #   middleware/skills/        <- /aegis slash-command skill
 #   middleware/scripts/       <- hook-enforce.js
 #   middleware/LICENSE
+#   middleware/README.md      <- copied from repo root (marketplace-facing)
 #   middleware/docs/PRIVACY.md
 #
-# NOTE: We intentionally do NOT overwrite middleware/README.md. That file is
-# tracked in git (per T10) and is the dev-facing middleware doc. To publish a
-# different README, we'd clobber a tracked file — which would dirty the
-# working tree across npm publish runs. Keep them separate; the dev-facing
-# middleware/README.md is what shows on npmjs.com. The marketplace-facing
-# root README.md stays at the repo root.
+# NOTE: The marketplace-facing root README.md is copied into middleware/ so
+# that npmjs.com shows the marketplace landing page. The dev-facing middleware
+# doc lives at middleware/CONTRIBUTING.md (tracked in git). The copied
+# README.md is .gitignored so it doesn't dirty the working tree.
 #
 # These staged copies are .gitignored (see middleware/.gitignore additions)
 # so they don't pollute git history. `npm pack` picks them up via the local
@@ -36,7 +35,7 @@ echo "[copy-package-assets] repo=$REPO_ROOT pkg=$PKG_DIR"
 
 # Clean any previous staging so we don't ship stale files.
 rm -rf "$PKG_DIR/aegis" "$PKG_DIR/skills" "$PKG_DIR/scripts" "$PKG_DIR/docs"
-rm -f  "$PKG_DIR/LICENSE"
+rm -f  "$PKG_DIR/LICENSE" "$PKG_DIR/README.md"
 
 # Python runtime (bridge + embedding + trained head + requirements).
 # Exclude __pycache__ to keep the tarball small.
@@ -53,8 +52,12 @@ rsync -a --exclude '__pycache__' --exclude '*.pyc' \
 mkdir -p "$PKG_DIR/scripts"
 cp "$REPO_ROOT/scripts/hook-enforce.js" "$PKG_DIR/scripts/hook-enforce.js"
 
-# License (root). README is intentionally NOT touched — see header note.
+# License (root).
 cp "$REPO_ROOT/LICENSE" "$PKG_DIR/LICENSE"
+
+# Copy root README.md into middleware/ for npm tarball (marketplace-facing).
+# The dev-facing doc lives at middleware/CONTRIBUTING.md.
+cp "$REPO_ROOT/README.md" "$PKG_DIR/README.md"
 
 # Privacy doc only (skip docs/eval-results, docs/plans, docs/superpowers, etc.).
 mkdir -p "$PKG_DIR/docs"

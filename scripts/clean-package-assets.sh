@@ -4,8 +4,9 @@
 # `npm publish` leave the working tree clean.
 #
 # This is symmetric with copy-package-assets.sh — same paths, just deleted.
-# middleware/README.md is intentionally NOT touched (it's a tracked file,
-# the copy script doesn't clobber it).
+# middleware/README.md is the staged copy of the repo-root README.md (the
+# marketplace-facing doc), removed here after pack. The dev-facing doc
+# lives at middleware/CONTRIBUTING.md and is tracked in git.
 
 set -euo pipefail
 
@@ -16,6 +17,6 @@ PKG_DIR="$REPO_ROOT/middleware"
 echo "[clean-package-assets] cleaning staged copies in $PKG_DIR"
 
 rm -rf "$PKG_DIR/aegis" "$PKG_DIR/skills" "$PKG_DIR/scripts" "$PKG_DIR/docs"
-rm -f  "$PKG_DIR/LICENSE"
+rm -f  "$PKG_DIR/LICENSE" "$PKG_DIR/README.md"
 
 echo "[clean-package-assets] done"
