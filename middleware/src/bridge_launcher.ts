@@ -130,8 +130,21 @@ export async function spawnBridge(
     port: number,
     timeoutMs = 600000,
 ): Promise<ChildProcess> {
+    // The bridge script lives at <root>/aegis/bridge.py and does
+    // `from aegis.embedding import Embedder`, which requires <root> on sys.path.
+    // Python adds the script's own directory (aegis/) to sys.path[0] by default,
+    // not its parent, so we explicitly put <root> on PYTHONPATH and set cwd
+    // there for good measure.
+    const bridgeRoot = path.dirname(path.dirname(bridgeScript));
     const child = spawn(venvPython, [bridgeScript, '--port', String(port), '--backend', 'local'], {
         stdio: ['ignore', 'pipe', 'pipe'],
+        cwd: bridgeRoot,
+        env: {
+            ...process.env,
+            PYTHONPATH: process.env.PYTHONPATH
+                ? `${bridgeRoot}${path.delimiter}${process.env.PYTHONPATH}`
+                : bridgeRoot,
+        },
     });
 
     let stderr = '';
