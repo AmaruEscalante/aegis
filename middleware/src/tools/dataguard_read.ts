@@ -12,8 +12,8 @@
 import fs from "fs";
 import path from "path";
 import type { DataGuardConfig, AegisReadResult } from "../types";
-import { checkPath, checkFileSize } from "../sanitize/policy";
-import { extractText } from "../sanitize/extract";
+import { checkPath } from "../sanitize/policy";
+import { extractText as extractTextForGate } from "../extract";
 import { sanitize } from "../sanitize/sanitize";
 import { redactPdfWithLlmAnalysis } from "../sanitize/pdf-redactor";
 import { redactFileWithLlmAnalysis } from "../sanitize/file-redactor";
@@ -74,18 +74,57 @@ export function createDataguardRead(config: DataGuardConfig) {
       throw new Error(`Aegis denied access: ${check.reason}`);
     }
 
-    // --- Step 2: File stat + size check ---
+    // --- Step 2: File stat (size policy is enforced by the gate below) ---
     const stat = fs.statSync(absPath);
-    if (!checkFileSize(stat.size, config)) {
-      throw new Error(
-        `File too large: ${stat.size} bytes exceeds maxFileBytes ${config.maxFileBytes}`
-      );
+
+    // --- Step 2.5: Pre-extraction gate (images + oversize → request_permission) ---
+    // Images and oversize files short-circuit to request_permission without
+    // invoking the bridge — there's no text to classify, and human review is
+    // required. The gate also OWNS the maxFileBytes policy: oversize escalates
+    // instead of throwing, so the caller receives a structured verdict.
+    //
+    // The gate's text + format are reused downstream — no double-extraction.
+    const gate = await extractTextForGate(absPath, config.maxFileBytes);
+    if (gate.escalate) {
+      log({
+        timestamp: new Date().toISOString(),
+        event: "aegis_read",
+        path: absPath,
+        action: "escalate",
+        reason: gate.escalateReason || "extract-gate escalate",
+      });
+
+      return {
+        content: null,
+        format: gate.format,
+        aegis_verdict: "escalate",
+        aegis_reason: gate.escalateReason || "request_permission",
+        aegis_confidence: 1.0,
+        redaction_count: 0,
+        method: "request_permission",
+        cached: false,
+        escalation: {
+          reason: gate.escalateReason || "request_permission",
+          confidence: 1.0,
+          message:
+            "This file requires human review before it can be shared. " +
+            `Reason: ${gate.escalateReason}. ` +
+            "Please ask the user for explicit permission before proceeding.",
+        },
+      };
     }
 
     // --- Step 0: Aegis classification (FunctionGemma via bridge) ---
     // Runs BEFORE cache check so classification informs the action.
-    // Extracts text early since we need it for both classification and sanitization.
-    const extracted = await extractText(absPath, config.maxFileBytes);
+    // Reuses the text + format already extracted by the gate — do NOT re-read
+    // the file. (Legacy sanitize/extract.ts is still used by other tools and
+    // covers an alternate PDF path via pdftotext, but for aegis_read the
+    // gate's pdfjs-based extraction is the source of truth.)
+    const extracted = {
+      text: gate.text,
+      format: gate.format,
+      sizeBytes: stat.size,
+    };
 
     if (config.aegisEnabled) {
       const classification = await classifyFile(extracted.text, config);
