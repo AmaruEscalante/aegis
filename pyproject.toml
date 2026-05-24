@@ -1,9 +1,19 @@
 [project]
-name = "deepmind-cactus"
-version = "0.1.0"
-description = "Add your description here"
+name = "aegis-mcp-dev"
+version = "1.0.0"
+description = "Aegis MCP — on-device privacy classifier for AI agents (dev workspace)"
 readme = "README.md"
 requires-python = ">=3.12"
+authors = [
+    { name = "Christian Morales Panitz" },
+]
+license = { text = "MIT" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 dependencies = [
     "accelerate>=1.12.0",
     "google-genai>=1.64.0",
@@ -15,6 +25,10 @@ dependencies = [
     "tqdm>=4.67.3",
     "transformers>=5.2.0",
 ]
+
+[project.urls]
+Repository = "https://github.com/AmaruEscalante/aegis"
+Issues = "https://github.com/AmaruEscalante/aegis/issues"
 
 [dependency-groups]
 dev = [

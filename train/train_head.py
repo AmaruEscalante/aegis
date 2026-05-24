@@ -5,7 +5,7 @@ Pipeline:
     1. Read train/dataset.jsonl  (200 hand-curated examples)
     2. Embed each row via the in-process Embedder (task-prompted)    -> X (200, 768)
     3. Fit sklearn LogisticRegression                                  -> trained head
-    4. Save the head to aegis-head/lr.joblib
+    4. Save the head to aegis/head/lr.joblib
     5. Evaluate on the 12 real samples/ files                          -> scorecard row
 
 Usage:
@@ -33,7 +33,7 @@ from aegis.embedding import Embedder  # noqa: E402
 
 # ── Config ──────────────────────────────────────────────────────────
 DATASET_PATH = pathlib.Path("train/dataset.jsonl")
-HEAD_PATH = pathlib.Path("aegis-head/lr.joblib")
+HEAD_PATH = pathlib.Path("aegis/head/lr.joblib")
 WINNER_PATH = pathlib.Path("train/sweep_winner.json")
 EMBED_DIM = 768
 RANDOM_SEED = 42

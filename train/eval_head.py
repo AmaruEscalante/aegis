@@ -30,7 +30,7 @@ from sklearn.metrics import (
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent.parent))
 from aegis.embedding import Embedder  # noqa: E402
 
-HEAD_PATH = pathlib.Path("aegis-head/lr.joblib")
+HEAD_PATH = pathlib.Path("aegis/head/lr.joblib")
 
 _VALID_CASES_MODULES = ("eval", "eval_fresh", "eval_regression")
 

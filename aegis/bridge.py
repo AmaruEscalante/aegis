@@ -6,9 +6,9 @@ Endpoints (consumed by the TypeScript middleware and the Python CLI):
   GET  /health    — Bridge + Ollama status
 
 Usage:
-  python aegis_bridge.py                                    # defaults
-  python aegis_bridge.py --model gemma4:31b --port 7523
-  python aegis_bridge.py --ollama-url http://127.0.0.1:11434
+  python -m aegis.bridge                                    # defaults
+  python -m aegis.bridge --model gemma4:31b --port 7523
+  python -m aegis.bridge --ollama-url http://127.0.0.1:11434
 """
 
 import argparse
@@ -35,6 +35,11 @@ MAX_INPUT_CHARS = 8000
 OLLAMA_TIMEOUT_SECONDS = 120
 
 VERDICTS = ["classify_safe", "flag_pii", "block_transfer", "request_permission"]
+
+# Default path to the trained LR head, relative to this package's directory.
+# Resolves correctly whether the bridge is run from a dev checkout
+# (cwd = repo root) or from an installed venv (cwd irrelevant).
+HEAD_PATH = pathlib.Path(__file__).resolve().parent / "head" / "lr.joblib"
 
 CLASSIFY_SCHEMA = {
     "type": "object",
@@ -151,7 +156,7 @@ class OllamaBackend:
 class LocalBackend:
     """In-process classifier: Embedder + LR head loaded eagerly."""
 
-    def __init__(self, head_path: pathlib.Path = pathlib.Path("aegis-head/lr.joblib")):
+    def __init__(self, head_path: pathlib.Path = HEAD_PATH):
         if not head_path.exists():
             raise RuntimeError(
                 f"No trained head at {head_path}. "

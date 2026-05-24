@@ -26,7 +26,7 @@ def test_localbackend_classifies_held_out_eval_above_gate():
     on the held-out set). The current head was committed at this exact threshold
     in T7g (no-prompt rollback).
     """
-    import aegis_bridge
+    import aegis.bridge as aegis_bridge
     from eval import CASES
 
     backend = aegis_bridge.LocalBackend()
@@ -41,7 +41,7 @@ def test_localbackend_classifies_held_out_eval_above_gate():
 
 def test_bridge_real_local_serves_held_out_eval_above_gate():
     """Bring up the real bridge in-process and POST each of the 98 CASES."""
-    import aegis_bridge
+    import aegis.bridge as aegis_bridge
     from eval import CASES
 
     aegis_bridge._backend = aegis_bridge.LocalBackend()

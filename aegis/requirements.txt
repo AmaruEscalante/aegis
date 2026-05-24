@@ -1,0 +1,9 @@
+# Runtime dependencies for the Aegis bridge (aegis/bridge.py).
+# Pinned at v1.0.0 release time. The bootstrap installs these into
+# ~/.aegis-mcp/venv/ on first run.
+
+sentence-transformers==5.5.0
+scikit-learn==1.8.0
+joblib==1.5.3
+torch==2.12.0
+numpy==2.4.4
