@@ -1,6 +1,17 @@
 node_modules/
 dist/
 *.log
+
+# Staged assets produced by scripts/copy-package-assets.sh (prepack hook).
+# These are copies of repo-level assets dropped here so `npm pack` can include
+# them — npm `files` can't reference paths outside the package directory.
+# Cleaned up by scripts/clean-package-assets.sh (postpack hook).
+/aegis/
+/skills/
+/scripts/
+/docs/
+/LICENSE
+*.tgz
 .DS_Store
 .env
 .env.local

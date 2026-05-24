@@ -8,12 +8,12 @@
   },
   "files": [
     "dist/",
-    "../aegis/",
-    "../skills/",
-    "../scripts/",
-    "../LICENSE",
-    "../README.md",
-    "../docs/PRIVACY.md"
+    "aegis/",
+    "skills/",
+    "scripts/",
+    "docs/PRIVACY.md",
+    "LICENSE",
+    "README.md"
   ],
   "scripts": {
     "build": "tsc",
@@ -22,7 +22,9 @@
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
     "mcp": "node dist/mcp-server.js",
-    "mcp:dev": "npx tsx src/mcp-server.ts"
+    "mcp:dev": "npx tsx src/mcp-server.ts",
+    "prepack": "npm run build && bash ../scripts/copy-package-assets.sh",
+    "postpack": "bash ../scripts/clean-package-assets.sh"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.26.0",
