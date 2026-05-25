@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const path = require('node:path');
 const os = require('node:os');
-const { uninstallHook } = require(path.join(os.homedir(), '.aegis-mcp', 'middleware', 'dist', 'installer.js'));
+const { uninstallHook } = require(path.join(os.homedir(), '.aegis-gate', 'middleware', 'dist', 'installer.js'));
 
 const SETTINGS_PATH = path.join(os.homedir(), '.claude', 'settings.json');
 

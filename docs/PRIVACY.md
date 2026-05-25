@@ -35,7 +35,7 @@ The classifier has two components, both cached on your machine:
 ls ~/.cache/huggingface/hub/models--google--embeddinggemma-300m/
 
 # The classifier head (~25 KB) — bundled in the npm package
-ls ~/.aegis-mcp/middleware/aegis/head/lr.joblib
+ls ~/.aegis-gate/middleware/aegis/head/lr.joblib
 ```
 
 If you delete these files, Aegis will re-download the embedder (since it's HF-cached) but the classifier head is part of the npm install — it doesn't re-download from a separate endpoint.
@@ -44,7 +44,7 @@ If you delete these files, Aegis will re-download the embedder (since it's HF-ca
 
 ```bash
 # Search the published source for common telemetry SDKs
-grep -rE 'posthog|amplitude|honeycomb|datadog|sentry|google-analytics' ~/.aegis-mcp/middleware/dist/ ~/.aegis-mcp/middleware/aegis/
+grep -rE 'posthog|amplitude|honeycomb|datadog|sentry|google-analytics' ~/.aegis-gate/middleware/dist/ ~/.aegis-gate/middleware/aegis/
 ```
 
 Returns nothing. The bridge has no analytics imports.

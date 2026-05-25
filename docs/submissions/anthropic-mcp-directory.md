@@ -1,13 +1,13 @@
 # Anthropic MCP directory submission
 
-This is the content the user submits to the Anthropic MCP directory (`modelcontextprotocol/servers` GitHub repo) once `aegis-mcp@1.0.0` is on npm.
+This is the content the user submits to the Anthropic MCP directory (`modelcontextprotocol/servers` GitHub repo) once `aegis-gate@1.0.0` is on npm.
 
 ## Submission snippet (for the directory README or server-listing file)
 
 ### Aegis
 
 - **Repo:** [github.com/AmaruEscalante/aegis](https://github.com/AmaruEscalante/aegis)
-- **Install:** `npx aegis-mcp`
+- **Install:** `npx aegis-gate`
 - **Category:** Security & Privacy
 - **Description:** On-device privacy classifier for AI agents. Classifies file content locally using `embeddinggemma-300m` + trained LR head; routes to passthrough, sanitization, block, or escalation. No network calls at inference, no telemetry, MIT-licensed.
 - **Verified:** Yes (npm package signed by maintainer)
@@ -29,7 +29,7 @@ $EDITOR README.md
 
 # 5. Commit
 git add README.md
-git commit -m "Add aegis-mcp — on-device privacy classifier"
+git commit -m "Add aegis-gate — on-device privacy classifier"
 
 # 6. Push your fork
 git push -u origin aegis-add-listing
@@ -37,12 +37,12 @@ git push -u origin aegis-add-listing
 # 7. Open PR
 gh pr create \
   --repo modelcontextprotocol/servers \
-  --title "Add aegis-mcp — on-device privacy classifier" \
+  --title "Add aegis-gate — on-device privacy classifier" \
   --body "$(cat <<'EOF'
 Adds Aegis to the directory.
 
-- Package: aegis-mcp on npm (v1.0.0)
-- Install: npx aegis-mcp
+- Package: aegis-gate on npm (v1.0.0)
+- Install: npx aegis-gate
 - Source: https://github.com/AmaruEscalante/aegis
 - License: MIT
 - Category: Security & Privacy

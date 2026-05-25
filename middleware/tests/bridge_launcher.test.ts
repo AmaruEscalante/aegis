@@ -31,7 +31,7 @@ describe('resolveAegisCachePath', () => {
     it('returns a path under the user home', () => {
         const p = resolveAegisCachePath();
         expect(p).toContain(os.homedir());
-        expect(p).toContain('.aegis-mcp');
+        expect(p).toContain('.aegis-gate');
     });
 });
 

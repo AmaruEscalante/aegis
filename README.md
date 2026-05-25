@@ -3,7 +3,7 @@
 > **On-device, by default.** Aegis classifies files locally before any AI agent reads them — weights are bundled at install, no network calls at inference, no telemetry. Verify it yourself: see [PRIVACY.md](docs/PRIVACY.md) for the receipts.
 
 ```
-npx aegis-mcp
+npx aegis-gate
 ```
 
 That's the entire install.
@@ -22,7 +22,7 @@ Aegis routes Claude Code's `Read`/`Glob`/`Grep` through an on-device classifier 
 ## Receipts (the privacy promise, verifiable)
 
 - **No network calls at inference** — run `lsof -i` while Aegis classifies a file; you'll see only the localhost bridge connection.
-- **Weights are local** — `~/.cache/huggingface/hub/models--google--embeddinggemma-300m/` (model) + `~/.aegis-mcp/middleware/aegis/head/lr.joblib` (classifier head).
+- **Weights are local** — `~/.cache/huggingface/hub/models--google--embeddinggemma-300m/` (model) + `~/.aegis-gate/middleware/aegis/head/lr.joblib` (classifier head).
 - **No telemetry** — `grep -r posthog\|amplitude\|honeycomb middleware/dist/` returns nothing.
 - **Source for the curious** — this repo, MIT-licensed. Full audit welcome.
 
@@ -54,12 +54,12 @@ Claude → Read(path)              ← hook intercepts
 
 ```bash
 # One-command install
-npx aegis-mcp
+npx aegis-gate
 ```
 
 On first run:
 1. Prompts to install the Read/Glob/Grep enforcement hook (default Yes)
-2. Sets up the Python bridge venv at `~/.aegis-mcp/venv/`
+2. Sets up the Python bridge venv at `~/.aegis-gate/venv/`
 3. Downloads the embedding model on first classification (~1.2 GB, cached)
 4. Registers slash commands: `/aegis-status`, `/aegis-policy`, `/aegis-enable-hook`, `/aegis-disable-hook`, `/aegis-uninstall`
 
@@ -70,7 +70,7 @@ On first run:
 
 ### Uninstall
 ```bash
-npx aegis-mcp uninstall
+npx aegis-gate uninstall
 ```
 
 ## Contributing

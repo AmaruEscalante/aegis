@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * `npx aegis-mcp` entry point.
+ * `npx aegis-gate` entry point.
  *
  * Subcommands:
  *   (default)        — install (with consent) + start MCP server
@@ -54,14 +54,14 @@ export function parseArgs(
 
 const VERSION = '1.0.0';
 
-const HELP_TEXT = `aegis-mcp — on-device privacy classifier for AI agents
+const HELP_TEXT = `aegis-gate — on-device privacy gate for AI agents
 
 Usage:
-  npx aegis-mcp                Install (with consent) + start MCP server
-  npx aegis-mcp install-hook   Re-install enforcement hook
-  npx aegis-mcp uninstall      Remove hook + MCP server config
-  npx aegis-mcp --version      Print version
-  npx aegis-mcp --help         Show this help
+  npx aegis-gate                Install (with consent) + start MCP server
+  npx aegis-gate install-hook   Re-install enforcement hook
+  npx aegis-gate uninstall      Remove hook + MCP server config
+  npx aegis-gate --version      Print version
+  npx aegis-gate --help         Show this help
 
 Environment:
   AEGIS_INSTALL_HOOK=1   Auto-consent to hook install (CI/scripts)
@@ -76,7 +76,7 @@ async function promptConsent(): Promise<boolean> {
         rl.question(
             'Add Aegis enforcement hook to ~/.claude/settings.json?\n' +
                 '  This routes Read/Glob/Grep through aegis_read automatically.\n' +
-                '  You can disable later with /aegis-disable-hook or `npx aegis-mcp uninstall`.\n' +
+                '  You can disable later with /aegis-disable-hook or `npx aegis-gate uninstall`.\n' +
                 '[Y/n] ',
             (answer) => {
                 rl.close();
@@ -91,7 +91,7 @@ async function runInstall(args: {
     autoConsent?: boolean;
     skipHookInstall?: boolean;
 }): Promise<void> {
-    process.stderr.write('Aegis MCP — on-device privacy classifier for Claude Code\n\n');
+    process.stderr.write('Aegis Gate — on-device privacy gate for Claude Code\n\n');
 
     const settingsPath = path.join(os.homedir(), '.claude', 'settings.json');
     const hookScript = path.resolve(__dirname, '..', '..', 'scripts', 'hook-enforce.js');
@@ -148,7 +148,7 @@ async function runUninstall(): Promise<void> {
     const settingsPath = path.join(os.homedir(), '.claude', 'settings.json');
     await uninstallHook({ settingsPath });
     process.stderr.write('  ✓ Aegis hook removed from ~/.claude/settings.json\n');
-    process.stderr.write('Cache at ~/.aegis-mcp/ preserved. Remove manually if desired.\n');
+    process.stderr.write('Cache at ~/.aegis-gate/ preserved. Remove manually if desired.\n');
 }
 
 async function main(): Promise<void> {

@@ -7,7 +7,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const os = require('node:os');
 
-const HOOK_NAME = 'aegis-mcp:enforce-read-routing';
+const HOOK_NAME = 'aegis-gate:enforce-read-routing';
 const SETTINGS_PATH = path.join(os.homedir(), '.claude', 'settings.json');
 
 async function main() {
@@ -19,7 +19,7 @@ async function main() {
     } catch { /* file absent or malformed */ }
 
     // Check bridge — read the latest known port from the install marker
-    const portFile = path.join(os.homedir(), '.aegis-mcp', 'bridge.port');
+    const portFile = path.join(os.homedir(), '.aegis-gate', 'bridge.port');
     let bridgeStatus = 'unknown';
     let bridgeMeta = {};
     if (fs.existsSync(portFile)) {

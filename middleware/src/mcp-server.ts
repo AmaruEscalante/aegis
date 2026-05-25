@@ -105,10 +105,10 @@ export async function startMcpServer(opts: StartMcpServerOptions = {}): Promise<
   // Check bridge health
   const health = await healthCheck(config);
   if (health.status === "ok") {
-    console.error(`[aegis-mcp] Bridge connected: backend=${health.backend}, model=${health.model}`);
+    console.error(`[aegis-gate] Bridge connected: backend=${health.backend}, model=${health.model}`);
   } else {
-    console.error("[aegis-mcp] Bridge unreachable — will fall back to sanitize-everything mode");
-    console.error("[aegis-mcp] Start it with: uv run python aegis_bridge.py --backend transformers --model ./aegis-adapter");
+    console.error("[aegis-gate] Bridge unreachable — will fall back to sanitize-everything mode");
+    console.error("[aegis-gate] Start it with: uv run python aegis_bridge.py --backend transformers --model ./aegis-adapter");
   }
 
   // Create MCP server
@@ -257,7 +257,7 @@ export async function startMcpServer(opts: StartMcpServerOptions = {}): Promise<
   // Connect via stdio transport
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error("[aegis-mcp] Server running on stdio");
+  console.error("[aegis-gate] Server running on stdio");
 }
 
 // Preserve direct-invocation path for `npm run mcp` / `npm run mcp:dev`
@@ -265,7 +265,7 @@ if (require.main === module) {
   const envPort = process.env.AEGIS_BRIDGE_PORT;
   const bridgePort = envPort ? Number(envPort) : 7523;
   startMcpServer({ bridgePort }).catch((err) => {
-    console.error("[aegis-mcp] Fatal error:", err);
+    console.error("[aegis-gate] Fatal error:", err);
     process.exit(1);
   });
 }

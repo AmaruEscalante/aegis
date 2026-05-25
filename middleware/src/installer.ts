@@ -7,7 +7,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-export const HOOK_NAME = 'aegis-mcp:enforce-read-routing';
+export const HOOK_NAME = 'aegis-gate:enforce-read-routing';
 export const HOOK_MATCHER = 'Read|Glob|Grep';
 
 interface InstallOptions {
@@ -43,13 +43,13 @@ export async function installHook(opts: InstallOptions): Promise<string | null> 
         } catch (e: any) {
             throw new Error(
                 `Refusing to install: ${opts.settingsPath} is not valid JSON. ` +
-                `Fix the file manually before running 'npx aegis-mcp' again. (${e.message})`
+                `Fix the file manually before running 'npx aegis-gate' again. (${e.message})`
             );
         }
 
         // Backup before mutating
         const ts = new Date().toISOString().replace(/[:.]/g, '-');
-        const backupDir = path.join(path.dirname(opts.settingsPath), '..', '.aegis-mcp', 'backups');
+        const backupDir = path.join(path.dirname(opts.settingsPath), '..', '.aegis-gate', 'backups');
         fs.mkdirSync(backupDir, { recursive: true });
         backupPath = path.join(backupDir, `settings.json.${ts}`);
         fs.copyFileSync(opts.settingsPath, backupPath);

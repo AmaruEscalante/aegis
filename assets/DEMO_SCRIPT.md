@@ -17,11 +17,11 @@ This script describes the 60-second 5-scene demo that ships as `assets/demo.gif`
 
 Action in Terminal:
 ```bash
-npx aegis-mcp
+npx aegis-gate
 ```
 
 Show:
-- The "Aegis MCP — on-device privacy classifier for Claude Code" header
+- The "Aegis Gate — on-device privacy gate for Claude Code" header
 - The consent prompt: "Add Aegis enforcement hook? [Y/n]"
 - Press Enter (default Yes)
 - "✓ Hook installed" message

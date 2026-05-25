@@ -1,6 +1,6 @@
-# aegis-mcp middleware
+# aegis-gate middleware
 
-TypeScript MCP server for Aegis. This is the package published to npm as `aegis-mcp` and invoked by `npx aegis-mcp`.
+TypeScript MCP server for Aegis. This is the package published to npm as `aegis-gate` and invoked by `npx aegis-gate`.
 
 Companion to `aegis/` (Python bridge) at the repo root.
 
@@ -15,7 +15,7 @@ Exposes four MCP tools to Claude Code (and any MCP client):
 
 On startup:
 1. Detects Python 3.12+ on PATH
-2. Ensures `~/.aegis-mcp/venv/` with pinned deps from `aegis/requirements.txt`
+2. Ensures `~/.aegis-gate/venv/` with pinned deps from `aegis/requirements.txt`
 3. Spawns `aegis/bridge.py` on an ephemeral port
 4. Polls the bridge `/health` until ready
 5. Starts the MCP server on stdio, forwarding tool calls
@@ -39,7 +39,7 @@ npx vitest run tests/extract.test.ts   # single test file
 
 ```
 src/
-  cli.ts              # `npx aegis-mcp` entry point
+  cli.ts              # `npx aegis-gate` entry point
   bridge_launcher.ts  # Python detection + venv + spawn
   installer.ts        # Hook + skill installer
   extract.ts          # PDF/DOCX/image extraction

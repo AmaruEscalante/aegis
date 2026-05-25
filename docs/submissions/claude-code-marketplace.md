@@ -5,9 +5,9 @@ Content for the Claude Code marketplace submission form (filed via the Claude Co
 ## Submission fields
 
 ```
-Plugin name:      aegis-mcp
+Plugin name:      aegis-gate
 Description:      On-device privacy classifier for AI agents. Routes Read/Glob/Grep through aegis_read to classify, sanitize, block, or escalate file content locally — no network calls at inference, no telemetry.
-Install command:  npx aegis-mcp
+Install command:  npx aegis-gate
 Repository:       https://github.com/AmaruEscalante/aegis
 Demo:             https://raw.githubusercontent.com/AmaruEscalante/aegis/main/assets/demo.gif
 License:          MIT

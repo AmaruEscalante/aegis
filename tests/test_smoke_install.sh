@@ -32,12 +32,12 @@ echo "[1/5] Install kicked off; verifying..."
 # Verify hook installed
 echo "[2/5] Checking hook in settings.json..."
 test -f "$HOME/.claude/settings.json" || { echo "FAIL: settings.json not created"; exit 1; }
-grep -q 'aegis-mcp:enforce-read-routing' "$HOME/.claude/settings.json" || { echo "FAIL: hook entry missing"; exit 1; }
+grep -q 'aegis-gate:enforce-read-routing' "$HOME/.claude/settings.json" || { echo "FAIL: hook entry missing"; exit 1; }
 echo "[2/5] OK"
 
 # Verify venv populated
-echo "[3/5] Checking ~/.aegis-mcp/venv..."
-test -d "$HOME/.aegis-mcp/venv/bin" || { echo "FAIL: venv not created"; exit 1; }
+echo "[3/5] Checking ~/.aegis-gate/venv..."
+test -d "$HOME/.aegis-gate/venv/bin" || { echo "FAIL: venv not created"; exit 1; }
 echo "[3/5] OK"
 
 # Kill the CLI, run uninstall
@@ -50,7 +50,7 @@ echo "[5/5] Running uninstall..."
 node middleware/dist/cli.js uninstall
 
 # Verify hook removed
-grep -q 'aegis-mcp:enforce-read-routing' "$HOME/.claude/settings.json" && { echo "FAIL: hook still present after uninstall"; exit 1; }
+grep -q 'aegis-gate:enforce-read-routing' "$HOME/.claude/settings.json" && { echo "FAIL: hook still present after uninstall"; exit 1; }
 echo "[5/5] OK"
 
 echo ""

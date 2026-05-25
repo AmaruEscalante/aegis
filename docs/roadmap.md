@@ -54,7 +54,7 @@ Scanned-image PDFs are explicitly out of scope for Phase 3 — they require OCR 
 The Aegis MCP server is already the right shape (`aegis_read`, `aegis_classify`, `aegis_policy_explain`, `aegis_sanitize_path`). Once Phase 3 lands, Aegis becomes a self-contained, pip-installable / npx-installable package.
 
 **Deliverables:**
-- `pyproject.toml` / `package.json` packaged for distribution; `pipx install aegis-mcp` or `npx aegis-mcp` works out of the box.
+- `pyproject.toml` / `package.json` packaged for distribution; `npx aegis-gate` works out of the box.
 - README with a 30-second install demo and a screen recording showing the privacy gate in action (safe file → pass-through, credentials file → blocked, NDA → request permission).
 - Listing in the Anthropic MCP directory and the Claude Code plugin marketplace.
 - Privacy promise stated upfront: weights bundled, no network calls at inference time, no telemetry by default.
@@ -140,7 +140,7 @@ If we ever expand beyond 200 training examples (e.g., when Phase 5 ships and we 
 
 ## Open questions / decisions to make
 
-- **MCP plugin name.** `aegis-mcp`? `aegis-privacy-gate`? `mcp-aegis`? Picks affect SEO in marketplace listings.
+- **MCP plugin name.** Decided: `aegis-gate` (chose this after `aegis-mcp` was reserved/blocked by npm).
 - **License.** MIT for max adoption? Apache 2.0 to keep patent grant explicit? Decide before Phase 4 publish.
 - **Telemetry.** Default off (privacy promise). Optional opt-in usage stats? If yes, what backend (Honeycomb? PostHog? Self-hosted Plausible)? Decide before Phase 4.
 - **Custom verdict classes.** Today the head is fixed at 4 classes. Should v2 of the head support user-defined classes (e.g., "internal-Anthropic-confidential")? If yes, that's a Phase 6+ feature.

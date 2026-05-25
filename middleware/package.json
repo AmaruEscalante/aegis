@@ -1,10 +1,10 @@
 {
-  "name": "aegis-mcp",
+  "name": "aegis-gate",
   "version": "1.0.0",
-  "description": "On-device privacy classifier for AI agents — MCP plugin",
+  "description": "On-device privacy gate for AI agents — MCP plugin",
   "main": "dist/mcp-server.js",
   "bin": {
-    "aegis-mcp": "dist/cli.js"
+    "aegis-gate": "dist/cli.js"
   },
   "files": [
     "dist/",

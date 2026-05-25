@@ -2,7 +2,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const os = require('node:os');
-const { uninstallHook } = require(path.join(os.homedir(), '.aegis-mcp', 'middleware', 'dist', 'installer.js'));
+const { uninstallHook } = require(path.join(os.homedir(), '.aegis-gate', 'middleware', 'dist', 'installer.js'));
 
 const SETTINGS_PATH = path.join(os.homedir(), '.claude', 'settings.json');
 const CLAUDE_CONFIG_PATH = path.join(os.homedir(), '.claude.json');
@@ -23,10 +23,10 @@ async function main() {
     }
 
     console.log('');
-    console.log('Cache at ~/.aegis-mcp/ preserved (contains the cached Python venv and embedding model).');
-    console.log('Remove it manually with `rm -rf ~/.aegis-mcp` if you no longer want Aegis on disk.');
+    console.log('Cache at ~/.aegis-gate/ preserved (contains the cached Python venv and embedding model).');
+    console.log('Remove it manually with `rm -rf ~/.aegis-gate` if you no longer want Aegis on disk.');
     console.log('');
-    console.log('Backups of ~/.claude/settings.json are under ~/.aegis-mcp/backups/.');
+    console.log('Backups of ~/.claude/settings.json are under ~/.aegis-gate/backups/.');
 }
 
 main().catch(e => { console.error(`Error: ${e.message}`); process.exit(1); });

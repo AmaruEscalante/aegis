@@ -45,7 +45,7 @@ class Embedder:
         except Exception as e:
             raise RuntimeError(
                 f"Failed to load embedder {model_id!r}: {e}. "
-                f"Hint: run `uv sync` (project) or `pipx install aegis-mcp` (end user)."
+                f"Hint: run `uv sync` (project) or `npx aegis-gate` (end user)."
             ) from e
 
     @property

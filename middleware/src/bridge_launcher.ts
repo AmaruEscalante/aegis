@@ -1,6 +1,6 @@
 /**
  * Bridge launcher — detects Python, ensures the user-cached venv at
- * ~/.aegis-mcp/venv/ exists with pinned dependencies installed, spawns
+ * ~/.aegis-gate/venv/ exists with pinned dependencies installed, spawns
  * aegis/bridge.py on an ephemeral port, and polls /health until ready.
  *
  * Owned by middleware/src/cli.ts; not invoked directly by the MCP server.
@@ -47,11 +47,11 @@ export async function detectPython(): Promise<string> {
 }
 
 /**
- * Return the Aegis cache directory at ~/.aegis-mcp/.
+ * Return the Aegis cache directory at ~/.aegis-gate/.
  * Creates it if it doesn't exist.
  */
 export function resolveAegisCachePath(): string {
-    const cachePath = path.join(os.homedir(), '.aegis-mcp');
+    const cachePath = path.join(os.homedir(), '.aegis-gate');
     fs.mkdirSync(cachePath, { recursive: true });
     return cachePath;
 }
