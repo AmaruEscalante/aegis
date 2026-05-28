@@ -39,7 +39,7 @@ async function main() {
 
     console.log('Aegis status');
     console.log('============');
-    console.log(`Hook (enforce Read/Glob/Grep):  ${hookInstalled ? 'installed' : 'NOT installed'}`);
+    console.log(`Hook (enforce Read/Glob/Grep/Bash):  ${hookInstalled ? 'installed' : 'NOT installed'}`);
     console.log(`Bridge:                          ${bridgeStatus}`);
     if (bridgeStatus === 'ok') {
         console.log(`  embed model:    ${bridgeMeta.embed_model}`);

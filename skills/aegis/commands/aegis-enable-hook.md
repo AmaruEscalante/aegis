@@ -1,6 +1,6 @@
 ---
 name: aegis-enable-hook
-description: Enable Aegis enforcement hook (route Read/Glob/Grep through aegis_read).
+description: Enable Aegis enforcement hook (route Read/Glob/Grep and common Bash file reads through aegis_read).
 ---
 
 When the user invokes `/aegis-enable-hook`:
