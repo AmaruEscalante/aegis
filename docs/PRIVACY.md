@@ -55,6 +55,7 @@ Aegis is MIT-licensed and the source is at [github.com/AmaruEscalante/aegis](htt
 
 ## What we don't promise
 
+- **Adversarial containment.** Aegis is a cooperative guardrail. It routes `Read`/`Glob`/`Grep` and common single-file `Bash` reads through the classifier, but a determined agent can read files in ways no command-level filter catches (`python -c`, encoding, chunking). For a hard wall, pair Aegis with OS-level sandboxing (`sandbox.filesystem.denyRead`).
 - **Image classification.** Image files (`.jpg`, `.png`, etc.) are escalated to you for manual review — they're not classified by the on-device model in v1. OCR support is planned for a future release.
 - **Cross-platform identical behavior.** v1 ships macOS-tested. Linux + Windows work in our testing but aren't on the CI matrix yet.
 - **Accuracy beyond the documented eval.** The shipped classifier scored 94.90% on a 98-sample held-out eval (see [scorecard.md](eval-results/scorecard.md)). Real-world distribution may differ; we know of one documented fail-open case.

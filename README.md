@@ -12,7 +12,7 @@ That's the entire install.
 
 ## What it does
 
-Aegis routes Claude Code's `Read`/`Glob`/`Grep` through an on-device classifier and returns one of four verdicts:
+Aegis routes Claude Code's `Read`/`Glob`/`Grep` — and common single-file shell reads via `Bash` (`cat`, `head`, `grep FILE`, …) — through an on-device classifier and returns one of four verdicts:
 
 - **classify_safe** — pass through unchanged (most file content)
 - **flag_pii** — sanitize PII inline with placeholders (`__EMAIL_1__`, `__SSN_1__`)
@@ -44,6 +44,12 @@ Claude → Read(path)              ← hook intercepts
        passthrough / sanitize / block / escalate
 ```
 
+### Scope: guardrail, not sandbox
+
+Aegis is a **cooperative guardrail**. It redirects the file-access paths an agent normally uses — `Read`/`Glob`/`Grep` and common single-file `Bash` reads — through the classifier, in both default and bypass-permissions modes.
+
+It is **not** containment against an actively adversarial agent. Indirect reads (`python -c "open('.env')"`), piped/substituted/encoded commands, and chunked exfiltration are out of scope — every command-level filter is defeatable. For a hard wall on crown-jewel paths, combine Aegis with Claude Code's OS sandbox (`sandbox.filesystem.denyRead` for `.env`, `~/.ssh`, etc.), which blocks reads at the OS level regardless of how they're attempted.
+
 ## Performance
 
 - **94.90% accuracy** on a 98-sample real-world held-out eval (Wilson 95% CI [88.6%, 97.8%])
@@ -58,7 +64,7 @@ npx aegis-gate
 ```
 
 On first run:
-1. Prompts to install the Read/Glob/Grep enforcement hook (default Yes)
+1. Prompts to install the Read/Glob/Grep/Bash enforcement hook (default Yes)
 2. Sets up the Python bridge venv at `~/.aegis-gate/venv/`
 3. Downloads the embedding model on first classification (~1.2 GB, cached)
 4. Registers slash commands: `/aegis-status`, `/aegis-policy`, `/aegis-enable-hook`, `/aegis-disable-hook`, `/aegis-uninstall`

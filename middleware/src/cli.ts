@@ -75,7 +75,7 @@ async function promptConsent(): Promise<boolean> {
     return new Promise((resolve) => {
         rl.question(
             'Add Aegis enforcement hook to ~/.claude/settings.json?\n' +
-                '  This routes Read/Glob/Grep through aegis_read automatically.\n' +
+                '  This routes Read/Glob/Grep and common Bash file reads through aegis_read automatically.\n' +
                 '  You can disable later with /aegis-disable-hook or `npx aegis-gate uninstall`.\n' +
                 '[Y/n] ',
             (answer) => {
