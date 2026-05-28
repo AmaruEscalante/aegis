@@ -29,7 +29,7 @@ describe('installer', () => {
         expect(written.hooks?.PreToolUse).toBeInstanceOf(Array);
         const aegisEntry = written.hooks.PreToolUse.find((h: any) => h.name === HOOK_NAME);
         expect(aegisEntry).toBeTruthy();
-        expect(aegisEntry.matcher).toBe('Read|Glob|Grep');
+        expect(aegisEntry.matcher).toBe('Read|Glob|Grep|Bash');
     });
 
     it('additively patches existing settings.json without touching other keys', async () => {

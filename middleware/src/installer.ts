@@ -8,7 +8,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 
 export const HOOK_NAME = 'aegis-gate:enforce-read-routing';
-export const HOOK_MATCHER = 'Read|Glob|Grep';
+export const HOOK_MATCHER = 'Read|Glob|Grep|Bash';
 
 interface InstallOptions {
     settingsPath: string;
