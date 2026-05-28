@@ -1,6 +1,6 @@
 {
   "name": "aegis-gate",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "On-device privacy gate for AI agents — MCP plugin",
   "main": "dist/mcp-server.js",
   "bin": {
