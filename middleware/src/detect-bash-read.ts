@@ -23,6 +23,11 @@ const PATTERN_READERS = new Set(['grep', 'egrep', 'fgrep', 'rg', 'sed', 'awk']);
 
 // Short/long flags that consume the NEXT token as their value (for ALWAYS
 // readers — head/tail/cut). Used so `head -n 5 file` counts `file`, not `5`.
+// KNOWN LIMITATION: this set is shared across all ALWAYS_READERS, so a flag
+// that takes a value for one command (e.g. `-f` = field for `cut`) but is
+// boolean for another (e.g. `-f` = follow for `tail`) over-skips the next
+// token — so `tail -f app.log` fails open (under-blocks). Acceptable under the
+// cooperative fail-open design.
 const VALUE_FLAGS = new Set(['-n', '-c', '-d', '-f', '--lines', '--bytes']);
 
 // Operators that delimit the first command segment of a pipeline/chain.
@@ -81,6 +86,10 @@ export function detectBashRead(command: string): BashReadResult {
     // following value): pattern-reader value-flags are command-specific.
     const nonOptions = args.filter((a) => !a.startsWith('-'));
     // nonOptions[0] is the pattern/script; remaining are files.
+    // INTENTIONAL ASYMMETRY: unlike ALWAYS_READERS (which fail open on multiple
+    // files), PATTERN_READERS with multiple files return the LAST file as the
+    // path — grepping multiple files is common, and gating one file the command
+    // touches is still useful.
     if (nonOptions.length >= 2) {
       return { isRead: true, path: nonOptions[nonOptions.length - 1] };
     }
